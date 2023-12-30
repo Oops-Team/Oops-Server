@@ -24,7 +24,7 @@ public class UserController {
 
     // Oops 회원 이메일 중복 검사
     @GetMapping("/email/{email}")
-    public void checkOopsEmail(@PathVariable("name") String email) {
+    public void checkOopsEmail(@PathVariable("email") String email) {
         userService.validateDuplicateUser(email, "oops");
     }
 
