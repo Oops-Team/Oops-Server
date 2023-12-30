@@ -22,7 +22,7 @@ public class UserController {
 
     // Oops 회원 이메일 중복 검사
     @GetMapping("/email/{email}")
-    public void createOopsUser(@PathVariable String email) {
+    public void checkOopsEmail(@PathVariable String email) {
         userService.validateDuplicateUser(email, "oops");
     }
 }
