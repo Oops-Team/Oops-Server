@@ -19,8 +19,17 @@ public class User {
     @Column(length = 320, nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column
     private String password;
+
+    /**
+     * [sns type 표기 방식]
+     * Oops 자체 회원가입: oops
+     * Naver 연동 가입: naver
+     * Google 연동 가입: google
+     **/
+    @Column(name = "sns_type", nullable = false)
+    private String snsType;
 
     @OneToOne(mappedBy = "user")
     private NaverUser naverUser;
@@ -29,10 +38,11 @@ public class User {
     private GoogleUser googleUser;
 
     @Builder
-    public void createUser(int id, String name, String email, String password) {
+    public void createOopsUser(int id, String name, String email, String password) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.snsType = "oops";
     }
 }

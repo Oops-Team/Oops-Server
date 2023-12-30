@@ -12,9 +12,6 @@ public class GoogleUser {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @Column(name = "sns_id", length = 45, nullable = false)
-    private String id;
-
     @Column(length = 100)
     private String token;
 }
