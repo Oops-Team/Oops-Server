@@ -5,8 +5,11 @@ import static com.oops.server.exception.ExceptionMessages.*;
 import com.oops.server.dto.request.SignUpRequest;
 import com.oops.server.entity.User;
 import com.oops.server.repository.UserRepository;
+import com.oops.server.token.TokenProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -16,16 +19,15 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder encoder;
+    private TokenProvider tokenProvider;
+
     // Oops 회원가입
     public void join(SignUpRequest request) {
-        User user = new User();
-        user.createOopsBuilder()
-                .name(request.name())
-                .email(request.email())
-                .password(request.password())
-                .build();
+        userRepository.save(User.createOopsUser(request, encoder));
 
-        userRepository.save(user);
+
     }
 
     // 중복 회원 검증

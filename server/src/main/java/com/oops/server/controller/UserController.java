@@ -28,7 +28,7 @@ public class UserController {
     }
 
     // Oops 회원가입
-    @PostMapping("/signup")
+    @PostMapping("/sign-up")
     public void createOopsUser(@RequestBody SignUpRequest request) {
         userService.join(request);
 

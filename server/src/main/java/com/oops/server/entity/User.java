@@ -1,8 +1,10 @@
 package com.oops.server.entity;
 
+import com.oops.server.dto.request.SignUpRequest;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Getter
@@ -37,11 +39,20 @@ public class User {
     @OneToOne(mappedBy = "user")
     private GoogleUser googleUser;
 
-    @Builder(builderMethodName = "createOopsBuilder")
-    public void createOopsUser(String name, String email, String password) {
+    @Builder
+    private User(String name, String email, String password, String snsType) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.snsType = "oops";
+        this.snsType = snsType;
+    }
+
+    public static User createOopsUser(SignUpRequest request, PasswordEncoder encoder) {
+        return User.builder()
+                .name(request.name())
+                .email(request.email())
+                .password(encoder.encode(request.password()))
+                .snsType("oops")
+                .build();
     }
 }
