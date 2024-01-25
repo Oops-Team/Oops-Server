@@ -1,7 +1,6 @@
 package com.oops.server.controller;
 
-import com.oops.server.dto.user.SignUpRequest;
-import com.oops.server.dto.user.SignUpResponse;
+import com.oops.server.dto.request.SignUpRequest;
 import com.oops.server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

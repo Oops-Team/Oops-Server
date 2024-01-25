@@ -2,7 +2,7 @@ package com.oops.server.service;
 
 import static com.oops.server.exception.ExceptionMessages.*;
 
-import com.oops.server.dto.user.SignUpRequest;
+import com.oops.server.dto.request.SignUpRequest;
 import com.oops.server.entity.User;
 import com.oops.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +20,9 @@ public class UserService {
     public void join(SignUpRequest request) {
         User user = new User();
         user.createOopsBuilder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .password(request.getPassword())
+                .name(request.name())
+                .email(request.email())
+                .password(request.password())
                 .build();
 
         userRepository.save(user);
