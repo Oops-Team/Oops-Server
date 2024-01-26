@@ -1,8 +1,12 @@
 package com.oops.server.controller;
 
+import com.oops.server.context.StatusCode;
 import com.oops.server.dto.request.SignUpRequest;
+import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,10 +33,8 @@ public class UserController {
 
     // Oops 회원가입
     @PostMapping("/sign-up")
-    public void createOopsUser(@RequestBody SignUpRequest request) {
-        userService.join(request);
-
-        // TODO: 토큰 만들기(클래스 따로 생성하는 게 좋을듯)
-        // TODO: 응답 데이터 보내기
+    public ResponseEntity createOopsUser(@RequestBody SignUpRequest request) {
+        return new ResponseEntity(DefaultResponse.from(StatusCode.OK, "성공", userService.join(request)),
+                HttpStatus.OK);
     }
 }

@@ -1,12 +1,12 @@
 package com.oops.server.service;
 
-import static com.oops.server.exception.ExceptionMessages.*;
+import static com.oops.server.context.ExceptionMessages.*;
 
 import com.oops.server.dto.request.SignUpRequest;
+import com.oops.server.dto.response.SignUpResponse;
 import com.oops.server.entity.User;
 import com.oops.server.repository.UserRepository;
 import com.oops.server.token.TokenProvider;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,16 +18,24 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private PasswordEncoder encoder;
+    @Autowired
     private TokenProvider tokenProvider;
 
     // Oops 회원가입
-    public void join(SignUpRequest request) {
-        userRepository.save(User.createOopsUser(request, encoder));
+    public SignUpResponse join(SignUpRequest request) {
+        User user = User.createOopsUser(request, encoder);
+        userRepository.save(user);
 
+        // 토큰에 저장할 user 정보 가져오기
+        Long userId = user.getId();
+        String userName = user.getName();
 
+        // 토큰 생성
+        String token = tokenProvider.createAccessToken(userId, userName);
+
+        return new SignUpResponse(token);
     }
 
     // 중복 회원 검증

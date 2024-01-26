@@ -1,4 +1,4 @@
-package com.oops.server.exception;
+package com.oops.server.context;
 
 public enum ExceptionMessages {
 
