@@ -15,7 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @EnableWebSecurity
 @Configuration
-public class SecurityConfiguration {
+public class SecurityConfig {
 
     private final String[] allowedUrls = {"/", "/nickname/**", "/email/**", "/sign-up"};
 
