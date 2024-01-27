@@ -1,7 +1,5 @@
 package com.oops.server.service;
 
-import static com.oops.server.context.ExceptionMessages.*;
-
 import com.oops.server.dto.request.SignUpRequest;
 import com.oops.server.dto.response.SignUpResponse;
 import com.oops.server.entity.User;
@@ -10,11 +8,8 @@ import com.oops.server.repository.UserRefreshTokenRepository;
 import com.oops.server.repository.UserRepository;
 import com.oops.server.token.TokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @RequiredArgsConstructor
 @Service
@@ -28,22 +23,13 @@ public class UserService {
     // 중복 회원 검증
     public boolean validateDuplicateUser(String email, String snsType) {
         // 중복시 false 반환
-        if (userRepository.findByEmailAndSnsType(email, snsType) != null) {
-            return false;
-        } else {
-            return true;
-        }
+        return userRepository.findByEmailAndSnsType(email, snsType) == null;
     }
 
     // 중복 닉네임 검증
     public boolean validateDuplicateName(String name) {
         // 중복시 false 반환
-        if (userRepository.findByName(name) != null) {
-            return false;
-        }
-        else {
-            return true;
-        }
+        return userRepository.findByName(name) == null;
     }
 
     // Oops 회원가입
