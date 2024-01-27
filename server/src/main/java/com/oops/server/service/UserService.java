@@ -37,16 +37,23 @@ public class UserService {
     }
 
     // 중복 회원 검증
-    public void validateDuplicateUser(String email, String snsType) {
+    public boolean validateDuplicateUser(String email, String snsType) {
+        // 중복시 false 반환
         if (userRepository.findByEmailAndSnsType(email, snsType) != null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, DUPLICATE_USER.get());
+            return false;
+        } else {
+            return true;
         }
     }
 
     // 중복 닉네임 검증
-    public void validateDuplicateName(String name) {
+    public boolean validateDuplicateName(String name) {
+        // 중복시 false 반환
         if (userRepository.findByName(name) != null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, DUPLICATE_NAME.get());
+            return false;
+        }
+        else {
+            return true;
         }
     }
 }

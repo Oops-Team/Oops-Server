@@ -1,5 +1,6 @@
 package com.oops.server.controller;
 
+import com.oops.server.context.ExceptionMessages;
 import com.oops.server.context.StatusCode;
 import com.oops.server.dto.request.SignUpRequest;
 import com.oops.server.dto.response.DefaultResponse;
@@ -21,14 +22,32 @@ public class UserController {
 
     // 닉네임 중복 검사
     @GetMapping("/nickname/{name}")
-    public void checkNickname(@PathVariable("name") String name) {
-        userService.validateDuplicateName(name);
+    public ResponseEntity checkNickname(@PathVariable("name") String name) {
+        boolean isValidate = userService.validateDuplicateName(name);
+
+        if (isValidate) {
+            return new ResponseEntity(DefaultResponse.from(StatusCode.OK, "성공"),
+                    HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity(DefaultResponse.from(StatusCode.CONFLICT, ExceptionMessages.DUPLICATE_NAME.get()),
+                    HttpStatus.CONFLICT);
+        }
     }
 
     // Oops 회원 이메일 중복 검사
     @GetMapping("/email/{email}")
-    public void checkOopsEmail(@PathVariable("email") String email) {
-        userService.validateDuplicateUser(email, "oops");
+    public ResponseEntity checkOopsEmail(@PathVariable("email") String email) {
+        boolean isValidate = userService.validateDuplicateUser(email, "oops");
+
+        if (isValidate) {
+            return new ResponseEntity(DefaultResponse.from(StatusCode.OK, "성공"),
+                    HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity(DefaultResponse.from(StatusCode.CONFLICT, ExceptionMessages.DUPLICATE_USER.get()),
+                    HttpStatus.CONFLICT);
+        }
     }
 
     // Oops 회원가입
