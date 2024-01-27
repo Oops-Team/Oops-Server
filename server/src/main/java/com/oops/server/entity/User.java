@@ -4,8 +4,10 @@ import com.oops.server.dto.request.SignUpRequest;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+@NoArgsConstructor
 @Entity
 @Getter
 @Table(name = "member")

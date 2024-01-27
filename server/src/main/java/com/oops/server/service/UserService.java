@@ -7,21 +7,20 @@ import com.oops.server.dto.response.SignUpResponse;
 import com.oops.server.entity.User;
 import com.oops.server.repository.UserRepository;
 import com.oops.server.token.TokenProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+@RequiredArgsConstructor
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder encoder;
-    @Autowired
-    private TokenProvider tokenProvider;
+    private final UserRepository userRepository;
+    private final PasswordEncoder encoder;
+    private final TokenProvider tokenProvider;
 
     // Oops 회원가입
     public SignUpResponse join(SignUpRequest request) {
@@ -30,10 +29,9 @@ public class UserService {
 
         // 토큰에 저장할 user 정보 가져오기
         Long userId = user.getId();
-        String userName = user.getName();
 
         // 토큰 생성
-        String token = tokenProvider.createAccessToken(userId, userName);
+        String token = tokenProvider.createAccessToken(userId);
 
         return new SignUpResponse(token);
     }
