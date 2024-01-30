@@ -5,7 +5,7 @@ import com.oops.server.context.StatusCode;
 import com.oops.server.dto.request.SignInRequest;
 import com.oops.server.dto.request.SignUpRequest;
 import com.oops.server.dto.response.DefaultResponse;
-import com.oops.server.dto.response.SignUpResponse;
+import com.oops.server.dto.response.SignInResponse;
 import com.oops.server.entity.User;
 //import com.oops.server.entity.UserRefreshToken;
 //import com.oops.server.repository.UserRefreshTokenRepository;
@@ -39,7 +39,7 @@ public class UserService {
     }
 
     // Oops 회원가입
-    public SignUpResponse join(SignUpRequest request) {
+    public SignInResponse join(SignUpRequest request) {
         User user = User.createOopsUser(request, encoder);
         userRepository.save(user);
 
@@ -58,7 +58,7 @@ public class UserService {
 //                        () -> userRefreshTokenRepository.save(new UserRefreshToken(user, refreshToken))
 //                );
 
-        return new SignUpResponse(accessToken);
+        return new SignInResponse(accessToken);
     }
 
     // Oops 로그인
@@ -83,7 +83,7 @@ public class UserService {
         String token = tokenProvider.createAccessToken(user.getId());
 
         return new ResponseEntity(
-                DefaultResponse.from(StatusCode.OK, "성공", new SignUpResponse(token)),
+                DefaultResponse.from(StatusCode.OK, "성공", new SignInResponse(token)),
                 HttpStatus.OK);
     }
 }

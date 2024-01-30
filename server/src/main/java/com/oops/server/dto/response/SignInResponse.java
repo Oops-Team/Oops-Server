@@ -1,5 +1,5 @@
 package com.oops.server.dto.response;
 
-public record SignUpResponse (
+public record SignInResponse(
         String accessToken
 ) {}
