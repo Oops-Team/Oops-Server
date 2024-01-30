@@ -35,12 +35,6 @@ public class User {
     @Column(name = "sns_type", nullable = false)
     private String snsType;
 
-    @OneToOne(mappedBy = "user")
-    private NaverUser naverUser;
-
-    @OneToOne(mappedBy = "user")
-    private GoogleUser googleUser;
-
     @Builder
     private User(String name, String email, String password, String snsType) {
         this.name = name;
