@@ -17,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-    private final String[] allowedUrls = {"/", "/nickname/**", "/email/**", "/sign-up"};
+    private final String[] allowedUrls = {"/", "/nickname/**", "/email/**", "/sign-up", "/login/**"};
 
     // H2 콘솔 사용을 위한 설정
     @Bean

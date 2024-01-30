@@ -1,6 +1,10 @@
 package com.oops.server.service;
 
+import com.oops.server.context.ExceptionMessages;
+import com.oops.server.context.StatusCode;
+import com.oops.server.dto.request.SignInRequest;
 import com.oops.server.dto.request.SignUpRequest;
+import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.dto.response.SignUpResponse;
 import com.oops.server.entity.User;
 //import com.oops.server.entity.UserRefreshToken;
@@ -8,6 +12,8 @@ import com.oops.server.entity.User;
 import com.oops.server.repository.UserRepository;
 import com.oops.server.token.TokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +22,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
-//    private final UserRefreshTokenRepository userRefreshTokenRepository;
+    //    private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final PasswordEncoder encoder;
     private final TokenProvider tokenProvider;
 
@@ -53,5 +59,31 @@ public class UserService {
 //                );
 
         return new SignUpResponse(accessToken);
+    }
+
+    // Oops 로그인
+    public ResponseEntity signInOops(SignInRequest request) {
+
+        User user = userRepository.findByEmailAndSnsType(request.email(), "oops");
+
+        // 해당하는 이메일이 없을 시
+        if (user == null) {
+            return new ResponseEntity(DefaultResponse.from(StatusCode.NOT_FOUND,
+                    ExceptionMessages.NOT_FOUND_EMAIL.get()),
+                    HttpStatus.NOT_FOUND);
+        }
+        // 비밀번호 불일치
+        else if (!encoder.matches(request.password(), user.getPassword())) {
+            return new ResponseEntity(DefaultResponse.from(StatusCode.BAD_REQUEST,
+                    ExceptionMessages.MISS_MATCH_PASSWORD.get()),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        // 모두 일치할 시 - 토큰 생성
+        String token = tokenProvider.createAccessToken(user.getId());
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공", new SignUpResponse(token)),
+                HttpStatus.OK);
     }
 }

@@ -2,6 +2,7 @@ package com.oops.server.controller;
 
 import com.oops.server.context.ExceptionMessages;
 import com.oops.server.context.StatusCode;
+import com.oops.server.dto.request.SignInRequest;
 import com.oops.server.dto.request.SignUpRequest;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.service.UserService;
@@ -28,9 +29,9 @@ public class UserController {
         if (isValidate) {
             return new ResponseEntity(DefaultResponse.from(StatusCode.OK, "성공"),
                     HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity(DefaultResponse.from(StatusCode.CONFLICT, ExceptionMessages.DUPLICATE_NAME.get()),
+        } else {
+            return new ResponseEntity(DefaultResponse.from(StatusCode.CONFLICT,
+                    ExceptionMessages.DUPLICATE_NAME.get()),
                     HttpStatus.CONFLICT);
         }
     }
@@ -43,9 +44,9 @@ public class UserController {
         if (isValidate) {
             return new ResponseEntity(DefaultResponse.from(StatusCode.OK, "성공"),
                     HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity(DefaultResponse.from(StatusCode.CONFLICT, ExceptionMessages.DUPLICATE_USER.get()),
+        } else {
+            return new ResponseEntity(DefaultResponse.from(StatusCode.CONFLICT,
+                    ExceptionMessages.DUPLICATE_USER.get()),
                     HttpStatus.CONFLICT);
         }
     }
@@ -53,7 +54,25 @@ public class UserController {
     // Oops 회원가입
     @PostMapping("/sign-up")
     public ResponseEntity createOopsUser(@RequestBody SignUpRequest request) {
-        return new ResponseEntity(DefaultResponse.from(StatusCode.OK, "성공", userService.join(request)),
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공", userService.join(request)),
                 HttpStatus.OK);
+    }
+
+    // 로그인
+    @GetMapping("/login/{loginId}")
+    public ResponseEntity login(@PathVariable("loginId") String loginType,
+            @RequestBody SignInRequest request) {
+
+        switch (loginType) {
+            // oops 로그인
+            case "oops":
+                return userService.signInOops(request);
+
+            default:
+                return new ResponseEntity(
+                        DefaultResponse.from(StatusCode.BAD_REQUEST, ExceptionMessages.BAD_REQUEST.get()),
+                        HttpStatus.BAD_REQUEST);
+        }
     }
 }
