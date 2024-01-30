@@ -3,8 +3,8 @@ package com.oops.server.service;
 import com.oops.server.dto.request.SignUpRequest;
 import com.oops.server.dto.response.SignUpResponse;
 import com.oops.server.entity.User;
-import com.oops.server.entity.UserRefreshToken;
-import com.oops.server.repository.UserRefreshTokenRepository;
+//import com.oops.server.entity.UserRefreshToken;
+//import com.oops.server.repository.UserRefreshTokenRepository;
 import com.oops.server.repository.UserRepository;
 import com.oops.server.token.TokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final UserRefreshTokenRepository userRefreshTokenRepository;
+//    private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final PasswordEncoder encoder;
     private final TokenProvider tokenProvider;
 
