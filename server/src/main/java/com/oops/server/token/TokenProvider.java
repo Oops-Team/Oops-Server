@@ -23,8 +23,8 @@ import org.springframework.stereotype.Component;
 public class TokenProvider {
 
     private final String secretKey;
-    private final long expirationMinutes;
-    private final long refreshExpirationHours;
+    private final long expirationDays;
+//    private final long refreshExpirationHours;
     private final String issuer;
 
     @Autowired
@@ -32,13 +32,13 @@ public class TokenProvider {
 
     public TokenProvider(
             @Value("${secret-key}") String secretKey,
-            @Value("${expiration-minutes}") long expirationMinutes,
-            @Value("${refresh-expiration-hours}") long refreshExpirationHours,
+            @Value("${expiration-days}") long expirationDays,
+//            @Value("${refresh-expiration-hours}") long refreshExpirationHours,
             @Value("${issuer}") String issuer
     ) {
         this.secretKey = secretKey;
-        this.expirationMinutes = expirationMinutes;
-        this.refreshExpirationHours = refreshExpirationHours;
+        this.expirationDays = expirationDays;
+//        this.refreshExpirationHours = refreshExpirationHours;
         this.issuer = issuer;
     }
 
@@ -48,18 +48,18 @@ public class TokenProvider {
                 .claim("userId", userId)
                 .setIssuer(issuer)
                 .setIssuedAt(Timestamp.valueOf(LocalDateTime.now()))
-                .setExpiration(Date.from(Instant.now().plus(expirationMinutes, ChronoUnit.MINUTES)))
+                .setExpiration(Date.from(Instant.now().plus(expirationDays, ChronoUnit.DAYS)))
                 .compact();
     }
 
-    public String createRefreshToken() {
-        return Jwts.builder()
-                .signWith(SignatureAlgorithm.HS512, secretKey.getBytes())
-                .setIssuer(issuer)
-                .setIssuedAt(Timestamp.valueOf(LocalDateTime.now()))
-                .setExpiration(Date.from(Instant.now().plus(refreshExpirationHours, ChronoUnit.HOURS)))
-                .compact();
-    }
+//    public String createRefreshToken() {
+//        return Jwts.builder()
+//                .signWith(SignatureAlgorithm.HS512, secretKey.getBytes())
+//                .setIssuer(issuer)
+//                .setIssuedAt(Timestamp.valueOf(LocalDateTime.now()))
+//                .setExpiration(Date.from(Instant.now().plus(refreshExpirationHours, ChronoUnit.HOURS)))
+//                .compact();
+//    }
 
     // 토큰의 Claim 디코딩
     public Claims getAllClaims(String token) {

@@ -42,14 +42,15 @@ public class UserService {
 
         // Access 토큰 생성
         String accessToken = tokenProvider.createAccessToken(userId);
-        // Refresh 토큰 생성
-        String refreshToken = tokenProvider.createRefreshToken();
-        // Refresh 토큰이 이미 있으면 토큰 갱신, 없으면 토큰 추가
-        userRefreshTokenRepository.findByUserId(userId)
-                .ifPresentOrElse(
-                        it -> it.updateRefreshToken(refreshToken),
-                        () -> userRefreshTokenRepository.save(new UserRefreshToken(user, refreshToken))
-                );
+
+//        // Refresh 토큰 생성
+//        String refreshToken = tokenProvider.createRefreshToken();
+//        // Refresh 토큰이 이미 있으면 토큰 갱신, 없으면 토큰 추가
+//        userRefreshTokenRepository.findByUserId(userId)
+//                .ifPresentOrElse(
+//                        it -> it.updateRefreshToken(refreshToken),
+//                        () -> userRefreshTokenRepository.save(new UserRefreshToken(user, refreshToken))
+//                );
 
         return new SignUpResponse(accessToken);
     }
