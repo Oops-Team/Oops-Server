@@ -2,7 +2,6 @@ package com.oops.server.controller;
 
 import com.oops.server.context.ExceptionMessages;
 import com.oops.server.context.StatusCode;
-import com.oops.server.dto.request.SignInRequest;
 import com.oops.server.dto.request.SignUpRequest;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.service.UserService;
@@ -62,16 +61,22 @@ public class UserController {
     // 로그인
     @GetMapping("/login/{loginId}")
     public ResponseEntity login(@PathVariable("loginId") String loginType,
-            @RequestBody SignInRequest request) {
+            @RequestBody SignUpRequest request) {
 
         switch (loginType) {
             // oops 로그인
             case "oops":
                 return userService.signInOops(request);
 
+            // 소셜 로그인
+            case "naver":
+            case "google":
+                return userService.signInSocial(request, loginType);
+
             default:
                 return new ResponseEntity(
-                        DefaultResponse.from(StatusCode.BAD_REQUEST, ExceptionMessages.BAD_REQUEST.get()),
+                        DefaultResponse.from(StatusCode.BAD_REQUEST,
+                                ExceptionMessages.BAD_REQUEST.get()),
                         HttpStatus.BAD_REQUEST);
         }
     }

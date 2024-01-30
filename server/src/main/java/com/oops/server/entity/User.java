@@ -27,10 +27,7 @@ public class User {
     private String password;
 
     /**
-     * [sns type 표기 방식]
-     * - Oops 자체 회원가입: oops
-     * - Naver 연동 가입: naver
-     * - Google 연동 가입: google
+     * [sns type 표기 방식] - Oops 자체 회원가입: oops - Naver 연동 가입: naver - Google 연동 가입: google
      **/
     @Column(name = "sns_type", nullable = false)
     private String snsType;
@@ -43,12 +40,20 @@ public class User {
         this.snsType = snsType;
     }
 
-    public static User createOopsUser(SignUpRequest request, PasswordEncoder encoder) {
+    public static User create(SignUpRequest request, PasswordEncoder encoder, String snsType) {
         return User.builder()
-                .name(request.name())
-                .email(request.email())
-                .password(encoder.encode(request.password()))
-                .snsType("oops")
-                .build();
+                   .name(request.name())
+                   .email(request.email())
+                   .password(encoder.encode(request.password()))
+                   .snsType(snsType)
+                   .build();
+    }
+
+    public static User createSocial(SignUpRequest request, String snsType) {
+        return User.builder()
+                   .name(request.name())
+                   .email(request.email())
+                   .snsType(snsType)
+                   .build();
     }
 }

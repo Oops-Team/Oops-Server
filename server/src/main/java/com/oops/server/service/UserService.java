@@ -2,7 +2,6 @@ package com.oops.server.service;
 
 import com.oops.server.context.ExceptionMessages;
 import com.oops.server.context.StatusCode;
-import com.oops.server.dto.request.SignInRequest;
 import com.oops.server.dto.request.SignUpRequest;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.dto.response.SignInResponse;
@@ -40,7 +39,7 @@ public class UserService {
 
     // Oops 회원가입
     public SignInResponse join(SignUpRequest request) {
-        User user = User.createOopsUser(request, encoder);
+        User user = User.create(request, encoder, "oops");
         userRepository.save(user);
 
         // 토큰에 저장할 user 정보 가져오기
@@ -62,7 +61,7 @@ public class UserService {
     }
 
     // Oops 로그인
-    public ResponseEntity signInOops(SignInRequest request) {
+    public ResponseEntity signInOops(SignUpRequest request) {
 
         User user = userRepository.findByEmailAndSnsType(request.email(), "oops");
 
@@ -80,6 +79,33 @@ public class UserService {
         }
 
         // 모두 일치할 시 - 토큰 생성
+        String token = tokenProvider.createAccessToken(user.getId());
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공", new SignInResponse(token)),
+                HttpStatus.OK);
+    }
+
+    // 소셜 로그인
+    public ResponseEntity signInSocial(SignUpRequest request, String snsType) {
+
+        String email = request.email();
+        User user = userRepository.findByEmailAndSnsType(email, snsType);
+
+        // 가입된 이력이 없을 경우
+        if (user == null) {
+            // 회원가입 진행
+            if (snsType.equals("naver")) {
+                user = User.createSocial(request, "naver");
+            } else if (snsType.equals("google")) {
+                user = User.createSocial(request, "google");
+            }
+
+            userRepository.save(user);
+            user = userRepository.findByEmailAndSnsType(email, snsType);    // id값을 가져오기 위함
+        }
+
+        // 토큰 발급
         String token = tokenProvider.createAccessToken(user.getId());
 
         return new ResponseEntity(
