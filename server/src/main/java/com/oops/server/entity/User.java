@@ -2,6 +2,7 @@ package com.oops.server.entity;
 
 import com.oops.server.dto.request.SignUpRequest;
 import jakarta.persistence.*;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,10 +28,16 @@ public class User {
     private String password;
 
     /**
-     * [sns type 표기 방식] - Oops 자체 회원가입: oops - Naver 연동 가입: naver - Google 연동 가입: google
+     * [sns type 표기 방식]
+     * - Oops 자체 회원가입: oops
+     * - Naver 연동 가입: naver
+     * - Google 연동 가입: google
      **/
     @Column(name = "sns_type", nullable = false)
     private String snsType;
+
+    @OneToMany(mappedBy = "user")
+    private List<Inventory> inventory;
 
     @Builder
     private User(String name, String email, String password, String snsType) {
