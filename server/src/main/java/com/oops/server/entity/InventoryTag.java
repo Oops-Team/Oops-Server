@@ -2,6 +2,7 @@ package com.oops.server.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@IdClass(InventoryTag.class)
 public class InventoryTag {
 
     @Id
@@ -23,11 +25,10 @@ public class InventoryTag {
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "tag_id", referencedColumnName = "id")
+    @JoinColumn(name = "tag_id", referencedColumnName = "tag_id")
     private Tag tag;
 
     public static InventoryTag create(Inventory inventory, Tag tag) {
-
         return InventoryTag.builder()
                 .inventory(inventory)
                 .tag(tag)

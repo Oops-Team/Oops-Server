@@ -43,7 +43,7 @@ public class UserService {
         userRepository.save(user);
 
         // 토큰에 저장할 user 정보 가져오기
-        Long userId = user.getId();
+        Long userId = user.getUserId();
 
         // Access 토큰 생성
         String accessToken = tokenProvider.createAccessToken(userId);
@@ -79,7 +79,7 @@ public class UserService {
         }
 
         // 모두 일치할 시 - 토큰 생성
-        String token = tokenProvider.createAccessToken(user.getId());
+        String token = tokenProvider.createAccessToken(user.getUserId());
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공", new SignInResponse(token)),
@@ -106,7 +106,7 @@ public class UserService {
         }
 
         // 토큰 발급
-        String token = tokenProvider.createAccessToken(user.getId());
+        String token = tokenProvider.createAccessToken(user.getUserId());
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공", new SignInResponse(token)),

@@ -21,7 +21,8 @@ import lombok.NoArgsConstructor;
 public class Tag {
 
     @Id
-    private Integer id;
+    @Column(name = "tag_id", length = 2)
+    private Integer tagId;
 
     @Column(length = 3)
     private String name;
@@ -31,7 +32,7 @@ public class Tag {
 
     public static Tag create(Integer id, String name) {
         return Tag.builder()
-                .id(id)
+                .tagId(id)
                 .name(name)
                 .build();
     }

@@ -10,4 +10,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // 닉네임으로 회원 찾기
     User findByName(String name);
+
+    // 유저 고유 아이디값으로 해당 회원 찾기
+    User findByUserId(Long userId);
 }
