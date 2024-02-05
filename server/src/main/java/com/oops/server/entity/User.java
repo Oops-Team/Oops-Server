@@ -3,14 +3,17 @@ package com.oops.server.entity;
 import com.oops.server.dto.request.SignUpRequest;
 import jakarta.persistence.*;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Getter
+@Builder
 @Table(name = "member")
 public class User {
 
@@ -38,14 +41,6 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Inventory> inventory;
-
-    @Builder
-    private User(String name, String email, String password, String snsType) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.snsType = snsType;
-    }
 
     public static User create(SignUpRequest request, PasswordEncoder encoder, String snsType) {
         return User.builder()
