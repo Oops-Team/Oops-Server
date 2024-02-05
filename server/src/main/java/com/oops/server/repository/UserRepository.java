@@ -8,6 +8,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 이메일로 특정 sns의 회원 찾기
     User findByEmailAndSnsType(String email, String snsType);
 
-    // 닉네임으로 특정 sns의 회원 찾기
+    // 닉네임으로 회원 찾기
     User findByName(String name);
 }
