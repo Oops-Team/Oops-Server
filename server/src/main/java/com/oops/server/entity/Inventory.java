@@ -40,6 +40,9 @@ public class Inventory {
     @OneToMany(mappedBy = "inventory", cascade = CascadeType.REMOVE)
     private List<InventoryTag> inventoryTags;
 
+    @OneToMany(mappedBy = "inventory", cascade = CascadeType.REMOVE)
+    private List<InventoryObject> inventoryObjects;
+
     public static Inventory create(User user, String inventoryName) {
         return Inventory.builder()
                 .user(user)

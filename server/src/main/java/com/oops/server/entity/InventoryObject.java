@@ -1,6 +1,7 @@
 package com.oops.server.entity;
 
-import com.oops.server.composite_key.InventoryTagID;
+import com.oops.server.composite_key.InventoryObjectID;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -10,16 +11,17 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-// 인벤토리의 태그
 @Entity
 @Builder
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@IdClass(InventoryTagID.class)
-@Table(name = "inventory_tag")
-public class InventoryTag {
+@IdClass(InventoryObjectID.class)
+@Table(name = "inventory_object")
+public class InventoryObject {
 
     @Id
     @ManyToOne
@@ -27,14 +29,6 @@ public class InventoryTag {
     private Inventory inventory;
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "tag_id", referencedColumnName = "tag_id")
-    private Tag tag;
-
-    public static InventoryTag create(Inventory inventory, Tag tag) {
-        return InventoryTag.builder()
-                .inventory(inventory)
-                .tag(tag)
-                .build();
-    }
+    @Column(name = "object_name", length = 20)
+    private String objectName;
 }
