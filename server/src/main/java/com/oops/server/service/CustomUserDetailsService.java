@@ -21,6 +21,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         Long userId = Long.valueOf(username);
         User user = userRepository.findByUserId(userId);
 
+        if (user == null) {
+            throw new UsernameNotFoundException("해당 유저가 없습니다.");
+        }
+
         return new CustomUserDetails(String.valueOf(user.getUserId()));
     }
 }
