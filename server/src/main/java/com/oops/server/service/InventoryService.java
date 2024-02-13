@@ -33,6 +33,13 @@ public class InventoryService {
         // 유저 정보 가져오기
         User user = userRepository.findByUserId(userId);
 
+        // 인벤토리 이름이 중복되었다면
+        if (!validateDuplicateName(user, request.inventoryName())) {
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.CONFLICT, "이미 있는 이름이에요"),
+                    HttpStatus.CONFLICT);
+        }
+
         // 인벤토리 데이터 추가
         Inventory inventory = Inventory.create(user, request.inventoryName());
         inventoryRepository.save(inventory);
@@ -52,5 +59,11 @@ public class InventoryService {
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공"),
                 HttpStatus.OK);
+    }
+
+    // 인벤토리 이름 중복 검사
+    public boolean validateDuplicateName(User user, String name) {
+        // 중복 시 false 반환
+        return inventoryRepository.findByUserAndName(user, name) == null;
     }
 }
