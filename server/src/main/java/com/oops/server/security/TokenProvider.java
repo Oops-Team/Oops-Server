@@ -1,4 +1,4 @@
-package com.oops.server.token;
+package com.oops.server.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

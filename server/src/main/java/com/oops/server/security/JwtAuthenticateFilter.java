@@ -1,4 +1,4 @@
-package com.oops.server.token;
+package com.oops.server.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

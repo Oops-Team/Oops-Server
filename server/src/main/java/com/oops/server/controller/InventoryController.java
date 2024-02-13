@@ -1,16 +1,10 @@
 package com.oops.server.controller;
 
 import com.oops.server.dto.request.InventoryCreateRequest;
-import com.oops.server.entity.User;
 import com.oops.server.service.InventoryService;
-import com.oops.server.token.TokenProvider;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.oops.server.security.TokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;

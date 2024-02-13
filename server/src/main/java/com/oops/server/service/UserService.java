@@ -9,7 +9,7 @@ import com.oops.server.entity.User;
 //import com.oops.server.entity.UserRefreshToken;
 //import com.oops.server.repository.UserRefreshTokenRepository;
 import com.oops.server.repository.UserRepository;
-import com.oops.server.token.TokenProvider;
+import com.oops.server.security.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
