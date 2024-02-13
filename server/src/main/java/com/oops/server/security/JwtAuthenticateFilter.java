@@ -24,7 +24,7 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
         String token = tokenProvider.resolveToken(request);
 
         // 토큰이 유효하다면
-        if (token != null && tokenProvider.isTokenExpired(token)) {
+        if (token != null && !tokenProvider.isTokenExpired(token)) {
             // 토큰으로부터 유저 정보를 받아
             Authentication authentication = tokenProvider.getAuthentication(token);
             // 저장

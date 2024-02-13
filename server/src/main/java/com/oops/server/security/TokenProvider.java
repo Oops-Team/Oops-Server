@@ -1,5 +1,6 @@
 package com.oops.server.security;
 
+import com.oops.server.service.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -15,7 +16,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,7 +28,7 @@ public class TokenProvider {
     private final String issuer;
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private CustomUserDetailsService userDetailsService;
 
     public TokenProvider(
             @Value("${secret-key}") String secretKey,
@@ -78,7 +78,8 @@ public class TokenProvider {
 
     // Claim 중 userId 값 빼오기
     public Long getUserIdFromToken(String token) {
-        return (Long) getAllClaims(token).get("userId");
+        String userIdStr = getAllClaims(token).get("userId").toString();
+        return Long.valueOf(userIdStr);
     }
 
     // 토큰 만료기한 가져오기

@@ -45,10 +45,4 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticateFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
-    // 패스워드 암호화 모듈
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 }

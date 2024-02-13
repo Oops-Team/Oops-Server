@@ -5,6 +5,7 @@ import com.oops.server.service.InventoryService;
 import com.oops.server.security.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -18,7 +19,7 @@ public class InventoryController {
     private final TokenProvider tokenProvider;
 
     // 인벤토리 생성
-    @PostMapping("inventories/create")
+    @PostMapping("/inventories/create")
     public ResponseEntity create(@RequestHeader("xAuthToken") String token,
             @RequestBody InventoryCreateRequest request) {
 
