@@ -5,6 +5,7 @@ import com.oops.server.service.InventoryService;
 import com.oops.server.security.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,5 +38,12 @@ public class InventoryController {
             @RequestBody InventoryCreateRequest request) {
 
         return inventoryService.modify(inventoryId, request);
+    }
+
+    // 인벤토리 삭제
+    @DeleteMapping("/inventories/{inventoryIdx}")
+    public ResponseEntity delete(@PathVariable("inventoryIdx") Long inventoryId) {
+
+        return inventoryService.delete(inventoryId);
     }
 }

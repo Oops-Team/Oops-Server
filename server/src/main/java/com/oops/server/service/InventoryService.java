@@ -105,4 +105,14 @@ public class InventoryService {
                 DefaultResponse.from(StatusCode.OK, "성공"),
                 HttpStatus.OK);
     }
+
+    // 인벤토리 삭제
+    public ResponseEntity delete(Long inventoryId) {
+
+        inventoryRepository.deleteByInventoryId(inventoryId);
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공"),
+                HttpStatus.OK);
+    }
 }

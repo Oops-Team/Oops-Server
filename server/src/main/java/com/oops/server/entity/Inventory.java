@@ -1,5 +1,6 @@
 package com.oops.server.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -36,7 +37,7 @@ public class Inventory {
     @Column(length = 6)
     private String name;
 
-    @OneToMany(mappedBy = "inventory")
+    @OneToMany(mappedBy = "inventory", cascade = CascadeType.REMOVE)
     private List<InventoryTag> inventoryTags;
 
     public static Inventory create(User user, String inventoryName) {
