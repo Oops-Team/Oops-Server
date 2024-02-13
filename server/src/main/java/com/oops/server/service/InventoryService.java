@@ -33,6 +33,21 @@ public class InventoryService {
         return inventoryRepository.findByUserAndName(user, name) == null;
     }
 
+    // 인벤토리 태그 저장
+    public void saveInventoryTags(Inventory inventory, List<Integer> tagIdList) {
+
+        List<Tag> tagList = new ArrayList<>();
+
+        for (Integer tagId : tagIdList) {
+            tagList.add(tagRepository.findByTagId(tagId));
+        }
+
+        for (Tag tag : tagList) {
+            InventoryTag inventoryTag = InventoryTag.create(inventory, tag);
+            inventoryTagRepository.save(inventoryTag);
+        }
+    }
+
     // 인벤토리 생성
     public ResponseEntity create(Long userId, InventoryCreateRequest request) {
 
@@ -53,14 +68,7 @@ public class InventoryService {
                 request.inventoryName());
 
         // 인벤토리 태그 데이터 추가
-        List<Tag> tagList = new ArrayList<>();
-        for (Integer tagId : request.inventoryTag()) {
-            tagList.add(tagRepository.findByTagId(tagId));
-        }
-        for (Tag tag : tagList) {
-            InventoryTag inventoryTag = InventoryTag.create(inventory, tag);
-            inventoryTagRepository.save(inventoryTag);
-        }
+        saveInventoryTags(inventory, request.inventoryTag());
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공"),
@@ -91,15 +99,7 @@ public class InventoryService {
 
         // 인벤토리 태그 테이블 갱신 (태그 갱신)
         inventoryTagRepository.deleteAllByInventory(inventory);
-
-        List<Tag> tagList = new ArrayList<>();
-        for (Integer tagId : request.inventoryTag()) {
-            tagList.add(tagRepository.findByTagId(tagId));
-        }
-        for (Tag tag : tagList) {
-            InventoryTag inventoryTag = InventoryTag.create(inventory, tag);
-            inventoryTagRepository.save(inventoryTag);
-        }
+        saveInventoryTags(inventory, request.inventoryTag());
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공"),
