@@ -45,4 +45,8 @@ public class Inventory {
                 .name(inventoryName)
                 .build();
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

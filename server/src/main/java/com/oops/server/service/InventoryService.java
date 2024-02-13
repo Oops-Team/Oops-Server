@@ -27,6 +27,12 @@ public class InventoryService {
     private final InventoryTagRepository inventoryTagRepository;
     private final UserRepository userRepository;
 
+    // 인벤토리 이름 중복 검사
+    public boolean validateDuplicateName(User user, String name) {
+        // 중복 시 false 반환
+        return inventoryRepository.findByUserAndName(user, name) == null;
+    }
+
     // 인벤토리 생성
     public ResponseEntity create(Long userId, InventoryCreateRequest request) {
 
@@ -61,9 +67,42 @@ public class InventoryService {
                 HttpStatus.OK);
     }
 
-    // 인벤토리 이름 중복 검사
-    public boolean validateDuplicateName(User user, String name) {
-        // 중복 시 false 반환
-        return inventoryRepository.findByUserAndName(user, name) == null;
+    // 인벤토리 수정
+    public ResponseEntity modify(Long inventoryId, InventoryCreateRequest request) {
+
+        // 해당 인벤토리가 없을 경우
+        if (inventoryRepository.findByInventoryId(inventoryId) == null) {
+            return new ResponseEntity(DefaultResponse.from(StatusCode.NOT_FOUND, "해당 인벤토리가 없습니다."),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        Inventory inventory = inventoryRepository.findByInventoryId(inventoryId);
+
+        // 인벤토리 이름이 중복되었다면
+        if (!validateDuplicateName(inventory.getUser(), request.inventoryName())) {
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.CONFLICT, "이미 있는 이름이에요"),
+                    HttpStatus.CONFLICT);
+        }
+
+        // 인벤토리 테이블 갱신 (이름 갱신)
+        inventory.setName(request.inventoryName());
+        inventoryRepository.save(inventory);
+
+        // 인벤토리 태그 테이블 갱신 (태그 갱신)
+        inventoryTagRepository.deleteAllByInventory(inventory);
+
+        List<Tag> tagList = new ArrayList<>();
+        for (Integer tagId : request.inventoryTag()) {
+            tagList.add(tagRepository.findByTagId(tagId));
+        }
+        for (Tag tag : tagList) {
+            InventoryTag inventoryTag = InventoryTag.create(inventory, tag);
+            inventoryTagRepository.save(inventoryTag);
+        }
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공"),
+                HttpStatus.OK);
     }
 }
