@@ -4,9 +4,11 @@ import com.oops.server.context.StatusCode;
 import com.oops.server.dto.request.InventoryCreateRequest;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.entity.Inventory;
+import com.oops.server.entity.InventoryObject;
 import com.oops.server.entity.InventoryTag;
 import com.oops.server.entity.Tag;
 import com.oops.server.entity.User;
+import com.oops.server.repository.InventoryObjectRepository;
 import com.oops.server.repository.InventoryRepository;
 import com.oops.server.repository.InventoryTagRepository;
 import com.oops.server.repository.TagRepository;
@@ -25,6 +27,7 @@ public class InventoryService {
     private final InventoryRepository inventoryRepository;
     private final TagRepository tagRepository;
     private final InventoryTagRepository inventoryTagRepository;
+    private final InventoryObjectRepository inventoryObjectRepository;
     private final UserRepository userRepository;
 
     // 인벤토리 이름 중복 검사
@@ -110,6 +113,27 @@ public class InventoryService {
     public ResponseEntity delete(Long inventoryId) {
 
         inventoryRepository.deleteByInventoryId(inventoryId);
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공"),
+                HttpStatus.OK);
+    }
+
+    // 인벤토리 내 소지품 추가
+    public ResponseEntity addObject(Long inventoryId, List<String> stuffNameList) {
+
+        Inventory inventory = inventoryRepository.findByInventoryId(inventoryId);
+
+        // 해당 인벤토리가 없을 경우
+        if (inventory == null) {
+            return new ResponseEntity(DefaultResponse.from(StatusCode.NOT_FOUND, "해당 인벤토리가 없습니다."),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        for (String stuffName : stuffNameList) {
+            InventoryObject inventoryObject = InventoryObject.create(inventory, stuffName);
+            inventoryObjectRepository.save(inventoryObject);
+        }
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공"),

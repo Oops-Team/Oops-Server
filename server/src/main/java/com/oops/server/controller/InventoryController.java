@@ -1,8 +1,10 @@
 package com.oops.server.controller;
 
+import com.oops.server.dto.request.InventoryAddObjectRequest;
 import com.oops.server.dto.request.InventoryCreateRequest;
 import com.oops.server.service.InventoryService;
 import com.oops.server.security.TokenProvider;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +26,7 @@ public class InventoryController {
     // 인벤토리 생성
     @PostMapping("/inventories/create")
     public ResponseEntity create(@RequestHeader("xAuthToken") String token,
-            @RequestBody InventoryCreateRequest request) {
+                                 @RequestBody InventoryCreateRequest request) {
 
         // 헤더에서 유저 정보 가져오기
         Long userId = tokenProvider.getUserIdFromToken(token);
@@ -35,7 +37,7 @@ public class InventoryController {
     // 인벤토리 수정
     @PatchMapping("/inventories/{inventoryIdx}")
     public ResponseEntity modify(@PathVariable("inventoryIdx") Long inventoryId,
-            @RequestBody InventoryCreateRequest request) {
+                                 @RequestBody InventoryCreateRequest request) {
 
         return inventoryService.modify(inventoryId, request);
     }
@@ -45,5 +47,13 @@ public class InventoryController {
     public ResponseEntity delete(@PathVariable("inventoryIdx") Long inventoryId) {
 
         return inventoryService.delete(inventoryId);
+    }
+
+    // 인벤토리 내 소지품 추가
+    @PostMapping("/inventories/{inventoryIdx}/stuff")
+    public ResponseEntity addObject(@PathVariable("inventoryIdx") Long inventoryId,
+                                    @RequestBody InventoryAddObjectRequest request) {
+
+        return inventoryService.addObject(inventoryId, request.stuffName());
     }
 }

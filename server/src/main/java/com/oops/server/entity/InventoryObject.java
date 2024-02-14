@@ -31,4 +31,11 @@ public class InventoryObject {
     @Id
     @Column(name = "object_name", length = 20)
     private String objectName;
+
+    public static InventoryObject create(Inventory inventory, String objectName) {
+        return InventoryObject.builder()
+                .inventory(inventory)
+                .objectName(objectName)
+                .build();
+    }
 }
