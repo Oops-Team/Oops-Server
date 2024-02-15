@@ -1,6 +1,6 @@
 package com.oops.server.entity;
 
-import com.oops.server.compositekey.InventoryObjectID;
+import com.oops.server.compositekey.InventoryStuffID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -19,9 +19,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@IdClass(InventoryObjectID.class)
-@Table(name = "inventory_object")
-public class InventoryObject {
+@IdClass(InventoryStuffID.class)
+@Table(name = "inventory_stuff")
+public class InventoryStuff {
 
     @Id
     @ManyToOne
@@ -29,13 +29,14 @@ public class InventoryObject {
     private Inventory inventory;
 
     @Id
-    @Column(name = "object_name", length = 20)
-    private String objectName;
+    @ManyToOne
+    @JoinColumn(name = "stuff_name", referencedColumnName = "name")
+    private Stuff stuff;
 
-    public static InventoryObject create(Inventory inventory, String objectName) {
-        return InventoryObject.builder()
+    public static InventoryStuff create(Inventory inventory, Stuff stuff) {
+        return InventoryStuff.builder()
                 .inventory(inventory)
-                .objectName(objectName)
+                .stuff(stuff)
                 .build();
     }
 }

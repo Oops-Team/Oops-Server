@@ -4,13 +4,15 @@ import com.oops.server.context.StatusCode;
 import com.oops.server.dto.request.InventoryCreateRequest;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.entity.Inventory;
-import com.oops.server.entity.InventoryObject;
+import com.oops.server.entity.InventoryStuff;
 import com.oops.server.entity.InventoryTag;
+import com.oops.server.entity.Stuff;
 import com.oops.server.entity.Tag;
 import com.oops.server.entity.User;
-import com.oops.server.repository.InventoryObjectRepository;
+import com.oops.server.repository.InventoryStuffRepository;
 import com.oops.server.repository.InventoryRepository;
 import com.oops.server.repository.InventoryTagRepository;
+import com.oops.server.repository.StuffRepository;
 import com.oops.server.repository.TagRepository;
 import com.oops.server.repository.UserRepository;
 import java.util.ArrayList;
@@ -26,8 +28,9 @@ public class InventoryService {
 
     private final InventoryRepository inventoryRepository;
     private final TagRepository tagRepository;
+    private final StuffRepository stuffRepository;
     private final InventoryTagRepository inventoryTagRepository;
-    private final InventoryObjectRepository inventoryObjectRepository;
+    private final InventoryStuffRepository inventoryStuffRepository;
     private final UserRepository userRepository;
 
     // 인벤토리 이름 중복 검사
@@ -131,8 +134,9 @@ public class InventoryService {
         }
 
         for (String stuffName : stuffNameList) {
-            InventoryObject inventoryObject = InventoryObject.create(inventory, stuffName);
-            inventoryObjectRepository.save(inventoryObject);
+            Stuff stuff = stuffRepository.findByName(stuffName);
+            InventoryStuff inventoryStuff = InventoryStuff.create(inventory, stuff);
+            inventoryStuffRepository.save(inventoryStuff);
         }
 
         return new ResponseEntity(
@@ -152,15 +156,36 @@ public class InventoryService {
         }
 
         // 해당 인벤토리의 소지품 전체 삭제 후 추가
-        inventoryObjectRepository.deleteAllByInventory(inventory);
+        inventoryStuffRepository.deleteAllByInventory(inventory);
 
         for (String stuffName : stuffNameList) {
-            InventoryObject inventoryObject = InventoryObject.create(inventory, stuffName);
-            inventoryObjectRepository.save(inventoryObject);
+            Stuff stuff = stuffRepository.findByName(stuffName);
+            InventoryStuff inventoryStuff = InventoryStuff.create(inventory, stuff);
+            inventoryStuffRepository.save(inventoryStuff);
         }
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공"),
                 HttpStatus.OK);
+    }
+
+    // 인벤토리 전체 조회
+    public ResponseEntity getAll(Long userId) {
+
+        User user = userRepository.findByUserId(userId);
+        List<Inventory> inventoryList = inventoryRepository.findAllByUser(user);
+
+        // 인벤토리 idx & 이름 가져오기
+        List<Long> inventoryIdxList = new ArrayList<>();
+        List<String> inventoryNameList = new ArrayList<>();
+        for (Inventory tempInventory : inventoryList) {
+            inventoryIdxList.add(tempInventory.getInventoryId());
+            inventoryNameList.add(tempInventory.getName());
+
+            // 해당 인벤토리의 소지품 관련 정보 가져오기
+
+        }
+
+        return null;
     }
 }
