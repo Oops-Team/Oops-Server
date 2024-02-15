@@ -3,6 +3,7 @@ package com.oops.server.service;
 import com.oops.server.context.StatusCode;
 import com.oops.server.dto.request.InventoryCreateRequest;
 import com.oops.server.dto.response.DefaultResponse;
+import com.oops.server.dto.response.InventoryGetAllResponse;
 import com.oops.server.entity.Inventory;
 import com.oops.server.entity.InventoryStuff;
 import com.oops.server.entity.InventoryTag;
@@ -175,17 +176,30 @@ public class InventoryService {
         User user = userRepository.findByUserId(userId);
         List<Inventory> inventoryList = inventoryRepository.findAllByUser(user);
 
-        // 인벤토리 idx & 이름 가져오기
         List<Long> inventoryIdxList = new ArrayList<>();
         List<String> inventoryNameList = new ArrayList<>();
+        List<Stuff> stuffList = new ArrayList<>();
+        int stuffTotalNum = 0;  // 총 등록 소지품 개수
+
+        // 인벤토리 idx & 이름 가져오기
         for (Inventory tempInventory : inventoryList) {
             inventoryIdxList.add(tempInventory.getInventoryId());
             inventoryNameList.add(tempInventory.getName());
-
-            // 해당 인벤토리의 소지품 관련 정보 가져오기
-
         }
 
-        return null;
+        // 해당 유저의 등록된 모든 소지품 가져오기
+        List<InventoryStuff> inventoryStuffList = inventoryStuffRepository.findAllByInventoryUser(user);
+        for (InventoryStuff inventoryStuff : inventoryStuffList) {
+            stuffList.add(inventoryStuff.getStuff());
+        }
+        stuffList = stuffList.stream().distinct().toList();
+
+        // 총 등록 소지품 개수 저장
+        stuffTotalNum = stuffList.size();
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공",
+                        new InventoryGetAllResponse(inventoryIdxList, inventoryNameList, stuffTotalNum, stuffList)),
+                HttpStatus.OK);
     }
 }

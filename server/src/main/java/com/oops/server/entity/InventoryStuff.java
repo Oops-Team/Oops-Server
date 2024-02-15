@@ -1,7 +1,7 @@
 package com.oops.server.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.oops.server.compositekey.InventoryStuffID;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -30,6 +30,7 @@ public class InventoryStuff {
 
     @Id
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "stuff_name", referencedColumnName = "name")
     private Stuff stuff;
 

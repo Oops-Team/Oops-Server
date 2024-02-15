@@ -4,7 +4,6 @@ import com.oops.server.dto.request.InventoryAddObjectRequest;
 import com.oops.server.dto.request.InventoryCreateRequest;
 import com.oops.server.service.InventoryService;
 import com.oops.server.security.TokenProvider;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -63,5 +62,15 @@ public class InventoryController {
                                        @RequestBody InventoryAddObjectRequest request) {
 
         return inventoryService.modifyObject(inventoryId, request.stuffName());
+    }
+
+    // 인벤토리 전체 조회
+    @GetMapping("/inventories")
+    public ResponseEntity getAll(@RequestHeader("xAuthToken") String token) {
+
+        // 헤더에서 유저 정보 가져오기
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return inventoryService.getAll(userId);
     }
 }

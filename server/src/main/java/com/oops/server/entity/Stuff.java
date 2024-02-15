@@ -1,6 +1,6 @@
 package com.oops.server.entity;
 
-import jakarta.persistence.CascadeType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -28,6 +28,7 @@ public class Stuff {
     @Column(length = 500)
     private String img_url;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "stuff")
     private List<InventoryStuff> inventoryStuffs;
 }
