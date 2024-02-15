@@ -4,6 +4,7 @@ import com.oops.server.context.StatusCode;
 import com.oops.server.dto.request.InventoryCreateRequest;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.dto.response.InventoryGetAllResponse;
+import com.oops.server.dto.response.InventoryGetOneResponse;
 import com.oops.server.entity.Inventory;
 import com.oops.server.entity.InventoryStuff;
 import com.oops.server.entity.InventoryTag;
@@ -200,6 +201,27 @@ public class InventoryService {
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공",
                         new InventoryGetAllResponse(inventoryIdxList, inventoryNameList, stuffTotalNum, stuffList)),
+                HttpStatus.OK);
+    }
+
+    // 인벤토리 상세 조회
+    public ResponseEntity getOne(Long inventoryId) {
+
+        Inventory inventory = inventoryRepository.findByInventoryId(inventoryId);
+        String inventoryName = inventory.getName();
+
+        List<InventoryStuff> inventoryStuffList = inventoryStuffRepository.findAllByInventory(inventory);
+        List<String> stuffImgURIList = new ArrayList<>();
+        List<String> stuffNameList = new ArrayList<>();
+        for (InventoryStuff inventoryStuff : inventoryStuffList) {
+            stuffImgURIList.add(inventoryStuff.getStuff().getImg_url());
+            stuffNameList.add(inventoryStuff.getStuff().getName());
+        }
+        int stuffNum = stuffNameList.size();
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공",
+                        new InventoryGetOneResponse(inventoryName, stuffImgURIList, stuffNameList, stuffNum)),
                 HttpStatus.OK);
     }
 }

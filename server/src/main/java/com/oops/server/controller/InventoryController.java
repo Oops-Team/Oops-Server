@@ -51,7 +51,7 @@ public class InventoryController {
     // 인벤토리 내 소지품 추가
     @PostMapping("/inventories/{inventoryIdx}/stuff")
     public ResponseEntity addStuff(@PathVariable("inventoryIdx") Long inventoryId,
-                                    @RequestBody InventoryAddStuffRequest request) {
+                                   @RequestBody InventoryAddStuffRequest request) {
 
         return inventoryService.addStuff(inventoryId, request.stuffName());
     }
@@ -59,7 +59,7 @@ public class InventoryController {
     // 인벤토리 내 소지품 수정
     @PatchMapping("/inventories/{inventoryIdx}/stuff")
     public ResponseEntity modifyStuff(@PathVariable("inventoryIdx") Long inventoryId,
-                                       @RequestBody InventoryAddStuffRequest request) {
+                                      @RequestBody InventoryAddStuffRequest request) {
 
         return inventoryService.modifyStuff(inventoryId, request.stuffName());
     }
@@ -72,5 +72,12 @@ public class InventoryController {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return inventoryService.getAll(userId);
+    }
+
+    // 인벤토리 상세 조회 (특정 인벤토리 조회)
+    @GetMapping("/inventories/{inventoryIdx}")
+    public ResponseEntity getOne(@PathVariable("inventoryIdx") Long inventoryId) {
+
+        return inventoryService.getOne(inventoryId);
     }
 }
