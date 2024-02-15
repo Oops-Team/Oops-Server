@@ -1,6 +1,6 @@
 package com.oops.server.repository;
 
-import com.oops.server.composite_key.InventoryObjectID;
+import com.oops.server.compositekey.InventoryObjectID;
 import com.oops.server.entity.Inventory;
 import com.oops.server.entity.InventoryObject;
 import jakarta.transaction.Transactional;

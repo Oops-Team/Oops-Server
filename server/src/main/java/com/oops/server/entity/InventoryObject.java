@@ -1,6 +1,6 @@
 package com.oops.server.entity;
 
-import com.oops.server.composite_key.InventoryObjectID;
+import com.oops.server.compositekey.InventoryObjectID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
