@@ -56,4 +56,12 @@ public class InventoryController {
 
         return inventoryService.addObject(inventoryId, request.stuffName());
     }
+
+    // 인벤토리 내 소지품 수정
+    @PatchMapping("/inventories/{inventoryIdx}/stuff")
+    public ResponseEntity modifyObject(@PathVariable("inventoryIdx") Long inventoryId,
+                                       @RequestBody InventoryAddObjectRequest request) {
+
+        return inventoryService.modifyObject(inventoryId, request.stuffName());
+    }
 }

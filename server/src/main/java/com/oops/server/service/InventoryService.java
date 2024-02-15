@@ -139,4 +139,28 @@ public class InventoryService {
                 DefaultResponse.from(StatusCode.OK, "성공"),
                 HttpStatus.OK);
     }
+
+    // 인벤토리 내 소지품 수정
+    public ResponseEntity modifyObject(Long inventoryId, List<String> stuffNameList) {
+
+        Inventory inventory = inventoryRepository.findByInventoryId(inventoryId);
+
+        // 해당 인벤토리가 없을 경우
+        if (inventory == null) {
+            return new ResponseEntity(DefaultResponse.from(StatusCode.NOT_FOUND, "해당 인벤토리가 없습니다."),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        // 해당 인벤토리의 소지품 전체 삭제 후 추가
+        inventoryObjectRepository.deleteAllByInventory(inventory);
+
+        for (String stuffName : stuffNameList) {
+            InventoryObject inventoryObject = InventoryObject.create(inventory, stuffName);
+            inventoryObjectRepository.save(inventoryObject);
+        }
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공"),
+                HttpStatus.OK);
+    }
 }
