@@ -1,6 +1,6 @@
 package com.oops.server.controller;
 
-import com.oops.server.dto.request.InventoryAddObjectRequest;
+import com.oops.server.dto.request.InventoryAddStuffRequest;
 import com.oops.server.dto.request.InventoryCreateRequest;
 import com.oops.server.service.InventoryService;
 import com.oops.server.security.TokenProvider;
@@ -50,18 +50,18 @@ public class InventoryController {
 
     // 인벤토리 내 소지품 추가
     @PostMapping("/inventories/{inventoryIdx}/stuff")
-    public ResponseEntity addObject(@PathVariable("inventoryIdx") Long inventoryId,
-                                    @RequestBody InventoryAddObjectRequest request) {
+    public ResponseEntity addStuff(@PathVariable("inventoryIdx") Long inventoryId,
+                                    @RequestBody InventoryAddStuffRequest request) {
 
-        return inventoryService.addObject(inventoryId, request.stuffName());
+        return inventoryService.addStuff(inventoryId, request.stuffName());
     }
 
     // 인벤토리 내 소지품 수정
     @PatchMapping("/inventories/{inventoryIdx}/stuff")
-    public ResponseEntity modifyObject(@PathVariable("inventoryIdx") Long inventoryId,
-                                       @RequestBody InventoryAddObjectRequest request) {
+    public ResponseEntity modifyStuff(@PathVariable("inventoryIdx") Long inventoryId,
+                                       @RequestBody InventoryAddStuffRequest request) {
 
-        return inventoryService.modifyObject(inventoryId, request.stuffName());
+        return inventoryService.modifyStuff(inventoryId, request.stuffName());
     }
 
     // 인벤토리 전체 조회

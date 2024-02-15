@@ -124,7 +124,7 @@ public class InventoryService {
     }
 
     // 인벤토리 내 소지품 추가
-    public ResponseEntity addObject(Long inventoryId, List<String> stuffNameList) {
+    public ResponseEntity addStuff(Long inventoryId, List<String> stuffNameList) {
 
         Inventory inventory = inventoryRepository.findByInventoryId(inventoryId);
 
@@ -146,7 +146,7 @@ public class InventoryService {
     }
 
     // 인벤토리 내 소지품 수정
-    public ResponseEntity modifyObject(Long inventoryId, List<String> stuffNameList) {
+    public ResponseEntity modifyStuff(Long inventoryId, List<String> stuffNameList) {
 
         Inventory inventory = inventoryRepository.findByInventoryId(inventoryId);
 
