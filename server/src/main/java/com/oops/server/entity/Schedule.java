@@ -51,6 +51,10 @@ public class Schedule {
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.REMOVE)
     private List<DateStuff> dateStuffs;
 
+    @ManyToOne
+    @JoinColumn(name = "inventory_id", referencedColumnName = "inventory_id")
+    private Inventory inventory;
+
     public static Schedule create(User user, LocalDate date, String tagList, LocalTime outTime, String notification) {
         return Schedule.builder()
                 .user(user)
