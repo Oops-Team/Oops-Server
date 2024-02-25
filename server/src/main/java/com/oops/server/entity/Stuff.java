@@ -1,6 +1,7 @@
 package com.oops.server.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -31,4 +32,7 @@ public class Stuff {
     @JsonIgnore
     @OneToMany(mappedBy = "stuff")
     private List<InventoryStuff> inventoryStuffs;
+
+    @OneToMany(mappedBy = "stuff")
+    private List<DateStuff> dateStuffs;
 }

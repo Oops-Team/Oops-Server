@@ -41,8 +41,11 @@ public class User {
     @Column(name = "sns_type", nullable = false)
     private String snsType;
 
-    @OneToMany(mappedBy = "user")
-    private List<Inventory> inventory;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<Inventory> inventories;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<Schedule> schedules;
 
     public static User create(SignUpRequest request, PasswordEncoder encoder, String snsType) {
         return User.builder()
