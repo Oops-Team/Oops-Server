@@ -13,17 +13,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequiredArgsConstructor
+@RequestMapping("/inventories")
 @RestController
+@RequiredArgsConstructor
 public class InventoryController {
 
     private final InventoryService inventoryService;
     private final TokenProvider tokenProvider;
 
     // 인벤토리 생성
-    @PostMapping("/inventories/create")
+    @PostMapping("/create")
     public ResponseEntity create(@RequestHeader("xAuthToken") String token,
                                  @RequestBody InventoryCreateRequest request) {
 
@@ -34,7 +36,7 @@ public class InventoryController {
     }
 
     // 인벤토리 수정
-    @PatchMapping("/inventories/{inventoryIdx}")
+    @PatchMapping("/{inventoryIdx}")
     public ResponseEntity modify(@PathVariable("inventoryIdx") Long inventoryId,
                                  @RequestBody InventoryCreateRequest request) {
 
@@ -42,14 +44,14 @@ public class InventoryController {
     }
 
     // 인벤토리 삭제
-    @DeleteMapping("/inventories/{inventoryIdx}")
+    @DeleteMapping("/{inventoryIdx}")
     public ResponseEntity delete(@PathVariable("inventoryIdx") Long inventoryId) {
 
         return inventoryService.delete(inventoryId);
     }
 
     // 인벤토리 내 소지품 추가
-    @PostMapping("/inventories/{inventoryIdx}/stuff")
+    @PostMapping("/{inventoryIdx}/stuff")
     public ResponseEntity addStuff(@PathVariable("inventoryIdx") Long inventoryId,
                                    @RequestBody InventoryAddStuffRequest request) {
 
@@ -57,7 +59,7 @@ public class InventoryController {
     }
 
     // 인벤토리 내 소지품 수정
-    @PatchMapping("/inventories/{inventoryIdx}/stuff")
+    @PatchMapping("/{inventoryIdx}/stuff")
     public ResponseEntity modifyStuff(@PathVariable("inventoryIdx") Long inventoryId,
                                       @RequestBody InventoryAddStuffRequest request) {
 
@@ -65,7 +67,7 @@ public class InventoryController {
     }
 
     // 인벤토리 전체 조회
-    @GetMapping("/inventories")
+    @GetMapping("")
     public ResponseEntity getAll(@RequestHeader("xAuthToken") String token) {
 
         // 헤더에서 유저 정보 가져오기
@@ -75,7 +77,7 @@ public class InventoryController {
     }
 
     // 인벤토리 상세 조회 (특정 인벤토리 조회)
-    @GetMapping("/inventories/{inventoryIdx}")
+    @GetMapping("/{inventoryIdx}")
     public ResponseEntity getOne(@PathVariable("inventoryIdx") Long inventoryId) {
 
         return inventoryService.getOne(inventoryId);
