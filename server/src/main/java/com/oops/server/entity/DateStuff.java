@@ -36,4 +36,11 @@ public class DateStuff {
     @ManyToOne
     @JoinColumn(name = "stuff_name", referencedColumnName = "name")
     private Stuff stuff;
+
+    public static DateStuff create(Schedule schedule, Stuff stuff) {
+        return DateStuff.builder()
+                .schedule(schedule)
+                .stuff(stuff)
+                .build();
+    }
 }

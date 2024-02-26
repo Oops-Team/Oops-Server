@@ -35,4 +35,11 @@ public class DateTodo {
     @Id
     @Column(length = 20)
     private String content;
+
+    public static DateTodo create(Schedule schedule, String content) {
+        return DateTodo.builder()
+                .schedule(schedule)
+                .content(content)
+                .build();
+    }
 }

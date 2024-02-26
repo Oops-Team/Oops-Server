@@ -64,4 +64,8 @@ public class Schedule {
                 .notification(notification)
                 .build();
     }
+
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
+    }
 }
