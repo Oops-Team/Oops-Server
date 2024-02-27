@@ -1,6 +1,7 @@
 package com.oops.server.service;
 
 import com.oops.server.context.StatusCode;
+import com.oops.server.dto.etc.StuffDto;
 import com.oops.server.dto.request.InventoryCreateRequest;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.dto.response.InventoryGetAllResponse;
@@ -191,7 +192,7 @@ public class InventoryService {
         List<Long> inventoryIdxList = new ArrayList<>();
         List<Integer> inventoryIconIdxList = new ArrayList<>();
         List<String> inventoryNameList = new ArrayList<>();
-        List<Stuff> stuffList = new ArrayList<>();
+        List<StuffDto> stuffList = new ArrayList<>();
         int stuffTotalNum = 0;  // 총 등록 소지품 개수
 
         // 인벤토리 idx & 아이콘 값 & 이름 가져오기
@@ -204,7 +205,10 @@ public class InventoryService {
         // 해당 유저의 등록된 모든 소지품 가져오기
         List<InventoryStuff> inventoryStuffList = inventoryStuffRepository.findAllByInventoryUser(user);
         for (InventoryStuff inventoryStuff : inventoryStuffList) {
-            stuffList.add(inventoryStuff.getStuff());
+            stuffList.add(new StuffDto(
+                    inventoryStuff.getStuff().getImg_url(),
+                    inventoryStuff.getStuff().getName()
+            ));
         }
         stuffList = stuffList.stream().distinct().toList();
 

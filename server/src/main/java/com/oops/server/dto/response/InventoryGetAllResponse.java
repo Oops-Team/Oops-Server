@@ -1,6 +1,6 @@
 package com.oops.server.dto.response;
 
-import com.oops.server.entity.Stuff;
+import com.oops.server.dto.etc.StuffDto;
 import java.util.List;
 
 // 인벤토리 전체 조회 시 사용
@@ -9,5 +9,5 @@ public record InventoryGetAllResponse(
         List<Integer> inventoryIconIdx,
         List<String> inventoryName,
         int stuffNum,
-        List<Stuff> stuffList
+        List<StuffDto> stuffList
 ) {}
