@@ -1,6 +1,6 @@
 package com.oops.server.service;
 
-import com.oops.server.dto.CustomUserDetails;
+import com.oops.server.dto.etc.CustomUserDetails;
 import com.oops.server.entity.User;
 import com.oops.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

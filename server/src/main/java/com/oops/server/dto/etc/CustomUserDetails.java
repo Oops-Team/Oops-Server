@@ -1,4 +1,4 @@
-package com.oops.server.dto;
+package com.oops.server.dto.etc;
 
 import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
