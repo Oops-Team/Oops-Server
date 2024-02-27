@@ -8,9 +8,7 @@ import com.oops.server.entity.DateStuff;
 import com.oops.server.entity.DateTodo;
 import com.oops.server.entity.Inventory;
 import com.oops.server.entity.InventoryStuff;
-import com.oops.server.entity.InventoryTag;
 import com.oops.server.entity.Schedule;
-import com.oops.server.entity.Stuff;
 import com.oops.server.entity.Tag;
 import com.oops.server.entity.User;
 import com.oops.server.repository.DateStuffRepository;
@@ -24,12 +22,14 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ScheduleService {
 
     private final UserRepository userRepository;
@@ -49,7 +49,7 @@ public class ScheduleService {
         List<Inventory> inventoryList = inventoryRepository.findAllByUser(user);
 
         // 매칭할 인벤토리 자체가 없다면
-        if (inventoryList == null) {
+        if (inventoryList.size() == 0) {
             return null;
         }
 
@@ -138,4 +138,3 @@ public class ScheduleService {
     }
 }
 
-// TODO: 일정 1개 조회시 해당 일정에 추천 인벤토리가 할당되지 않았다면 인벤토리 재매칭 시키기
