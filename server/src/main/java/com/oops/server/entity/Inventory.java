@@ -60,4 +60,6 @@ public class Inventory {
     public void setName(String name) {
         this.name = name;
     }
+
+    public void setIcon(int icon) { this.icon = icon; }
 }

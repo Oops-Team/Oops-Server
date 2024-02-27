@@ -171,6 +171,17 @@ public class InventoryService {
                 HttpStatus.OK);
     }
 
+    // 인벤토리 아이콘 수정
+    public ResponseEntity modifyIcon(Long inventoryId, int iconId) {
+        Inventory inventory = inventoryRepository.findByInventoryId(inventoryId);
+        inventory.setIcon(iconId);
+        inventoryRepository.save(inventory);
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공"),
+                HttpStatus.OK);
+    }
+
     // 인벤토리 전체 조회
     public ResponseEntity getAll(Long userId) {
 

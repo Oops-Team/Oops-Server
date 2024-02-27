@@ -4,6 +4,7 @@ import com.oops.server.dto.request.InventoryAddStuffRequest;
 import com.oops.server.dto.request.InventoryCreateRequest;
 import com.oops.server.service.InventoryService;
 import com.oops.server.security.TokenProvider;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -64,6 +65,16 @@ public class InventoryController {
                                       @RequestBody InventoryAddStuffRequest request) {
 
         return inventoryService.modifyStuff(inventoryId, request.stuffName());
+    }
+
+    // 인벤토리 아이콘 변경
+    @PatchMapping("/{inventoryIdx}/icon")
+    public ResponseEntity modifyIcon(@PathVariable("inventoryIdx") Long inventoryId,
+                                     @RequestBody Map<String, Integer> iconIdMap) {
+
+        int iconId = iconIdMap.get("inventoryIconIdx");
+
+        return inventoryService.modifyIcon(inventoryId, iconId);
     }
 
     // 인벤토리 전체 조회
