@@ -34,8 +34,11 @@ public class Inventory {
     @Column(name = "inventory_id")
     private Long inventoryId;
 
-    @Column(length = 6)
+    @Column(length = 6, nullable = false)
     private String name;
+
+    @Column(nullable = false)
+    private int icon;
 
     @OneToMany(mappedBy = "inventory", cascade = CascadeType.REMOVE)
     private List<InventoryTag> inventoryTags;
@@ -50,6 +53,7 @@ public class Inventory {
         return Inventory.builder()
                 .user(user)
                 .name(inventoryName)
+                .icon(1)
                 .build();
     }
 

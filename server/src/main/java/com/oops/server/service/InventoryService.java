@@ -178,13 +178,15 @@ public class InventoryService {
         List<Inventory> inventoryList = inventoryRepository.findAllByUser(user);
 
         List<Long> inventoryIdxList = new ArrayList<>();
+        List<Integer> inventoryIconIdxList = new ArrayList<>();
         List<String> inventoryNameList = new ArrayList<>();
         List<Stuff> stuffList = new ArrayList<>();
         int stuffTotalNum = 0;  // 총 등록 소지품 개수
 
-        // 인벤토리 idx & 이름 가져오기
+        // 인벤토리 idx & 아이콘 값 & 이름 가져오기
         for (Inventory tempInventory : inventoryList) {
             inventoryIdxList.add(tempInventory.getInventoryId());
+            inventoryIconIdxList.add(tempInventory.getIcon());
             inventoryNameList.add(tempInventory.getName());
         }
 
@@ -200,7 +202,7 @@ public class InventoryService {
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공",
-                        new InventoryGetAllResponse(inventoryIdxList, inventoryNameList, stuffTotalNum, stuffList)),
+                        new InventoryGetAllResponse(inventoryIdxList, inventoryIconIdxList, inventoryNameList, stuffTotalNum, stuffList)),
                 HttpStatus.OK);
     }
 
