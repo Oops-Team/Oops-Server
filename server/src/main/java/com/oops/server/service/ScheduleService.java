@@ -2,8 +2,12 @@ package com.oops.server.service;
 
 import com.oops.server.context.ExceptionMessages;
 import com.oops.server.context.StatusCode;
+import com.oops.server.dto.etc.TodoInventoryDto;
+import com.oops.server.dto.etc.StuffDto;
+import com.oops.server.dto.etc.TodoTodoDto;
 import com.oops.server.dto.request.TodoCreateRequest;
 import com.oops.server.dto.response.DefaultResponse;
+import com.oops.server.dto.response.TodoGetOneResponse;
 import com.oops.server.entity.DateStuff;
 import com.oops.server.entity.DateTodo;
 import com.oops.server.entity.Inventory;
@@ -20,6 +24,8 @@ import com.oops.server.repository.TagRepository;
 import com.oops.server.repository.UserRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -82,6 +88,106 @@ public class ScheduleService {
         }
 
         return resultInventory;
+    }
+
+    // 일정 1개 조회
+    public ResponseEntity getDetail(Long userId, LocalDate date) {
+        User user = userRepository.findByUserId(userId);
+        Schedule schedule = scheduleRepository.findByUserAndDate(user, date);
+
+        // todoTag string -> int 값으로 분리
+        int[] todoTagIntArr = Arrays.stream(schedule.getTagList().split(",")).mapToInt(Integer::parseInt).toArray();
+        List<Integer> todoTagIntList = Arrays.stream(todoTagIntArr).boxed().toList();
+
+        // 해당 일정에 추천 인벤토리가 배치되지 않은 상태라면
+        if (schedule.getInventory() == null) {
+            // 인벤토리 배정 및 반영
+            schedule.setInventory(matchingInventory(user, todoTagIntList));
+            schedule = scheduleRepository.save(schedule);
+        }
+
+        // 1. 인벤토리 관련 정보 담기
+        List<TodoInventoryDto> inventoryList = new ArrayList<>();
+        // 해당 일정에서 사용하고 있는 인벤토리 먼저 담기
+        Inventory usedInventory = schedule.getInventory();
+        inventoryList.add(new TodoInventoryDto(
+                usedInventory.getInventoryId(),
+                usedInventory.getName(),
+                usedInventory.getIcon(),
+                true));
+        // 그 외 인벤토리 담기
+        List<Inventory> allInventoryList = inventoryRepository.findAllByUser(user);
+        for (Inventory inventory : allInventoryList) {
+            log.info("그 외 인벤토리 담기 시작");
+            log.info("그냥.. 인벤토리 : " + inventory.getInventoryId());
+            log.info("현재 사용 중인 인벤토리 : " + usedInventory.getInventoryId());
+            log.info("비교값 : " + (inventory.getInventoryId() != usedInventory.getInventoryId()));
+
+            if (inventory.getInventoryId() != usedInventory.getInventoryId()) {
+                inventoryList.add(new TodoInventoryDto(
+                        inventory.getInventoryId(),
+                        inventory.getName(),
+                        inventory.getIcon(),
+                        false
+                ));
+            }
+        }
+
+        // 2. 오늘 할 일 관련 정보 담기
+        List<TodoTodoDto> todoList = new ArrayList<>();
+        // 완료되지 않은 할 일 담기
+        List<DateTodo> notCompleteTodoList = dateTodoRepository.findAllByScheduleAndIsComplete(schedule, false);
+        for (DateTodo dateTodo : notCompleteTodoList) {
+            todoList.add(new TodoTodoDto(
+                    dateTodo.getTodoId(),
+                    dateTodo.getContent(),
+                    false
+            ));
+        }
+        // 완료된 할 일 담기
+        List<DateTodo> completeTodoList = dateTodoRepository.findAllByScheduleAndIsComplete(schedule, true);
+        for (DateTodo dateTodo : completeTodoList) {
+            todoList.add(new TodoTodoDto(
+                    dateTodo.getTodoId(),
+                    dateTodo.getContent(),
+                    true
+            ));
+        }
+
+        // FIXME: 태그 타입 재확인 필요(보내는 게 이름인지 아이디값인지)
+        // 3. 관련 태그 목록 담기
+        List<String> todoTagList = new ArrayList<>();
+        for (Integer todoTagId : todoTagIntList) {
+            todoTagList.add(tagRepository.findByTagId(todoTagId).getName());
+        }
+
+        // 4. 외출 시간 담기
+        LocalTime goOutTime = schedule.getOutTime();
+
+        // 5. 알림 시간 담기
+        int[] remindTimeIntArr = Arrays.stream(schedule.getNotification().split(",")).mapToInt(Integer::parseInt).toArray();
+        List<Integer> remindTime = Arrays.stream(remindTimeIntArr).boxed().toList();
+
+        // 6. 챙겨야 할 것 관련 정보 담기
+        List<DateStuff> dateStuffList = dateStuffRepository.findAllBySchedule(schedule);
+        List<StuffDto> stuffList = new ArrayList<>();
+        for (DateStuff dateStuff : dateStuffList) {
+            stuffList.add(new StuffDto(
+                    dateStuff.getStuff().getImg_url(),
+                    dateStuff.getStuff().getName()
+            ));
+        }
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공", new TodoGetOneResponse(
+                        inventoryList,
+                        todoList,
+                        todoTagList,
+                        goOutTime,
+                        remindTime,
+                        stuffList
+                )),
+                HttpStatus.OK);
     }
 
     // 일정 추가
