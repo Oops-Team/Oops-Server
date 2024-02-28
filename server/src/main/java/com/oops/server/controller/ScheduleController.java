@@ -22,9 +22,20 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
     private final TokenProvider tokenProvider;
 
+    // 일정 전체 조회(1달 기준)
+    @GetMapping("")
+    public ResponseEntity getMonth(@RequestHeader("xAuthToken") String token,
+                                   @RequestBody Map<String, LocalDate> dateMap) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+        LocalDate date = dateMap.get("date");
+
+        return scheduleService.getMonth(userId, date);
+    }
+
     // 일정 1개 조회
     @GetMapping("/detail")
-    public ResponseEntity getDetail(@RequestHeader("xAuthToken") String token, @RequestBody Map<String, LocalDate> dateMap) {
+    public ResponseEntity getDetail(@RequestHeader("xAuthToken") String token,
+                                    @RequestBody Map<String, LocalDate> dateMap) {
         Long userId = tokenProvider.getUserIdFromToken(token);
         LocalDate date = dateMap.get("date");
 

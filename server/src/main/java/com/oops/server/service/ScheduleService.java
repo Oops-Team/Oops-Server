@@ -7,6 +7,7 @@ import com.oops.server.dto.etc.StuffDto;
 import com.oops.server.dto.etc.TodoTodoDto;
 import com.oops.server.dto.request.TodoCreateRequest;
 import com.oops.server.dto.response.DefaultResponse;
+import com.oops.server.dto.response.TodoGetAllResponse;
 import com.oops.server.dto.response.TodoGetOneResponse;
 import com.oops.server.entity.DateStuff;
 import com.oops.server.entity.DateTodo;
@@ -24,6 +25,7 @@ import com.oops.server.repository.TagRepository;
 import com.oops.server.repository.UserRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -88,6 +90,35 @@ public class ScheduleService {
         }
 
         return resultInventory;
+    }
+
+    // 일정 전체 조회(1달 기준)
+    public ResponseEntity getMonth(Long userId, LocalDate date) {
+        User user = userRepository.findByUserId(userId);
+        LocalDate startDate = date.withDayOfMonth(1);
+        LocalDate endDate = date.withDayOfMonth(date.lengthOfMonth());
+
+        List<Schedule> scheduleList = scheduleRepository.findAllByUserAndDateBetween(user, startDate, endDate);
+        List<TodoGetAllResponse> dateDto = new ArrayList<>();
+
+        for (Schedule schedule : scheduleList) {
+            List<DateTodo> dateTodoList = schedule.getDateTodo();
+            boolean isComplete = true;
+
+            for (DateTodo dateTodo : dateTodoList) {
+                // 미완료한 일정이 있을 경우
+                if (!dateTodo.isComplete()) {
+                    isComplete = false;
+                    break;
+                }
+            }
+
+            dateDto.add(new TodoGetAllResponse(schedule.getDate(), isComplete));
+        }
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공", dateDto),
+                HttpStatus.OK);
     }
 
     // 일정 1개 조회
@@ -157,7 +188,8 @@ public class ScheduleService {
         LocalTime goOutTime = schedule.getOutTime();
 
         // 5. 알림 시간 담기
-        int[] remindTimeIntArr = Arrays.stream(schedule.getNotification().split(",")).mapToInt(Integer::parseInt).toArray();
+        int[] remindTimeIntArr = Arrays.stream(schedule.getNotification().split(",")).mapToInt(Integer::parseInt)
+                .toArray();
         List<Integer> remindTime = Arrays.stream(remindTimeIntArr).boxed().toList();
 
         // 6. 챙겨야 할 것 관련 정보 담기
@@ -177,8 +209,7 @@ public class ScheduleService {
                         todoTagList,
                         goOutTime,
                         remindTime,
-                        stuffList
-                )),
+                        stuffList)),
                 HttpStatus.OK);
     }
 
