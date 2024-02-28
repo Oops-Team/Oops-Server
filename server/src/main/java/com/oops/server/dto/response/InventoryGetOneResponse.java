@@ -7,5 +7,6 @@ public record InventoryGetOneResponse(
         String inventoryName,
         List<String> stuffImgURIList,
         List<String> stuffNameList,
-        int stuffNum
+        int stuffNum,
+        List<Integer> inventoryTag
 ) {}

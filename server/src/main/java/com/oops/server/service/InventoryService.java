@@ -235,10 +235,15 @@ public class InventoryService {
             stuffNameList.add(inventoryStuff.getStuff().getName());
         }
         int stuffNum = stuffNameList.size();
+        List<Integer> inventoryTag = new ArrayList<>();
+        List<InventoryTag> inventoryTagList = inventory.getInventoryTags();
+        for (InventoryTag tempInventoryTag : inventoryTagList) {
+            inventoryTag.add(tempInventoryTag.getTag().getTagId());
+        }
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공",
-                        new InventoryGetOneResponse(inventoryName, stuffImgURIList, stuffNameList, stuffNum)),
+                        new InventoryGetOneResponse(inventoryName, stuffImgURIList, stuffNameList, stuffNum, inventoryTag)),
                 HttpStatus.OK);
     }
 }
