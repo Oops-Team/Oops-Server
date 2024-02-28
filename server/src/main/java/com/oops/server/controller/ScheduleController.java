@@ -8,6 +8,8 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -48,5 +50,14 @@ public class ScheduleController {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return scheduleService.create(userId, request);
+    }
+
+    // (Home) 일정 1개 수정
+    @PatchMapping("/home/{todoIdx}")
+    public ResponseEntity modifyOne(@PathVariable("todoIdx") Long todoId,
+                                    @RequestBody Map<String, String> todoNameMap) {
+        String todoName = todoNameMap.get("todoName");
+
+        return scheduleService.modifyOne(todoId, todoName);
     }
 }

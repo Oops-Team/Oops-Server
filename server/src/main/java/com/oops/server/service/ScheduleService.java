@@ -265,5 +265,16 @@ public class ScheduleService {
                 DefaultResponse.from(StatusCode.OK, "성공"),
                 HttpStatus.OK);
     }
+
+    // (Home) 일정 1개 수정
+    public ResponseEntity modifyOne(Long todoId, String todoName) {
+        DateTodo dateTodo = dateTodoRepository.findByTodoId(todoId);
+        dateTodo.modifyContent(todoName);
+        dateTodoRepository.save(dateTodo);
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공"),
+                HttpStatus.OK);
+    }
 }
 

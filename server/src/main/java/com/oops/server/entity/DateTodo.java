@@ -49,4 +49,8 @@ public class DateTodo {
                 .content(content)
                 .build();
     }
+
+    public void modifyContent(String content) {
+        this.content = content;
+    }
 }
