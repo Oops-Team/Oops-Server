@@ -97,12 +97,12 @@ public class ScheduleService {
 
         // todoTag string -> int 값으로 분리
         int[] todoTagIntArr = Arrays.stream(schedule.getTagList().split(",")).mapToInt(Integer::parseInt).toArray();
-        List<Integer> todoTagIntList = Arrays.stream(todoTagIntArr).boxed().toList();
+        List<Integer> todoTagList = Arrays.stream(todoTagIntArr).boxed().toList();
 
         // 해당 일정에 추천 인벤토리가 배치되지 않은 상태라면
         if (schedule.getInventory() == null) {
             // 인벤토리 배정 및 반영
-            schedule.setInventory(matchingInventory(user, todoTagIntList));
+            schedule.setInventory(matchingInventory(user, todoTagList));
             schedule = scheduleRepository.save(schedule);
         }
 
@@ -118,11 +118,7 @@ public class ScheduleService {
         // 그 외 인벤토리 담기
         List<Inventory> allInventoryList = inventoryRepository.findAllByUser(user);
         for (Inventory inventory : allInventoryList) {
-            log.info("그 외 인벤토리 담기 시작");
-            log.info("그냥.. 인벤토리 : " + inventory.getInventoryId());
-            log.info("현재 사용 중인 인벤토리 : " + usedInventory.getInventoryId());
-            log.info("비교값 : " + (inventory.getInventoryId() != usedInventory.getInventoryId()));
-
+            // 현재 사용 중인 인벤토리가 아니라면
             if (inventory.getInventoryId() != usedInventory.getInventoryId()) {
                 inventoryList.add(new TodoInventoryDto(
                         inventory.getInventoryId(),
@@ -154,12 +150,8 @@ public class ScheduleService {
             ));
         }
 
-        // FIXME: 태그 타입 재확인 필요(보내는 게 이름인지 아이디값인지)
         // 3. 관련 태그 목록 담기
-        List<String> todoTagList = new ArrayList<>();
-        for (Integer todoTagId : todoTagIntList) {
-            todoTagList.add(tagRepository.findByTagId(todoTagId).getName());
-        }
+        // 위 부분에서 만든 todoTagList 값으로 대체
 
         // 4. 외출 시간 담기
         LocalTime goOutTime = schedule.getOutTime();

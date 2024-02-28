@@ -9,7 +9,7 @@ import java.util.List;
 public record TodoGetOneResponse(
         List<TodoInventoryDto> inventoryList,
         List<TodoTodoDto> todoList,
-        List<String> todoTagList,
+        List<Integer> todoTagList,
         LocalTime goOutTime,
         List<Integer> remindTime,
         List<StuffDto> stuffList
