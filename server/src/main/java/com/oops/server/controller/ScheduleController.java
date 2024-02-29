@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -59,5 +60,11 @@ public class ScheduleController {
         String todoName = todoNameMap.get("todoName");
 
         return scheduleService.modifyOne(todoId, todoName);
+    }
+
+    // (Home) 일정 1개 삭제
+    @DeleteMapping("/home/{todoIdx}")
+    public ResponseEntity deleteOne(@PathVariable("todoIdx") Long todoId) {
+        return scheduleService.deleteOne(todoId);
     }
 }

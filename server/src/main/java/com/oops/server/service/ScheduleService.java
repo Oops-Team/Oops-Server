@@ -25,7 +25,6 @@ import com.oops.server.repository.TagRepository;
 import com.oops.server.repository.UserRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -271,6 +270,15 @@ public class ScheduleService {
         DateTodo dateTodo = dateTodoRepository.findByTodoId(todoId);
         dateTodo.modifyContent(todoName);
         dateTodoRepository.save(dateTodo);
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공"),
+                HttpStatus.OK);
+    }
+
+    // (Home) 일정 1개 삭제
+    public ResponseEntity deleteOne(Long todoId) {
+        dateTodoRepository.deleteByTodoId(todoId);
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공"),
