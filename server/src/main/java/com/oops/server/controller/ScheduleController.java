@@ -1,5 +1,6 @@
 package com.oops.server.controller;
 
+import com.oops.server.dto.request.StuffTakeRequest;
 import com.oops.server.dto.request.TodoCreateRequest;
 import com.oops.server.security.TokenProvider;
 import com.oops.server.service.ScheduleService;
@@ -76,5 +77,13 @@ public class ScheduleController {
     @DeleteMapping("/home/{todoIdx}")
     public ResponseEntity deleteOne(@PathVariable("todoIdx") Long todoId) {
         return scheduleService.deleteOne(todoId);
+    }
+
+    // (Home) 소지품 챙기기
+    @DeleteMapping("/home/stuff")
+    public ResponseEntity takeStuff(@RequestHeader("xAuthToken") String token, @RequestBody StuffTakeRequest request) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return scheduleService.takeStuff(userId, request);
     }
 }

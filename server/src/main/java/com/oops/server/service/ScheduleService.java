@@ -5,6 +5,7 @@ import com.oops.server.context.StatusCode;
 import com.oops.server.dto.etc.TodoInventoryDto;
 import com.oops.server.dto.etc.StuffDto;
 import com.oops.server.dto.etc.TodoTodoDto;
+import com.oops.server.dto.request.StuffTakeRequest;
 import com.oops.server.dto.request.TodoCreateRequest;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.dto.response.TodoGetAllResponse;
@@ -14,6 +15,7 @@ import com.oops.server.entity.DateTodo;
 import com.oops.server.entity.Inventory;
 import com.oops.server.entity.InventoryStuff;
 import com.oops.server.entity.Schedule;
+import com.oops.server.entity.Stuff;
 import com.oops.server.entity.Tag;
 import com.oops.server.entity.User;
 import com.oops.server.repository.DateStuffRepository;
@@ -21,6 +23,7 @@ import com.oops.server.repository.DateTodoRepository;
 import com.oops.server.repository.InventoryRepository;
 import com.oops.server.repository.InventoryTagRepository;
 import com.oops.server.repository.ScheduleRepository;
+import com.oops.server.repository.StuffRepository;
 import com.oops.server.repository.TagRepository;
 import com.oops.server.repository.UserRepository;
 import java.time.LocalDate;
@@ -40,12 +43,13 @@ import org.springframework.stereotype.Service;
 public class ScheduleService {
 
     private final UserRepository userRepository;
+    private final StuffRepository stuffRepository;
+    private final TagRepository tagRepository;
+    private final InventoryRepository inventoryRepository;
+    private final InventoryTagRepository inventoryTagRepository;
     private final ScheduleRepository scheduleRepository;
     private final DateTodoRepository dateTodoRepository;
     private final DateStuffRepository dateStuffRepository;
-    private final InventoryRepository inventoryRepository;
-    private final TagRepository tagRepository;
-    private final InventoryTagRepository inventoryTagRepository;
 
     // 확인하고 싶은 일정의 태그 리스트 값을 넣으면
     // 일정-인벤토리 매칭 후
@@ -289,6 +293,20 @@ public class ScheduleService {
     // (Home) 일정 1개 삭제
     public ResponseEntity deleteOne(Long todoId) {
         dateTodoRepository.deleteByTodoId(todoId);
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공"),
+                HttpStatus.OK);
+    }
+
+    // (Home) 소지품 챙기기
+    public ResponseEntity takeStuff(Long userId, StuffTakeRequest request) {
+        User user = userRepository.findByUserId(userId);
+        Schedule schedule = scheduleRepository.findByUserAndDate(user, request.date());
+        Stuff stuff = stuffRepository.findByName(request.stuffName());
+
+        // 해당 소지품 챙기기 (삭제)
+        dateStuffRepository.deleteByScheduleAndStuff(schedule, stuff);
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공"),
