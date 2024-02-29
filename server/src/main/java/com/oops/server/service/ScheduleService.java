@@ -265,6 +265,16 @@ public class ScheduleService {
                 HttpStatus.OK);
     }
 
+    // 일정 전체 삭제
+    public ResponseEntity deleteAll(Long userId, LocalDate date) {
+        User user = userRepository.findByUserId(userId);
+        scheduleRepository.deleteByUserAndDate(user, date);
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공"),
+                HttpStatus.OK);
+    }
+
     // (Home) 일정 1개 수정
     public ResponseEntity modifyOne(Long todoId, String todoName) {
         DateTodo dateTodo = dateTodoRepository.findByTodoId(todoId);

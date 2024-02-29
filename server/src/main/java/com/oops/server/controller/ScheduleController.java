@@ -53,6 +53,16 @@ public class ScheduleController {
         return scheduleService.create(userId, request);
     }
 
+    // 일정 전체 삭제
+    @DeleteMapping("")
+    public ResponseEntity deleteAll(@RequestHeader("xAuthToken") String token,
+                                    @RequestBody Map<String, LocalDate> dateMap) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+        LocalDate date = dateMap.get("date");
+
+        return scheduleService.deleteAll(userId, date);
+    }
+
     // (Home) 일정 1개 수정
     @PatchMapping("/home/{todoIdx}")
     public ResponseEntity modifyOne(@PathVariable("todoIdx") Long todoId,
