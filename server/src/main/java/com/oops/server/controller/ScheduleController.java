@@ -2,6 +2,7 @@ package com.oops.server.controller;
 
 import com.oops.server.dto.request.StuffTakeRequest;
 import com.oops.server.dto.request.TodoCreateRequest;
+import com.oops.server.dto.request.TodoInventoryModifyRequest;
 import com.oops.server.security.TokenProvider;
 import com.oops.server.service.ScheduleService;
 import java.time.LocalDate;
@@ -64,6 +65,15 @@ public class ScheduleController {
         return scheduleService.deleteAll(userId, date);
     }
 
+    // 챙겨야 할 것 수정(다른 인벤토리로 선택 및 변경)
+    @PatchMapping("/inventories/select")
+    public ResponseEntity modifyInventory(@RequestHeader("xAuthToken") String token,
+                                          @RequestBody TodoInventoryModifyRequest request) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return scheduleService.modifyInventory(userId, request);
+    }
+
     // (Home) 일정 1개 수정
     @PatchMapping("/home/{todoIdx}")
     public ResponseEntity modifyOne(@PathVariable("todoIdx") Long todoId,
@@ -89,7 +99,8 @@ public class ScheduleController {
 
     // (Home) 할 일 완료/미완료 체크
     @PatchMapping("/home/{todoIdx}/check")
-    public ResponseEntity checkTodo(@PathVariable("todoIdx") Long todoId, @RequestBody Map<String, Boolean> isCompleteMap) {
+    public ResponseEntity checkTodo(@PathVariable("todoIdx") Long todoId,
+                                    @RequestBody Map<String, Boolean> isCompleteMap) {
         boolean isComplete = isCompleteMap.get("isTodoComplete");
 
         return scheduleService.checkTodo(todoId, isComplete);

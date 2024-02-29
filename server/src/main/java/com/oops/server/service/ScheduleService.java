@@ -7,9 +7,11 @@ import com.oops.server.dto.etc.StuffDto;
 import com.oops.server.dto.etc.TodoTodoDto;
 import com.oops.server.dto.request.StuffTakeRequest;
 import com.oops.server.dto.request.TodoCreateRequest;
+import com.oops.server.dto.request.TodoInventoryModifyRequest;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.dto.response.TodoGetAllResponse;
 import com.oops.server.dto.response.TodoGetOneResponse;
+import com.oops.server.dto.response.TodoInventoryModifyResponse;
 import com.oops.server.entity.DateStuff;
 import com.oops.server.entity.DateTodo;
 import com.oops.server.entity.Inventory;
@@ -276,6 +278,31 @@ public class ScheduleService {
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공"),
+                HttpStatus.OK);
+    }
+
+    // 해당 일정(schedule)의 인벤토리 변경
+    public ResponseEntity modifyInventory(Long userId, TodoInventoryModifyRequest request) {
+        User user = userRepository.findByUserId(userId);
+        Schedule schedule = scheduleRepository.findByUserAndDate(user, request.date());
+        Inventory inventory = inventoryRepository.findByUserAndName(user, request.inventoryName());
+
+        // 인벤토리 변경
+        schedule.setInventory(inventory);
+        schedule = scheduleRepository.save(schedule);
+
+        // 해당 일정의 소지품 교체(일괄 삭제 후 추가)
+        dateStuffRepository.deleteAllBySchedule(schedule);
+        List<InventoryStuff> inventoryStuffList = inventory.getInventoryStuffs();
+        List<StuffDto> stuffList = new ArrayList<>();   // 응답으로 보낼 객체 리스트
+        for (InventoryStuff inventoryStuff : inventoryStuffList) {
+            dateStuffRepository.save(new DateStuff(schedule, inventoryStuff.getStuff()));
+            stuffList.add(new StuffDto(inventoryStuff.getStuff().getImg_url(), inventoryStuff.getStuff().getName()));
+        }
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공",
+                        new TodoInventoryModifyResponse(inventory.getInventoryId(), stuffList)),
                 HttpStatus.OK);
     }
 

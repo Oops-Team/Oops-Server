@@ -13,6 +13,10 @@ public interface DateStuffRepository extends JpaRepository<DateStuff, DateStuffI
     // 해당 유저, 특정 일자의 모든 소지품 리스트 가져오기
     List<DateStuff> findAllBySchedule(Schedule schedule);
 
+    // 해당 유저, 특정 일자의 모든 소지품 삭제
+    @Transactional
+    void deleteAllBySchedule(Schedule schedule);
+
     // 해당 유저, 특정 일자의 특정 소지품 삭제 (소지품 챙김)
     @Transactional
     void deleteByScheduleAndStuff(Schedule schedule, Stuff stuff);
