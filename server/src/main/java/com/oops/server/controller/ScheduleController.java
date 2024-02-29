@@ -86,4 +86,12 @@ public class ScheduleController {
 
         return scheduleService.takeStuff(userId, request);
     }
+
+    // (Home) 할 일 완료/미완료 체크
+    @PatchMapping("/home/{todoIdx}/check")
+    public ResponseEntity checkTodo(@PathVariable("todoIdx") Long todoId, @RequestBody Map<String, Boolean> isCompleteMap) {
+        boolean isComplete = isCompleteMap.get("isTodoComplete");
+
+        return scheduleService.checkTodo(todoId, isComplete);
+    }
 }

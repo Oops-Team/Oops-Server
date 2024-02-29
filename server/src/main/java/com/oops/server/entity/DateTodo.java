@@ -53,4 +53,8 @@ public class DateTodo {
     public void modifyContent(String content) {
         this.content = content;
     }
+
+    public void modifyIsComplete(boolean isComplete) {
+        this.isComplete = isComplete;
+    }
 }

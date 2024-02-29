@@ -312,5 +312,16 @@ public class ScheduleService {
                 DefaultResponse.from(StatusCode.OK, "성공"),
                 HttpStatus.OK);
     }
+
+    // (Home) 할 일 완료/미완료 체크 (변경)
+    public ResponseEntity checkTodo(Long todoId, boolean isComplete) {
+        DateTodo dateTodo = dateTodoRepository.findByTodoId(todoId);
+        dateTodo.modifyIsComplete(isComplete);
+        dateTodoRepository.save(dateTodo);
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공"),
+                HttpStatus.OK);
+    }
 }
 
