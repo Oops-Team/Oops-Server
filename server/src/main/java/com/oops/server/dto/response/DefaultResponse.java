@@ -9,17 +9,17 @@ import lombok.Getter;
 @Builder
 public class DefaultResponse<T> {
 
-    private int statusCode;
+    private int status;
     private String message;
     private T data;
 
-    public static <T> DefaultResponse<T> from(final int statusCode, final String message) {
-        return from(statusCode, message, null);
+    public static <T> DefaultResponse<T> from(final int status, final String message) {
+        return from(status, message, null);
     }
 
-    public static <T> DefaultResponse<T> from(final int statusCode, final String message, final T data) {
+    public static <T> DefaultResponse<T> from(final int status, final String message, final T data) {
         return DefaultResponse.<T>builder()
-                .statusCode(statusCode)
+                .status(status)
                 .message(message)
                 .data(data)
                 .build();
