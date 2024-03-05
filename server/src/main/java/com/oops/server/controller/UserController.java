@@ -59,7 +59,7 @@ public class UserController {
     }
 
     // 로그인
-    @GetMapping("/login/{loginId}")
+    @PostMapping("/login/{loginId}")
     public ResponseEntity login(@PathVariable("loginId") String loginType,
             @RequestBody SignUpRequest request) {
 
