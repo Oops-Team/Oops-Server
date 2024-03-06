@@ -3,6 +3,7 @@ package com.oops.server.controller;
 import com.oops.server.dto.request.StuffTakeRequest;
 import com.oops.server.dto.request.TodoCreateRequest;
 import com.oops.server.dto.request.TodoInventoryModifyRequest;
+import com.oops.server.dto.request.TodoModifyRequest;
 import com.oops.server.security.TokenProvider;
 import com.oops.server.service.ScheduleService;
 import java.time.LocalDate;
@@ -53,6 +54,14 @@ public class ScheduleController {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return scheduleService.create(userId, request);
+    }
+
+    // 일정 전체 수정
+    @PatchMapping("")
+    public ResponseEntity modifyAll(@RequestHeader("xAuthToken") String token, @RequestBody TodoModifyRequest request) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return scheduleService.modifyAll(userId, request);
     }
 
     // 일정 전체 삭제

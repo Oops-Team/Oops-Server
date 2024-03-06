@@ -4,10 +4,12 @@ import com.oops.server.context.ExceptionMessages;
 import com.oops.server.context.StatusCode;
 import com.oops.server.dto.etc.TodoInventoryDto;
 import com.oops.server.dto.etc.StuffDto;
+import com.oops.server.dto.etc.TodoModifyTodoDto;
 import com.oops.server.dto.etc.TodoTodoDto;
 import com.oops.server.dto.request.StuffTakeRequest;
 import com.oops.server.dto.request.TodoCreateRequest;
 import com.oops.server.dto.request.TodoInventoryModifyRequest;
+import com.oops.server.dto.request.TodoModifyRequest;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.dto.response.TodoGetAllResponse;
 import com.oops.server.dto.response.TodoGetOneResponse;
@@ -32,6 +34,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -138,7 +141,7 @@ public class ScheduleService {
         // 해당 일정에 추천 인벤토리가 배치되지 않은 상태라면
         if (schedule.getInventory() == null) {
             // 인벤토리 배정 및 반영
-            schedule.setInventory(matchingInventory(user, todoTagList));
+            schedule.modifyInventory(matchingInventory(user, todoTagList));
             schedule = scheduleRepository.save(schedule);
         }
 
@@ -227,6 +230,7 @@ public class ScheduleService {
         LocalTime outTime = request.goOutTime();
 
         String tagList = "";
+        request.todoTag().sort(Comparator.naturalOrder());  // 태그 아이디값 오름차순 정렬
         for (Integer todoTagId : request.todoTag()) {
             tagList += todoTagId.toString() + ",";
         }
@@ -255,7 +259,7 @@ public class ScheduleService {
                     DefaultResponse.from(StatusCode.OK, ExceptionMessages.NOT_FOUND_INVENTORY.get()),
                     HttpStatus.OK);
         }
-        schedule.setInventory(inventory);
+        schedule.modifyInventory(inventory);
         schedule = scheduleRepository.save(schedule);
 
         // 4. 해당 인벤토리의 소지품으로 date_stuff 테이블에 소지품들 넣기 (초기화)
@@ -269,6 +273,99 @@ public class ScheduleService {
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공"),
                 HttpStatus.OK);
+    }
+
+    // 일정 전체 수정
+    public ResponseEntity modifyAll(Long userId, TodoModifyRequest request) {
+        User user = userRepository.findByUserId(userId);
+        Schedule schedule = scheduleRepository.findByUserAndDate(user, request.date());
+
+        // 1. 삭제한 할 일들 반영
+        if (request.deleteTodoIdx() != null) {
+            for (Long todoId : request.deleteTodoIdx()) {
+                dateTodoRepository.deleteByTodoId(todoId);
+            }
+        }
+
+        // 2. 수정한 할 일들 반영
+        if (request.modifyTodo() != null) {
+            for (TodoModifyTodoDto todoDto : request.modifyTodo()) {
+                DateTodo dateTodo = dateTodoRepository.findByTodoId(todoDto.todoIdx());
+                dateTodo.modifyContent(todoDto.todoName());
+                dateTodoRepository.save(dateTodo);
+            }
+        }
+
+        // 3. 추가한 할 일들 반영
+        if (request.addTodoName() != null) {
+            for (String todoName : request.addTodoName()) {
+                dateTodoRepository.save(
+                        DateTodo.create(schedule, todoName)
+                );
+            }
+        }
+
+        // 4. 태그 변경 (기존 태그와 다를 경우 인벤토리 재매칭)
+        String oldTag = schedule.getTagList();  // 일정 수정 전 태그들
+        String newTag = "";
+        request.todoTag().sort(Comparator.naturalOrder());  // 오름차순 정렬
+        for (Integer tagId : request.todoTag()) {
+            newTag += tagId.toString() + ",";
+        }
+        // 만일 기존 태그와 다르다면
+        boolean isExistInventory = true;
+        if (!oldTag.equals(newTag)) {
+            // schedule 태그 값 변경 적용
+            schedule.modifyTagList(newTag);
+
+            // 추천 인벤토리 재매칭
+            Inventory inventory = matchingInventory(user, request.todoTag());
+            // 인벤토리가 있는 경우
+            if (inventory != null) {
+                // 추천 인벤토리 변경
+                schedule.modifyInventory(inventory);
+
+                // 해당 일정의 추천 소지품 목록 변경
+                List<InventoryStuff> inventoryStuffList = inventory.getInventoryStuffs();
+                dateStuffRepository.deleteAllBySchedule(schedule);
+                for (InventoryStuff inventoryStuff : inventoryStuffList) {
+                    dateStuffRepository.save(
+                            DateStuff.create(schedule, inventoryStuff.getStuff())
+                    );
+                }
+            }
+            // 인벤토리가 아예 없는 경우
+            else {
+                isExistInventory = false;
+            }
+        }
+
+        // 5. 외출 시간 변경
+        schedule.modifyOutTime(request.goOutTime());
+
+        // 6. 알림 시간 변경
+        String remindTimeStr = "";
+        for (Integer remindTime : request.remindTime()) {
+            remindTimeStr += remindTime.toString() + ",";
+        }
+        schedule.modifyNotification(remindTimeStr);
+
+        // 7. schedule 모든 변경사항 DB에 적용
+        scheduleRepository.save(schedule);
+
+        // 8. 응답 전송
+        // 정상 응답 (추천 인벤토리까지 배치한 상태)
+        if (isExistInventory) {
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.OK, "성공"),
+                    HttpStatus.OK);
+        }
+        // 현재 생성된 인벤토리가 없는 경우
+        else {
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.OK, ExceptionMessages.NOT_FOUND_INVENTORY.get()),
+                    HttpStatus.OK);
+        }
     }
 
     // 일정 전체 삭제
@@ -288,7 +385,7 @@ public class ScheduleService {
         Inventory inventory = inventoryRepository.findByUserAndName(user, request.inventoryName());
 
         // 인벤토리 변경
-        schedule.setInventory(inventory);
+        schedule.modifyInventory(inventory);
         schedule = scheduleRepository.save(schedule);
 
         // 해당 일정의 소지품 교체(일괄 삭제 후 추가)

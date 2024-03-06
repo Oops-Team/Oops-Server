@@ -65,7 +65,19 @@ public class Schedule {
                 .build();
     }
 
-    public void setInventory(Inventory inventory) {
+    public void modifyInventory(Inventory inventory) {
         this.inventory = inventory;
+    }
+
+    public void modifyTagList(String tagList) {
+        this.tagList = tagList;
+    }
+
+    public void modifyOutTime(LocalTime outTime) {
+        this.outTime = outTime;
+    }
+
+    public void modifyNotification(String notification) {
+        this.notification = notification;
     }
 }
