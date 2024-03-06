@@ -403,6 +403,12 @@ public class ScheduleService {
                 HttpStatus.OK);
     }
 
+    // 해당 날짜의 챙겨야 할 것 수정(소지품 삭제)
+    public ResponseEntity deleteStuff(Long userId, StuffTakeRequest request) {
+        // DB 내부 로직은 홈-소지품 챙김에서의 로직과 동일하므로 같은 메소드 사용함
+        return takeStuff(userId, request);
+    }
+
     // (Home) 일정 1개 수정
     public ResponseEntity modifyOne(Long todoId, String todoName) {
         DateTodo dateTodo = dateTodoRepository.findByTodoId(todoId);

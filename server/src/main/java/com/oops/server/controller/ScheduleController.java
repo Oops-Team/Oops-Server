@@ -83,6 +83,15 @@ public class ScheduleController {
         return scheduleService.modifyInventory(userId, request);
     }
 
+    // 챙겨야 할 것 수정(소지품 삭제)
+    @DeleteMapping("/stuff")
+    public ResponseEntity deleteStuff(@RequestHeader("xAuthToken") String token,
+                                      @RequestBody StuffTakeRequest request) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return scheduleService.deleteStuff(userId, request);
+    }
+
     // (Home) 일정 1개 수정
     @PatchMapping("/home/{todoIdx}")
     public ResponseEntity modifyOne(@PathVariable("todoIdx") Long todoId,
