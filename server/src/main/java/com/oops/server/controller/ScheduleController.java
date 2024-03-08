@@ -86,13 +86,13 @@ public class ScheduleController {
         return scheduleService.modifyInventory(userId, request);
     }
 
-    // 챙겨야 할 것 수정(소지품 추가)
-    @PostMapping("/stuff")
-    public ResponseEntity addStuff(@RequestHeader("xAuthToken") String token,
+    // 챙겨야 할 것 수정(소지품 수정)
+    @PatchMapping("/stuff")
+    public ResponseEntity modifyStuff(@RequestHeader("xAuthToken") String token,
             @RequestBody TodoStuffAddRequest request) {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
-        return scheduleService.addStuff(userId, request);
+        return scheduleService.modifyStuff(userId, request);
     }
 
     // 챙겨야 할 것 수정(소지품 삭제)

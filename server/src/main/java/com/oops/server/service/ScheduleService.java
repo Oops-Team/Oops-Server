@@ -406,14 +406,19 @@ public class ScheduleService {
                 HttpStatus.OK);
     }
 
-    // 해당 날짜의 챙겨야 할 것 수정(소지품 추가)
-    public ResponseEntity addStuff(Long userId, TodoStuffAddRequest request) {
+    // 해당 날짜의 챙겨야 할 것 수정(소지품 수정)
+    public ResponseEntity modifyStuff(Long userId, TodoStuffAddRequest request) {
         User user = userRepository.findByUserId(userId);
         Schedule schedule = scheduleRepository.findByUserAndDate(user, request.date());
+
+        // 해당 날짜의 소지품 초기화
+        dateStuffRepository.deleteAllBySchedule(schedule);
 
         // 소지품들을 인벤토리에도 같이 반영하는 것이라면
         if (request.isAddInventory()) {
             Inventory inventory = schedule.getInventory();
+            // 해당 인벤토리의 소지품들도 초기화
+            inventoryStuffRepository.deleteAllByInventory(inventory);
 
             for (String stuffName : request.stuffName()) {
                 Stuff stuff = stuffRepository.findByName(stuffName);
