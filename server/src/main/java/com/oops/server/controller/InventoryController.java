@@ -1,9 +1,9 @@
 package com.oops.server.controller;
 
-import com.oops.server.dto.request.InventoryAddStuffRequest;
 import com.oops.server.dto.request.InventoryCreateRequest;
 import com.oops.server.service.InventoryService;
 import com.oops.server.security.TokenProvider;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +28,7 @@ public class InventoryController {
     // 인벤토리 생성
     @PostMapping("/create")
     public ResponseEntity create(@RequestHeader("xAuthToken") String token,
-                                 @RequestBody InventoryCreateRequest request) {
+            @RequestBody InventoryCreateRequest request) {
 
         // 헤더에서 유저 정보 가져오기
         Long userId = tokenProvider.getUserIdFromToken(token);
@@ -39,7 +39,7 @@ public class InventoryController {
     // 인벤토리 수정
     @PatchMapping("/{inventoryIdx}")
     public ResponseEntity modify(@PathVariable("inventoryIdx") Long inventoryId,
-                                 @RequestBody InventoryCreateRequest request) {
+            @RequestBody InventoryCreateRequest request) {
 
         return inventoryService.modify(inventoryId, request);
     }
@@ -54,23 +54,23 @@ public class InventoryController {
     // 인벤토리 내 소지품 추가
     @PostMapping("/{inventoryIdx}/stuff")
     public ResponseEntity addStuff(@PathVariable("inventoryIdx") Long inventoryId,
-                                   @RequestBody InventoryAddStuffRequest request) {
+            @RequestBody Map<String, List<String>> stuffNameMap) {
 
-        return inventoryService.addStuff(inventoryId, request.stuffName());
+        return inventoryService.addStuff(inventoryId, stuffNameMap.get("stuffName"));
     }
 
     // 인벤토리 내 소지품 수정
     @PatchMapping("/{inventoryIdx}/stuff")
     public ResponseEntity modifyStuff(@PathVariable("inventoryIdx") Long inventoryId,
-                                      @RequestBody InventoryAddStuffRequest request) {
+            @RequestBody Map<String, List<String>> stuffNameMap) {
 
-        return inventoryService.modifyStuff(inventoryId, request.stuffName());
+        return inventoryService.modifyStuff(inventoryId, stuffNameMap.get("stuffName"));
     }
 
     // 인벤토리 아이콘 변경
     @PatchMapping("/{inventoryIdx}/icon")
     public ResponseEntity modifyIcon(@PathVariable("inventoryIdx") Long inventoryId,
-                                     @RequestBody Map<String, Integer> iconIdMap) {
+            @RequestBody Map<String, Integer> iconIdMap) {
 
         int iconId = iconIdMap.get("inventoryIconIdx");
 
