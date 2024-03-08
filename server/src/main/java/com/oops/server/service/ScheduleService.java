@@ -10,6 +10,7 @@ import com.oops.server.dto.request.StuffTakeRequest;
 import com.oops.server.dto.request.TodoCreateRequest;
 import com.oops.server.dto.request.TodoInventoryModifyRequest;
 import com.oops.server.dto.request.TodoModifyRequest;
+import com.oops.server.dto.request.TodoStuffAddRequest;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.dto.response.TodoGetAllResponse;
 import com.oops.server.dto.response.TodoGetOneResponse;
@@ -25,6 +26,7 @@ import com.oops.server.entity.User;
 import com.oops.server.repository.DateStuffRepository;
 import com.oops.server.repository.DateTodoRepository;
 import com.oops.server.repository.InventoryRepository;
+import com.oops.server.repository.InventoryStuffRepository;
 import com.oops.server.repository.InventoryTagRepository;
 import com.oops.server.repository.ScheduleRepository;
 import com.oops.server.repository.StuffRepository;
@@ -52,6 +54,7 @@ public class ScheduleService {
     private final TagRepository tagRepository;
     private final InventoryRepository inventoryRepository;
     private final InventoryTagRepository inventoryTagRepository;
+    private final InventoryStuffRepository inventoryStuffRepository;
     private final ScheduleRepository scheduleRepository;
     private final DateTodoRepository dateTodoRepository;
     private final DateStuffRepository dateStuffRepository;
@@ -400,6 +403,34 @@ public class ScheduleService {
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공",
                         new TodoInventoryModifyResponse(inventory.getInventoryId(), stuffList)),
+                HttpStatus.OK);
+    }
+
+    // 해당 날짜의 챙겨야 할 것 수정(소지품 추가)
+    public ResponseEntity addStuff(Long userId, TodoStuffAddRequest request) {
+        User user = userRepository.findByUserId(userId);
+        Schedule schedule = scheduleRepository.findByUserAndDate(user, request.date());
+
+        // 소지품들을 인벤토리에도 같이 반영하는 것이라면
+        if (request.isAddInventory()) {
+            Inventory inventory = schedule.getInventory();
+
+            for (String stuffName : request.stuffName()) {
+                Stuff stuff = stuffRepository.findByName(stuffName);
+                dateStuffRepository.save(new DateStuff(schedule, stuff));               // 해당 일정에 소지품 추가
+                inventoryStuffRepository.save(new InventoryStuff(inventory, stuff));    // 인벤토리에도 소지품 추가
+            }
+        }
+        // 해당 일정에만 일회성 추가하는 것이라면
+        else {
+            for (String stuffName : request.stuffName()) {
+                Stuff stuff = stuffRepository.findByName(stuffName);
+                dateStuffRepository.save(new DateStuff(schedule, stuff));   // 해당 일정에만 소지품 추가
+            }
+        }
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공"),
                 HttpStatus.OK);
     }
 

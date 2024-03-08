@@ -4,6 +4,7 @@ import com.oops.server.dto.request.StuffTakeRequest;
 import com.oops.server.dto.request.TodoCreateRequest;
 import com.oops.server.dto.request.TodoInventoryModifyRequest;
 import com.oops.server.dto.request.TodoModifyRequest;
+import com.oops.server.dto.request.TodoStuffAddRequest;
 import com.oops.server.security.TokenProvider;
 import com.oops.server.service.ScheduleService;
 import java.time.LocalDate;
@@ -31,7 +32,7 @@ public class ScheduleController {
     // 일정 전체 조회(1달 기준)
     @GetMapping("")
     public ResponseEntity getMonth(@RequestHeader("xAuthToken") String token,
-                                   @RequestBody Map<String, LocalDate> dateMap) {
+            @RequestBody Map<String, LocalDate> dateMap) {
         Long userId = tokenProvider.getUserIdFromToken(token);
         LocalDate date = dateMap.get("date");
 
@@ -41,7 +42,7 @@ public class ScheduleController {
     // 일정 1개 조회
     @GetMapping("/detail")
     public ResponseEntity getDetail(@RequestHeader("xAuthToken") String token,
-                                    @RequestBody Map<String, LocalDate> dateMap) {
+            @RequestBody Map<String, LocalDate> dateMap) {
         Long userId = tokenProvider.getUserIdFromToken(token);
         LocalDate date = dateMap.get("date");
 
@@ -50,7 +51,8 @@ public class ScheduleController {
 
     // 일정 추가
     @PostMapping("/create")
-    public ResponseEntity create(@RequestHeader("xAuthToken") String token, @RequestBody TodoCreateRequest request) {
+    public ResponseEntity create(@RequestHeader("xAuthToken") String token,
+            @RequestBody TodoCreateRequest request) {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return scheduleService.create(userId, request);
@@ -58,7 +60,8 @@ public class ScheduleController {
 
     // 일정 전체 수정
     @PatchMapping("")
-    public ResponseEntity modifyAll(@RequestHeader("xAuthToken") String token, @RequestBody TodoModifyRequest request) {
+    public ResponseEntity modifyAll(@RequestHeader("xAuthToken") String token,
+            @RequestBody TodoModifyRequest request) {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return scheduleService.modifyAll(userId, request);
@@ -67,7 +70,7 @@ public class ScheduleController {
     // 일정 전체 삭제
     @DeleteMapping("")
     public ResponseEntity deleteAll(@RequestHeader("xAuthToken") String token,
-                                    @RequestBody Map<String, LocalDate> dateMap) {
+            @RequestBody Map<String, LocalDate> dateMap) {
         Long userId = tokenProvider.getUserIdFromToken(token);
         LocalDate date = dateMap.get("date");
 
@@ -77,16 +80,25 @@ public class ScheduleController {
     // 챙겨야 할 것 수정(다른 인벤토리로 선택 및 변경)
     @PatchMapping("/inventories/select")
     public ResponseEntity modifyInventory(@RequestHeader("xAuthToken") String token,
-                                          @RequestBody TodoInventoryModifyRequest request) {
+            @RequestBody TodoInventoryModifyRequest request) {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return scheduleService.modifyInventory(userId, request);
     }
 
+    // 챙겨야 할 것 수정(소지품 추가)
+    @PostMapping("/stuff")
+    public ResponseEntity addStuff(@RequestHeader("xAuthToken") String token,
+            @RequestBody TodoStuffAddRequest request) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return scheduleService.addStuff(userId, request);
+    }
+
     // 챙겨야 할 것 수정(소지품 삭제)
     @DeleteMapping("/stuff")
     public ResponseEntity deleteStuff(@RequestHeader("xAuthToken") String token,
-                                      @RequestBody StuffTakeRequest request) {
+            @RequestBody StuffTakeRequest request) {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return scheduleService.deleteStuff(userId, request);
@@ -95,7 +107,7 @@ public class ScheduleController {
     // (Home) 일정 1개 수정
     @PatchMapping("/home/{todoIdx}")
     public ResponseEntity modifyOne(@PathVariable("todoIdx") Long todoId,
-                                    @RequestBody Map<String, String> todoNameMap) {
+            @RequestBody Map<String, String> todoNameMap) {
         String todoName = todoNameMap.get("todoName");
 
         return scheduleService.modifyOne(todoId, todoName);
@@ -109,7 +121,8 @@ public class ScheduleController {
 
     // (Home) 소지품 챙기기
     @DeleteMapping("/home/stuff")
-    public ResponseEntity takeStuff(@RequestHeader("xAuthToken") String token, @RequestBody StuffTakeRequest request) {
+    public ResponseEntity takeStuff(@RequestHeader("xAuthToken") String token,
+            @RequestBody StuffTakeRequest request) {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return scheduleService.takeStuff(userId, request);
@@ -118,7 +131,7 @@ public class ScheduleController {
     // (Home) 할 일 완료/미완료 체크
     @PatchMapping("/home/{todoIdx}/check")
     public ResponseEntity checkTodo(@PathVariable("todoIdx") Long todoId,
-                                    @RequestBody Map<String, Boolean> isCompleteMap) {
+            @RequestBody Map<String, Boolean> isCompleteMap) {
         boolean isComplete = isCompleteMap.get("isTodoComplete");
 
         return scheduleService.checkTodo(todoId, isComplete);
