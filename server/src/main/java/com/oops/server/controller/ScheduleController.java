@@ -1,5 +1,6 @@
 package com.oops.server.controller;
 
+import com.oops.server.dto.request.StuffGetAllRequest;
 import com.oops.server.dto.request.StuffTakeRequest;
 import com.oops.server.dto.request.TodoCreateRequest;
 import com.oops.server.dto.request.TodoInventoryModifyRequest;
@@ -84,6 +85,15 @@ public class ScheduleController {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return scheduleService.modifyInventory(userId, request);
+    }
+
+    // 챙겨야 할 것 수정(소지품 수정 -> 소지품 목록 조회)
+    @GetMapping("/stuff")
+    public ResponseEntity getAllStuff(@RequestHeader("xAuthToken") String token,
+            @RequestBody StuffGetAllRequest request) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return scheduleService.getAllStuff(userId, request);
     }
 
     // 챙겨야 할 것 수정(소지품 수정)

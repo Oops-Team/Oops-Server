@@ -6,6 +6,7 @@ import com.oops.server.dto.etc.TodoInventoryDto;
 import com.oops.server.dto.etc.StuffDto;
 import com.oops.server.dto.etc.TodoModifyTodoDto;
 import com.oops.server.dto.etc.TodoTodoDto;
+import com.oops.server.dto.request.StuffGetAllRequest;
 import com.oops.server.dto.request.StuffTakeRequest;
 import com.oops.server.dto.request.TodoCreateRequest;
 import com.oops.server.dto.request.TodoInventoryModifyRequest;
@@ -404,6 +405,21 @@ public class ScheduleService {
                 DefaultResponse.from(StatusCode.OK, "성공",
                         new TodoInventoryModifyResponse(inventory.getInventoryId(), stuffList)),
                 HttpStatus.OK);
+    }
+
+    // 소지품 전체 목록 불러오기
+    public ResponseEntity getAllStuff(Long userId, StuffGetAllRequest request) {
+        User user = userRepository.findByUserId(userId);
+        Schedule schedule = scheduleRepository.findByUserAndDate(user, request.date());
+
+        // TODO: 해당 일정의 소지품 추가 -> 소지품 목록 조회인 경우
+        if (request.date() != null) {
+
+        }
+        // TODO: 인벤토리 내 소지품 추가 및 수정 -> 소지품 목록 조회인 경우
+        else if (request.inventoryId() != null) {
+
+        }
     }
 
     // 해당 날짜의 챙겨야 할 것 수정(소지품 수정)
