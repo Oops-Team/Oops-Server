@@ -41,6 +41,12 @@ public class User {
     @Column(name = "sns_type", nullable = false)
     private String snsType;
 
+    @Column(name = "is_public", nullable = false)
+    private boolean isPublic;
+
+    @Column(name = "profile_url", length = 500)
+    private String profileUrl;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Inventory> inventories;
 
@@ -49,18 +55,20 @@ public class User {
 
     public static User create(SignUpRequest request, PasswordEncoder encoder, String snsType) {
         return User.builder()
-                   .name(request.name())
-                   .email(request.email())
-                   .password(encoder.encode(request.password()))
-                   .snsType(snsType)
-                   .build();
+                .name(request.name())
+                .email(request.email())
+                .password(encoder.encode(request.password()))
+                .snsType(snsType)
+                .isPublic(true)
+                .build();
     }
 
     public static User createSocial(SignUpRequest request, String snsType) {
         return User.builder()
-                   .name(request.name())
-                   .email(request.email())
-                   .snsType(snsType)
-                   .build();
+                .name(request.name())
+                .email(request.email())
+                .snsType(snsType)
+                .isPublic(true)
+                .build();
     }
 }
