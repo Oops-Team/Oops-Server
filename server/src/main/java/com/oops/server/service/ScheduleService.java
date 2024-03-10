@@ -152,24 +152,28 @@ public class ScheduleService {
 
         // 1. 인벤토리 관련 정보 담기
         List<TodoInventoryDto> inventoryList = new ArrayList<>();
-        // 해당 일정에서 사용하고 있는 인벤토리 먼저 담기
+        // 해당 일정에서 사용하고 있는 인벤토리 가져오기
         Inventory usedInventory = schedule.getInventory();
-        inventoryList.add(new TodoInventoryDto(
-                usedInventory.getInventoryId(),
-                usedInventory.getName(),
-                usedInventory.getIcon(),
-                true));
-        // 그 외 인벤토리 담기
-        List<Inventory> allInventoryList = inventoryRepository.findAllByUser(user);
-        for (Inventory inventory : allInventoryList) {
-            // 현재 사용 중인 인벤토리가 아니라면
-            if (inventory.getInventoryId() != usedInventory.getInventoryId()) {
-                inventoryList.add(new TodoInventoryDto(
-                        inventory.getInventoryId(),
-                        inventory.getName(),
-                        inventory.getIcon(),
-                        false
-                ));
+        if (usedInventory != null) {
+            // 해당 일정에서 사용하고 있는 인벤토리 먼저 담기
+            inventoryList.add(new TodoInventoryDto(
+                    usedInventory.getInventoryId(),
+                    usedInventory.getName(),
+                    usedInventory.getIcon(),
+                    true));
+
+            // 그 외 인벤토리 담기
+            List<Inventory> allInventoryList = inventoryRepository.findAllByUser(user);
+            for (Inventory inventory : allInventoryList) {
+                // 현재 사용 중인 인벤토리가 아니라면
+                if (inventory.getInventoryId() != usedInventory.getInventoryId()) {
+                    inventoryList.add(new TodoInventoryDto(
+                            inventory.getInventoryId(),
+                            inventory.getName(),
+                            inventory.getIcon(),
+                            false
+                    ));
+                }
             }
         }
 
