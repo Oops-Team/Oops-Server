@@ -13,6 +13,7 @@ import com.oops.server.dto.request.TodoInventoryModifyRequest;
 import com.oops.server.dto.request.TodoModifyRequest;
 import com.oops.server.dto.request.TodoStuffAddRequest;
 import com.oops.server.dto.response.DefaultResponse;
+import com.oops.server.dto.response.StuffGetAllResponse;
 import com.oops.server.dto.response.TodoGetAllResponse;
 import com.oops.server.dto.response.TodoGetOneResponse;
 import com.oops.server.dto.response.TodoInventoryModifyResponse;
@@ -409,17 +410,66 @@ public class ScheduleService {
 
     // 소지품 전체 목록 불러오기
     public ResponseEntity getAllStuff(Long userId, StuffGetAllRequest request) {
+        // 만일 요청 데이터가 잘못됐을 경우
+        if ((request.date() != null && request.inventoryId() != null) ||
+                (request.date() == null && request.inventoryId() == null)) {
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.BAD_REQUEST, ExceptionMessages.BAD_REQUEST.get()),
+                    HttpStatus.BAD_REQUEST);
+        }
+
         User user = userRepository.findByUserId(userId);
-        Schedule schedule = scheduleRepository.findByUserAndDate(user, request.date());
 
-        // TODO: 해당 일정의 소지품 추가 -> 소지품 목록 조회인 경우
+        // 응답 객체
+        List<StuffGetAllResponse> stuffList = new ArrayList<>();
+
+        // 전체 소지품 목록 불러오기
+        List<Stuff> stuffAllList = stuffRepository.findAll();
+
+        // 현재 등록된 소지품들의 이름 목록 (비교 대상)
+        List<String> stuffNameList = new ArrayList<>();
+
+        // 해당 일정의 소지품 추가 -> 소지품 목록 조회인 경우
         if (request.date() != null) {
+            // 해당 일정의 소지품 목록 불러오기
+            Schedule schedule = scheduleRepository.findByUserAndDate(user, request.date());
+            List<DateStuff> dateStuffList = schedule.getDateStuffs();
 
+            // 현재 등록된 소지품 이름들 추가
+            for (DateStuff dateStuff : dateStuffList) {
+                stuffNameList.add(dateStuff.getStuff().getName());
+            }
         }
-        // TODO: 인벤토리 내 소지품 추가 및 수정 -> 소지품 목록 조회인 경우
+        // 인벤토리 내 소지품 추가 및 수정 -> 소지품 목록 조회인 경우
         else if (request.inventoryId() != null) {
+            // 해당 인벤토리의 소지품 목록 불러오기
+            Inventory inventory = inventoryRepository.findByInventoryId(request.inventoryId());
+            List<InventoryStuff> inventoryStuffList = inventory.getInventoryStuffs();
 
+            // 현재 등록된 소지품 이름들 추가
+            for (InventoryStuff inventoryStuff : inventoryStuffList) {
+                stuffNameList.add(inventoryStuff.getStuff().getName());
+            }
         }
+
+        // DTO 정보 담기 수행
+        for (Stuff stuff : stuffAllList) {
+            boolean isSelected = false;
+
+            // 현재 등록된 소지품이라면
+            if (stuffNameList.contains(stuff.getName())) {
+                isSelected = true;
+            }
+
+            stuffList.add(new StuffGetAllResponse(
+                    stuff.getImg_url(),
+                    stuff.getName(),
+                    isSelected));
+        }
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공", stuffList),
+                HttpStatus.OK);
     }
 
     // 해당 날짜의 챙겨야 할 것 수정(소지품 수정)
