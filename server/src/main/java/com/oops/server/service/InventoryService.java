@@ -1,5 +1,6 @@
 package com.oops.server.service;
 
+import com.oops.server.context.ExceptionMessages;
 import com.oops.server.context.StatusCode;
 import com.oops.server.dto.etc.StuffDto;
 import com.oops.server.dto.request.InventoryCreateRequest;
@@ -66,7 +67,7 @@ public class InventoryService {
         // 인벤토리 이름이 중복되었다면
         if (!validateDuplicateName(user, request.inventoryName())) {
             return new ResponseEntity(
-                    DefaultResponse.from(StatusCode.CONFLICT, "이미 있는 이름이에요"),
+                    DefaultResponse.from(StatusCode.CONFLICT, ExceptionMessages.DUPLICATE_INVENTORY.get()),
                     HttpStatus.CONFLICT);
         }
 
@@ -89,7 +90,8 @@ public class InventoryService {
 
         // 해당 인벤토리가 없을 경우
         if (inventoryRepository.findByInventoryId(inventoryId) == null) {
-            return new ResponseEntity(DefaultResponse.from(StatusCode.NOT_FOUND, "해당 인벤토리가 없습니다."),
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.NOT_FOUND, ExceptionMessages.NOT_FOUND_INVENTORY.get()),
                     HttpStatus.NOT_FOUND);
         }
 
@@ -98,7 +100,7 @@ public class InventoryService {
         // 인벤토리 이름이 중복되었다면
         if (!validateDuplicateName(inventory.getUser(), request.inventoryName())) {
             return new ResponseEntity(
-                    DefaultResponse.from(StatusCode.CONFLICT, "이미 있는 이름이에요"),
+                    DefaultResponse.from(StatusCode.CONFLICT, ExceptionMessages.DUPLICATE_INVENTORY.get()),
                     HttpStatus.CONFLICT);
         }
 
@@ -132,7 +134,8 @@ public class InventoryService {
 
         // 해당 인벤토리가 없을 경우
         if (inventory == null) {
-            return new ResponseEntity(DefaultResponse.from(StatusCode.NOT_FOUND, "해당 인벤토리가 없습니다."),
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.NOT_FOUND, ExceptionMessages.NOT_FOUND_INVENTORY.get()),
                     HttpStatus.NOT_FOUND);
         }
 
@@ -154,7 +157,8 @@ public class InventoryService {
 
         // 해당 인벤토리가 없을 경우
         if (inventory == null) {
-            return new ResponseEntity(DefaultResponse.from(StatusCode.NOT_FOUND, "해당 인벤토리가 없습니다."),
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.NOT_FOUND, ExceptionMessages.NOT_FOUND_INVENTORY.get()),
                     HttpStatus.NOT_FOUND);
         }
 
@@ -175,6 +179,14 @@ public class InventoryService {
     // 인벤토리 아이콘 수정
     public ResponseEntity modifyIcon(Long inventoryId, int iconId) {
         Inventory inventory = inventoryRepository.findByInventoryId(inventoryId);
+
+        // 해당 인벤토리가 없을 경우
+        if (inventory == null) {
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.NOT_FOUND, ExceptionMessages.NOT_FOUND_INVENTORY.get()),
+                    HttpStatus.NOT_FOUND);
+        }
+
         inventory.setIcon(iconId);
         inventoryRepository.save(inventory);
 
@@ -217,7 +229,8 @@ public class InventoryService {
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공",
-                        new InventoryGetAllResponse(inventoryIdxList, inventoryIconIdxList, inventoryNameList, stuffTotalNum, stuffList)),
+                        new InventoryGetAllResponse(inventoryIdxList, inventoryIconIdxList, inventoryNameList,
+                                stuffTotalNum, stuffList)),
                 HttpStatus.OK);
     }
 
@@ -243,7 +256,8 @@ public class InventoryService {
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공",
-                        new InventoryGetOneResponse(inventoryName, stuffImgURIList, stuffNameList, stuffNum, inventoryTag)),
+                        new InventoryGetOneResponse(inventoryName, stuffImgURIList, stuffNameList, stuffNum,
+                                inventoryTag)),
                 HttpStatus.OK);
     }
 }

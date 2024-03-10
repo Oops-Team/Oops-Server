@@ -261,7 +261,7 @@ public class ScheduleService {
         // 만일 인벤토리가 없다면
         if (inventory == null) {
             return new ResponseEntity(
-                    DefaultResponse.from(StatusCode.OK, ExceptionMessages.NOT_FOUND_INVENTORY.get()),
+                    DefaultResponse.from(StatusCode.OK, ExceptionMessages.NOT_CREATE_INVENTORY.get()),
                     HttpStatus.OK);
         }
         schedule.modifyInventory(inventory);
@@ -368,7 +368,7 @@ public class ScheduleService {
         // 현재 생성된 인벤토리가 없는 경우
         else {
             return new ResponseEntity(
-                    DefaultResponse.from(StatusCode.OK, ExceptionMessages.NOT_FOUND_INVENTORY.get()),
+                    DefaultResponse.from(StatusCode.OK, ExceptionMessages.NOT_CREATE_INVENTORY.get()),
                     HttpStatus.OK);
         }
     }
