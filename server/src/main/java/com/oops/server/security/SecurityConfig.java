@@ -10,8 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -21,7 +19,7 @@ public class SecurityConfig {
 
     @Autowired
     private JwtAuthenticateFilter jwtAuthenticateFilter;
-    private final String[] allowedUrls = {"/", "/nickname/**", "/email/**", "/sign-up", "/login/**"};
+    private final String[] allowedUrls = {"/", "/user/nickname/**", "/user/email/**", "/user/sign-up", "/user/login/**"};
 
     // H2 콘솔 사용을 위한 설정
     @Bean
