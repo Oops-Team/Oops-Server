@@ -5,6 +5,7 @@ import com.oops.server.service.FriendService;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,8 +34,17 @@ public class FriendController {
     @PatchMapping("/accept")
     public ResponseEntity accept(@RequestHeader("xAuthToken") String token,
             @RequestBody Map<String, Long> friendIdMap) {
-        Long userId = tokenProvider.getUserIdFromToken(token);
+        Long myId = tokenProvider.getUserIdFromToken(token);
 
-        return friendService.accept(userId, friendIdMap.get("friendId"));
+        return friendService.accept(myId, friendIdMap.get("friendId"));
+    }
+
+    // 친구 삭제 & 거절
+    @DeleteMapping("")
+    public ResponseEntity delete(@RequestHeader("xAuthToken") String token,
+            @RequestBody Map<String, Long> friendIdMap) {
+        Long myId = tokenProvider.getUserIdFromToken(token);
+
+        return friendService.delete(myId, friendIdMap.get("friendId"));
     }
 }

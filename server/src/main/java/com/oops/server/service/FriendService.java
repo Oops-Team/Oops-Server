@@ -49,11 +49,10 @@ public class FriendService {
     }
 
     // 친구 수락
-    public ResponseEntity accept(Long userId, Long friendId) {
-        User me = userRepository.findByUserId(userId);
-        User friend = userRepository.findByUserId(friendId);
-
+    public ResponseEntity accept(Long myId, Long friendId) {
         // 친구 신청 내역 가져오기
+        User me = userRepository.findByUserId(myId);
+        User friend = userRepository.findByUserId(friendId);
         Friend friendRelation = friendRepository.findByRequestUserAndResponseUser(friend, me);
 
         try {
@@ -70,6 +69,29 @@ public class FriendService {
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공"),
+                HttpStatus.OK);
+    }
+
+    // 친구 신청 거절 & 친구 삭제
+    public ResponseEntity delete(Long myId, Long friendId) {
+        // 친구 신청 내역 가져오기
+        User me = userRepository.findByUserId(myId);
+        User friend = userRepository.findByUserId(friendId);
+        Friend friendRelation = friendRepository.findByRequestUserAndResponseUser(friend, me);
+
+        // 만약 삭제 & 거절할 친구가 없을 경우
+        if (friendRelation == null) {
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.NOT_FOUND,
+                            ExceptionMessages.NOT_FOUND_USER.get()),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        // 삭제 & 거절 수행
+        friendRepository.delete(friendRelation);
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공", friendId),
                 HttpStatus.OK);
     }
 }
