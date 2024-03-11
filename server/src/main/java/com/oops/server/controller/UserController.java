@@ -4,21 +4,27 @@ import com.oops.server.context.ExceptionMessages;
 import com.oops.server.context.StatusCode;
 import com.oops.server.dto.request.SignUpRequest;
 import com.oops.server.dto.response.DefaultResponse;
+import com.oops.server.security.TokenProvider;
 import com.oops.server.service.UserService;
+import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final TokenProvider tokenProvider;
 
     // 닉네임 중복 검사
     @GetMapping("/nickname/{name}")
@@ -62,7 +68,6 @@ public class UserController {
     @PostMapping("/login/{loginId}")
     public ResponseEntity login(@PathVariable("loginId") String loginType,
             @RequestBody SignUpRequest request) {
-
         switch (loginType) {
             // oops 로그인
             case "oops":
@@ -79,5 +84,14 @@ public class UserController {
                                 ExceptionMessages.BAD_REQUEST.get()),
                         HttpStatus.BAD_REQUEST);
         }
+    }
+
+    // 프로필 공개 설정 변경
+    @PatchMapping("/user/mypage/profile")
+    public ResponseEntity modifyPublic(@RequestHeader("xAuthToken") String token,
+            @RequestBody Map<String, Boolean> isPublicMap) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return userService.modifyPublic(userId, isPublicMap.get("isPublic"));
     }
 }

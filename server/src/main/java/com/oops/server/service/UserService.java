@@ -16,8 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
@@ -110,6 +110,17 @@ public class UserService {
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공", new SignInResponse(token)),
+                HttpStatus.OK);
+    }
+
+    // 프로필 공개/비공개 설정 변경
+    public ResponseEntity modifyPublic(Long userId, Boolean isPublic) {
+        User user = userRepository.findByUserId(userId);
+        user.modifyPublic(isPublic);
+        userRepository.save(user);
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공"),
                 HttpStatus.OK);
     }
 }

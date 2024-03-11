@@ -71,4 +71,8 @@ public class User {
                 .isPublic(true)
                 .build();
     }
+
+    public void modifyPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
 }
