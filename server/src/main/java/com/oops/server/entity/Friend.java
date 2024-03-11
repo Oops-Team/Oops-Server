@@ -33,19 +33,19 @@ public class Friend {
     @JoinColumn(name = "response_id", referencedColumnName = "user_id")
     private User responseUser;
 
-    @Column(nullable = false)
-    private boolean status;
+    @Column(name = "is_friend", nullable = false)
+    private boolean isFriend;
 
     public static Friend create(User requestUser, User responseUser) {
         return Friend.builder()
                 .requestUser(requestUser)
                 .responseUser(responseUser)
-                .status(false)
+                .isFriend(false)
                 .build();
     }
 
     // 친구 신청을 수락할 때 사용
     public void acceptRequest() {
-        this.status = true;
+        this.isFriend = true;
     }
 }
