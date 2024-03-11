@@ -47,4 +47,29 @@ public class FriendService {
                 DefaultResponse.from(StatusCode.OK, "성공"),
                 HttpStatus.OK);
     }
+
+    // 친구 수락
+    public ResponseEntity accept(Long userId, Long friendId) {
+        User me = userRepository.findByUserId(userId);
+        User friend = userRepository.findByUserId(friendId);
+
+        // 친구 신청 내역 가져오기
+        Friend friendRelation = friendRepository.findByRequestUserAndResponseUser(friend, me);
+
+        try {
+            // 친구 신청 수락 진행
+            friendRelation.acceptRequest();
+            friendRepository.save(friendRelation);
+        } catch (NullPointerException e) {
+            // 수락할 친구가 존재하지 않을 경우 응답
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.NOT_FOUND,
+                            ExceptionMessages.NOT_FOUND_ACCEPT_USER.get()),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공"),
+                HttpStatus.OK);
+    }
 }

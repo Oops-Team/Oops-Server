@@ -5,6 +5,7 @@ import com.oops.server.service.FriendService;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -26,5 +27,14 @@ public class FriendController {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return friendService.request(userId, nameMap.get("name"));
+    }
+
+    // 친구 수락
+    @PatchMapping("/accept")
+    public ResponseEntity accept(@RequestHeader("xAuthToken") String token,
+            @RequestBody Map<String, Long> friendIdMap) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return friendService.accept(userId, friendIdMap.get("friendId"));
     }
 }

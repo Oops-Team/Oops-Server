@@ -43,4 +43,9 @@ public class Friend {
                 .status(false)
                 .build();
     }
+
+    // 친구 신청을 수락할 때 사용
+    public void acceptRequest() {
+        this.status = true;
+    }
 }
