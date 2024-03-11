@@ -8,7 +8,8 @@ public enum ExceptionMessages {
     NOT_FOUND_EMAIL("입력된 이메일이 올바르지 않아요"),
     MISS_MATCH_PASSWORD("입력된 비밀번호가 올바르지 않아요"),
 
-    EXIST_FRIEND_REQUEST("이미 친구 신청을 보냈습니다"),
+    NOT_FOUND_RESPONSE_USER("신청하려는 사용자가 존재하지 않습니다"),
+    EXIST_FRIEND_REQUEST("이미 친구 신청한 사용자입니다"),
 
     DUPLICATE_INVENTORY("이미 있는 이름이에요"),
     NOT_FOUND_INVENTORY("해당 인벤토리가 없습니다"),
