@@ -69,6 +69,8 @@ public class Schedule {
         this.inventory = inventory;
     }
 
+    public void deleteInventory() { this.inventory = null; }
+
     public void modifyTagList(String tagList) {
         this.tagList = tagList;
     }

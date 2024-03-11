@@ -10,12 +10,14 @@ import com.oops.server.dto.response.InventoryGetOneResponse;
 import com.oops.server.entity.Inventory;
 import com.oops.server.entity.InventoryStuff;
 import com.oops.server.entity.InventoryTag;
+import com.oops.server.entity.Schedule;
 import com.oops.server.entity.Stuff;
 import com.oops.server.entity.Tag;
 import com.oops.server.entity.User;
 import com.oops.server.repository.InventoryStuffRepository;
 import com.oops.server.repository.InventoryRepository;
 import com.oops.server.repository.InventoryTagRepository;
+import com.oops.server.repository.ScheduleRepository;
 import com.oops.server.repository.StuffRepository;
 import com.oops.server.repository.TagRepository;
 import com.oops.server.repository.UserRepository;
@@ -36,6 +38,7 @@ public class InventoryService {
     private final InventoryTagRepository inventoryTagRepository;
     private final InventoryStuffRepository inventoryStuffRepository;
     private final UserRepository userRepository;
+    private final ScheduleRepository scheduleRepository;
 
     // 인벤토리 이름 중복 검사
     public boolean validateDuplicateName(User user, String name) {
@@ -119,7 +122,15 @@ public class InventoryService {
 
     // 인벤토리 삭제
     public ResponseEntity delete(Long inventoryId) {
+        // 해당 인벤토리를 쓰고 있는 일정들을 찾아 연관관계 끊기
+        Inventory inventory = inventoryRepository.findByInventoryId(inventoryId);
+        List<Schedule> scheduleList = inventory.getSchedules();
+        for (Schedule schedule : scheduleList) {
+            schedule.deleteInventory();
+            scheduleRepository.save(schedule);
+        }
 
+        // 인벤토리 삭제 수행
         inventoryRepository.deleteByInventoryId(inventoryId);
 
         return new ResponseEntity(
