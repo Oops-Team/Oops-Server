@@ -32,8 +32,10 @@ public class FriendService {
                     HttpStatus.NOT_FOUND);
         }
 
-        // 이미 친구 신청이 보내진 상태라면
-        if (friendRepository.findByRequestUserAndResponseUser(requestUser, responseUser) != null) {
+        // 이미 친구 신청이 보내진 상태라면 (양방향 모두 검색)
+        if (friendRepository.findByRequestUserAndResponseUser(requestUser, responseUser) != null
+                || friendRepository.findByRequestUserAndResponseUser(responseUser, requestUser)
+                != null) {
             return new ResponseEntity(
                     DefaultResponse.from(StatusCode.CONFLICT,
                             ExceptionMessages.EXIST_FRIEND_REQUEST.get()),
@@ -78,8 +80,11 @@ public class FriendService {
         User me = userRepository.findByUserId(myId);
         User friend = userRepository.findByUserId(friendId);
         Friend friendRelation = friendRepository.findByRequestUserAndResponseUser(friend, me);
+        // 양방향 검색을 위함
+        friendRelation = (friendRelation != null) ? friendRelation
+                : friendRepository.findByRequestUserAndResponseUser(me, friend);
 
-        // 만약 삭제 & 거절할 친구가 없을 경우
+        // (양방향 검색을 했는데도) 삭제 & 거절할 친구가 없을 경우
         if (friendRelation == null) {
             return new ResponseEntity(
                     DefaultResponse.from(StatusCode.NOT_FOUND,
