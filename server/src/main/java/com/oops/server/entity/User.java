@@ -53,6 +53,12 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Schedule> schedules;
 
+    @OneToMany(mappedBy = "requestUser", cascade = CascadeType.REMOVE)
+    private List<Friend> requestFriends;
+
+    @OneToMany(mappedBy = "responseUser", cascade = CascadeType.REMOVE)
+    private List<Friend> responseFriends;
+
     public static User create(SignUpRequest request, PasswordEncoder encoder, String snsType) {
         return User.builder()
                 .name(request.name())
