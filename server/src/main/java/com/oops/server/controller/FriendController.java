@@ -6,6 +6,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,14 @@ public class FriendController {
 
     private final FriendService friendService;
     private final TokenProvider tokenProvider;
+
+    // 친구 리스트 조회
+    @GetMapping("")
+    public ResponseEntity getAll(@RequestHeader("xAuthToken") String token) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return friendService.getAll(userId);
+    }
 
     // 친구 신청
     @PostMapping("/request")
