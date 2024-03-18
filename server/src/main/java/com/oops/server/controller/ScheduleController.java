@@ -33,18 +33,17 @@ public class ScheduleController {
     // 일정 전체 조회(1달 기준)
     @GetMapping("/{date}")
     public ResponseEntity getMonth(@RequestHeader("xAuthToken") String token,
-            @PathVariable("date") LocalDate date) {
+                                   @PathVariable("date") LocalDate date) {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return scheduleService.getMonth(userId, date);
     }
 
     // 일정 1개 조회
-    @GetMapping("/detail")
+    @GetMapping("/detail/{date}")
     public ResponseEntity getDetail(@RequestHeader("xAuthToken") String token,
-            @RequestBody Map<String, LocalDate> dateMap) {
+                                    @PathVariable("date") LocalDate date) {
         Long userId = tokenProvider.getUserIdFromToken(token);
-        LocalDate date = dateMap.get("date");
 
         return scheduleService.getDetail(userId, date);
     }
