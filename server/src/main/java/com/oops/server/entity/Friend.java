@@ -36,12 +36,22 @@ public class Friend {
     @Column(name = "is_friend", nullable = false)
     private boolean isFriend;
 
+    // 친구 신청 시 삽입할 행
     public static Friend create(User requestUser, User responseUser) {
         return Friend.builder()
                 .requestUser(requestUser)
                 .responseUser(responseUser)
                 .isFriend(false)
                 .build();
+    }
+
+    // 서로 친구가 되었을 때(친구 수락을 했을 때)의 삽입할 역방향 행
+    public static Friend createFriendState(User requestUser, User responseUser) {
+        return Friend.builder()
+                     .requestUser(requestUser)
+                     .responseUser(responseUser)
+                     .isFriend(true)
+                     .build();
     }
 
     // 친구 신청을 수락할 때 사용

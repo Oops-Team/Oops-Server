@@ -147,6 +147,9 @@ public class FriendService {
             // 친구 신청 수락 진행
             friendRelation.acceptRequest();
             friendRepository.save(friendRelation);
+
+            // 역방향 행 삽입
+            friendRepository.save(Friend.createFriendState(me, friend));
         } catch (NullPointerException e) {
             // 수락할 친구가 존재하지 않을 경우 응답
             return new ResponseEntity(
