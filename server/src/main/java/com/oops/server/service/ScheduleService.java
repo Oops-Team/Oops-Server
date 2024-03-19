@@ -139,6 +139,13 @@ public class ScheduleService {
         User user = userRepository.findByUserId(userId);
         Schedule schedule = scheduleRepository.findByUserAndDate(user, date);
 
+        // 만약 해당 날짜의 스케줄이 없다면
+        if (schedule == null) {
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.OK, ExceptionMessages.NOT_FOUND_SCHEDULE.get()),
+                    HttpStatus.OK);
+        }
+
         // todoTag string -> int 값으로 분리
         int[] todoTagIntArr = Arrays.stream(schedule.getTagList().split(",")).mapToInt(Integer::parseInt).toArray();
         List<Integer> todoTagList = Arrays.stream(todoTagIntArr).boxed().toList();

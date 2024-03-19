@@ -13,6 +13,8 @@ public enum ExceptionMessages {
     NOT_FOUND_ACCEPT_USER("수락할 사용자가 존재하지 않습니다"),
     NOT_FOUND_USER("해당 사용자가 존재하지 않습니다"),
 
+    NOT_FOUND_SCHEDULE("해당 날짜에 등록된 일정이 없습니다"),
+
     DUPLICATE_INVENTORY("이미 있는 이름이에요"),
     NOT_FOUND_INVENTORY("해당 인벤토리가 없습니다"),
     NOT_CREATE_INVENTORY("생성된 인벤토리가 없습니다");
