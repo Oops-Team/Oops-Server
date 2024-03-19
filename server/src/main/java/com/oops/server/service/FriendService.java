@@ -25,7 +25,6 @@ public class FriendService {
     private final FriendRepository friendRepository;
 
     // 친구 관계 상태값
-    private final int IS_NOT_FRIEND = 0;        // 현재 친구X
     private final int IS_FRIEND = 1;            // 현재 친구O
     private final int PENDING_OUTGOING = 2;     // 보낸 친구 요청 (대기중)
     private final int PENDING_INCOMING = 3;     // 받은 친구 요청 (대기중)
@@ -37,34 +36,40 @@ public class FriendService {
         // 응답 DTO
         List<FriendGetAllResponse> data = new ArrayList<>();
 
-        // 1-1. 내가 요청했던 입장의 친구 목록 불러오기
-        List<Friend> requestFriendList = friendRepository.findAllByRequestUser(user);
+        // 1-1. 내가 요청받았던 입장의 친구 목록 불러오기
+        List<Friend> receiveFriendList = friendRepository.getIncomingFriendRequestList(user);
 
         // 1-2. 1번 항목 응답 정보에 담기
-        for (Friend friend : requestFriendList) {
-            // 해당 유저와의 관계(상태)
-            int userState = friend.isFriend() ? IS_FRIEND : PENDING_OUTGOING;
-
-            data.add(new FriendGetAllResponse(
-                    friend.getResponseUser().getUserId(),
-                    friend.getResponseUser().getName(),
-                    friend.getResponseUser().getProfileUrl(),
-                    userState));
-        }
-
-        // 2-1. 내가 요청받았던 입장의 친구 목록 불러오기
-        List<Friend> receiveFriendList = friendRepository.findAllByResponseUser(user);
-
-        // 2-2. 2번 항목 응답 정보에 담기
         for (Friend friend : receiveFriendList) {
-            // 해당 유저와의 관계(상태)
-            int userState = friend.isFriend() ? IS_FRIEND : PENDING_INCOMING;
-
             data.add(new FriendGetAllResponse(
                     friend.getRequestUser().getUserId(),
                     friend.getRequestUser().getName(),
                     friend.getRequestUser().getProfileUrl(),
-                    userState));
+                    PENDING_INCOMING));
+        }
+
+        // 2-1. 내가 요청했던 입장의 친구 목록 불러오기
+        List<Friend> requestFriendList = friendRepository.getSendFriendRequestList(user);
+
+        // 2-2. 2번 항목 응답 정보에 담기
+        for (Friend friend : requestFriendList) {
+            data.add(new FriendGetAllResponse(
+                    friend.getResponseUser().getUserId(),
+                    friend.getResponseUser().getName(),
+                    friend.getResponseUser().getProfileUrl(),
+                    PENDING_OUTGOING));
+        }
+
+        // 3-1. 나와 완전 친구인 사용자들 불러오기
+        List<Friend> perfectFriendList = friendRepository.getFriendList(user);
+
+        // 3-2. 3번 항목 응답 정보에 담기
+        for (Friend friend : perfectFriendList) {
+            data.add(new FriendGetAllResponse(
+                    friend.getResponseUser().getUserId(),
+                    friend.getResponseUser().getName(),
+                    friend.getResponseUser().getProfileUrl(),
+                    IS_FRIEND));
         }
 
         return new ResponseEntity(
