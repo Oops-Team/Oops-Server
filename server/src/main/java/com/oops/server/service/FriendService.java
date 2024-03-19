@@ -2,8 +2,10 @@ package com.oops.server.service;
 
 import com.oops.server.context.ExceptionMessages;
 import com.oops.server.context.StatusCode;
+import com.oops.server.dto.etc.FriendDto;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.dto.response.FriendGetAllResponse;
+import com.oops.server.dto.response.FriendGetSearchResponse;
 import com.oops.server.entity.Friend;
 import com.oops.server.entity.User;
 import com.oops.server.repository.FriendRepository;
@@ -67,6 +69,39 @@ public class FriendService {
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공", data),
+                HttpStatus.OK);
+    }
+
+    // 사용자 리스트 검색 조회
+    public ResponseEntity getSearch(Long userId, String name) {
+        User user = userRepository.findByUserId(userId);
+        String searchName = "%" + name + "%"; // 해당 문자열을 포함하는 닉네임을 검색하기 위함
+
+        // 해당 사용자와 완전 친구인 사람들 중 검색
+        List<User> friendList = friendRepository.getSearchFriendList(user, searchName);
+        // 친구 중에서 검색한 결과 dto 정보 넣기
+        List<FriendDto> friendDtoList = new ArrayList<>();
+        for (User friendUser : friendList) {
+            friendDtoList.add(new FriendDto(
+                    friendUser.getUserId(),
+                    friendUser.getName(),
+                    friendUser.getProfileUrl()));
+        }
+
+        // 해당 사용자와 친구가 아닌 사람들 중 검색
+        List<User> notFriendList = userRepository.getSearchNotFriendList(user.getUserId(), searchName);
+        // 친구가 아닌 사용자들 중에서 검색한 결과 dto 정보 넣기
+        List<FriendDto> notFriendDtoList = new ArrayList<>();
+        for (User notFriendUser : notFriendList) {
+            notFriendDtoList.add(new FriendDto(
+                    notFriendUser.getUserId(),
+                    notFriendUser.getName(),
+                    notFriendUser.getProfileUrl()));
+        }
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공",
+                        new FriendGetSearchResponse(friendDtoList, notFriendDtoList)),
                 HttpStatus.OK);
     }
 
