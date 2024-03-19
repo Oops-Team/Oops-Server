@@ -46,7 +46,7 @@ public class Friend {
     }
 
     // 서로 친구가 되었을 때(친구 수락을 했을 때)의 삽입할 역방향 행
-    public static Friend createFriendState(User requestUser, User responseUser) {
+    public static Friend createFriendTrue(User requestUser, User responseUser) {
         return Friend.builder()
                      .requestUser(requestUser)
                      .responseUser(responseUser)
