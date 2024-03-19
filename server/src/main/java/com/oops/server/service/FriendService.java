@@ -169,11 +169,8 @@ public class FriendService {
         User me = userRepository.findByUserId(myId);
         User friend = userRepository.findByUserId(friendId);
         Friend friendRelation = friendRepository.findByRequestUserAndResponseUser(friend, me);
-        // 양방향 검색을 위함
-        friendRelation = (friendRelation != null) ? friendRelation
-                : friendRepository.findByRequestUserAndResponseUser(me, friend);
 
-        // (양방향 검색을 했는데도) 삭제 & 거절할 친구가 없을 경우
+        // 삭제 & 거절할 친구가 없을 경우
         if (friendRelation == null) {
             return new ResponseEntity(
                     DefaultResponse.from(StatusCode.NOT_FOUND,
@@ -182,7 +179,26 @@ public class FriendService {
         }
 
         // 삭제 & 거절 수행
-        friendRepository.delete(friendRelation);
+        // 만일 친구 삭제의 상황이라면
+        if (friendRelation.isFriend()) {
+            // 요청인, 피요청인 저장
+            User requestUser = friendRelation.getRequestUser();
+            User responseUser = friendRelation.getResponseUser();
+
+            // 정방향 행 삭제
+            friendRepository.delete(friendRelation);
+
+            // 역방향 행 삭제
+            Friend reverseFriend = friendRepository.findByRequestUserAndResponseUser(responseUser,
+                    requestUser);
+            friendRepository.delete(reverseFriend);
+        }
+        // 만일 친구 신청 거절의 상황이라면
+        else {
+            // 해당 행 삭제
+            friendRepository.delete(friendRelation);
+        }
+
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공", friendId),
