@@ -140,6 +140,8 @@ fabric.properties
 hs_err_pid*
 replay_pid*
 
+# oops server data
 server/src/main/resources/jwt.yml
+server/src/main/resources/data.sql
 
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij

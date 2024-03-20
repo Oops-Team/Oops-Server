@@ -19,6 +19,13 @@ spring:
           dialect: org.hibernate.dialect.H2Dialect
           format_sql: true
           show_sql: true
+      defer-datasource-initialization: true   # 테이블 생성 후 DB 초기 데이터가 삽입되게 하기 위함
+
+  # DB 초기 데이터 삽입을 위함
+  sql:
+    init:
+      data-locations: classpath:data.sql
+
 #콘솔 색상 출력을 위함
   output:
     ansi:
