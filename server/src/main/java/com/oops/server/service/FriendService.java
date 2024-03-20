@@ -33,24 +33,28 @@ public class FriendService {
     private final int PENDING_OUTGOING = 2;     // 보낸 친구 요청 (대기중)
     private final int PENDING_INCOMING = 3;     // 받은 친구 요청 (대기중)
 
+    // 콕콕 찌르기 친구들 불러오는 기준 시간 값
+    // ex) 30일 경우, 외출 30분 전인 친구를 조회하는 것
+    private final int STING_AFTER_TIME = 30;
+
     // 외출 30분 전인 친구 조회 (찌르기 화면)
     public ResponseEntity getStingList(Long userId) {
         User user = userRepository.findByUserId(userId);
 
         // 현재 날짜 구하기
         LocalDate presentDate = LocalDate.now();
-        log.info("현재 날짜 : " + presentDate.toString());
+        log.info("현재 날짜 : " + presentDate);
 
         // 현재 시각 구하기
         LocalTime presentTime = LocalTime.now();
         log.info("현재 시각 : " + presentTime.toString());
+
         // 시간 간격 구하기
-        LocalTime endTime = presentTime.plusMinutes(30);
+        LocalTime endTime = presentTime.plusMinutes(STING_AFTER_TIME);
         log.info("end 시각 : " + endTime.toString());
 
         // 찌를 수 있는 친구 불러오기
-        List<User> friendList = friendRepository.getStingList(user, presentDate, presentTime,
-                endTime);
+        List<User> friendList = friendRepository.getStingList(user, presentDate, presentTime, endTime);
 
         // 친구 정보 담기
         List<FriendDto> friendDtoList = new ArrayList<>();
@@ -241,7 +245,6 @@ public class FriendService {
             // 해당 행 삭제
             friendRepository.delete(friendRelation);
         }
-
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공", friendId),
