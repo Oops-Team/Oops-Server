@@ -23,13 +23,12 @@ public class FriendController {
     private final FriendService friendService;
     private final TokenProvider tokenProvider;
 
-    // 사용자 리스트 조회
-    @GetMapping("/search/{name}")
-    public ResponseEntity getSearch(@RequestHeader("xAuthToken") String token,
-                                    @PathVariable("name") String name) {
+    // 외출 30분 전 친구 리스트 조회
+    @GetMapping("/sting")
+    public ResponseEntity getStingList(@RequestHeader("xAuthToken") String token) {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
-        return friendService.getSearch(userId, name);
+        return friendService.getStingList(userId);
     }
 
     // 친구 리스트 조회
@@ -38,6 +37,15 @@ public class FriendController {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return friendService.getAll(userId);
+    }
+
+    // 사용자 리스트 조회
+    @GetMapping("/search/{name}")
+    public ResponseEntity getSearch(@RequestHeader("xAuthToken") String token,
+            @PathVariable("name") String name) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return friendService.getSearch(userId, name);
     }
 
     // 친구 신청

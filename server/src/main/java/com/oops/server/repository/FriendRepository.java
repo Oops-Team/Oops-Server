@@ -3,6 +3,8 @@ package com.oops.server.repository;
 import com.oops.server.compositekey.FriendID;
 import com.oops.server.entity.Friend;
 import com.oops.server.entity.User;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,4 +31,15 @@ public interface FriendRepository extends JpaRepository<Friend, FriendID> {
     @Query("SELECT m FROM Friend f LEFT JOIN f.responseUser m WHERE f.requestUser = :requestUser"
             + " AND f.isFriend = true AND m.name LIKE :name")
     List<User> getSearchFriendList(@Param("requestUser") User requestUser, @Param("name") String name);
+
+    // 해당 유저의 친구들 중, 외출 시간이 N분 남은 사람들 불러오기
+    @Query("SELECT m "
+            + "FROM Friend f JOIN f.responseUser m JOIN m.schedules s "
+            + "WHERE f.requestUser = :requestUser AND f.isFriend = true"
+            + " AND s.date = :date"
+            + " AND (s.outTime BETWEEN :startTime AND :endTime) "
+            + "ORDER BY s.outTime "
+            + "LIMIT 5")
+    List<User> getStingList(@Param("requestUser") User requestUser, @Param("date") LocalDate date,
+            @Param("startTime") LocalTime startTime, @Param("endTime") LocalTime endTime);
 }

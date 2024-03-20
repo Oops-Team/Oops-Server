@@ -10,13 +10,17 @@ import com.oops.server.entity.Friend;
 import com.oops.server.entity.User;
 import com.oops.server.repository.FriendRepository;
 import com.oops.server.repository.UserRepository;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FriendService {
@@ -33,8 +37,34 @@ public class FriendService {
     public ResponseEntity getStingList(Long userId) {
         User user = userRepository.findByUserId(userId);
 
-        // TODO: 나와 친구인 사용자들 불러오기
-        return null;
+        // 현재 날짜 구하기
+        LocalDate presentDate = LocalDate.now();
+        log.info("현재 날짜 : " + presentDate.toString());
+
+        // 현재 시각 구하기
+        LocalTime presentTime = LocalTime.now();
+        log.info("현재 시각 : " + presentTime.toString());
+        // 시간 간격 구하기
+        LocalTime endTime = presentTime.plusMinutes(30);
+        log.info("end 시각 : " + endTime.toString());
+
+        // 찌를 수 있는 친구 불러오기
+        List<User> friendList = friendRepository.getStingList(user, presentDate, presentTime,
+                endTime);
+
+        // 친구 정보 담기
+        List<FriendDto> friendDtoList = new ArrayList<>();
+        for (User friend : friendList) {
+            friendDtoList.add(new FriendDto(
+                    friend.getUserId(),
+                    friend.getName(),
+                    friend.getProfileUrl()
+            ));
+        }
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공", friendDtoList),
+                HttpStatus.OK);
     }
 
     // 친구 리스트 전체 조회
