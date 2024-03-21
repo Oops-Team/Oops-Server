@@ -2,14 +2,19 @@ package com.oops.server.service;
 
 import com.oops.server.context.ExceptionMessages;
 import com.oops.server.context.StatusCode;
+import com.oops.server.dto.etc.NoticeDto;
 import com.oops.server.dto.request.SignUpRequest;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.dto.response.SignInResponse;
+import com.oops.server.entity.Notice;
 import com.oops.server.entity.User;
 //import com.oops.server.entity.UserRefreshToken;
 //import com.oops.server.repository.UserRefreshTokenRepository;
+import com.oops.server.repository.NoticeRepository;
 import com.oops.server.repository.UserRepository;
 import com.oops.server.security.TokenProvider;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +25,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
     //    private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final PasswordEncoder encoder;
     private final TokenProvider tokenProvider;
+    private final UserRepository userRepository;
+    private final NoticeRepository noticeRepository;
 
     // 중복 회원 검증
     public boolean validateDuplicateUser(String email, String snsType) {
@@ -121,6 +127,26 @@ public class UserService {
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공"),
+                HttpStatus.OK);
+    }
+
+    // 공지사항 모두 조회
+    public ResponseEntity getAllNotices() {
+        // 공지사항 리스트 가져오기
+        List<Notice> noticeList = noticeRepository.getAllNoticeContent();
+
+        // 응답 값에 넣기
+        List<NoticeDto> noticeDtoList = new ArrayList<>();
+        for (Notice notice : noticeList) {
+            noticeDtoList.add(new NoticeDto(
+                    notice.getTitle(),
+                    notice.getDate(),
+                    notice.getContent()
+            ));
+        }
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공", noticeDtoList),
                 HttpStatus.OK);
     }
 }

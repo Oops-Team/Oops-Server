@@ -95,4 +95,10 @@ public class UserController {
 
         return userService.modifyPublic(userId, isPublicMap.get("isPublic"));
     }
+
+    // 공지사항 조회
+    @GetMapping("/notices")
+    public ResponseEntity getAllNotices() {
+        return userService.getAllNotices();
+    }
 }
