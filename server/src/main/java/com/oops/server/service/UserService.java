@@ -5,6 +5,7 @@ import com.oops.server.context.StatusCode;
 import com.oops.server.dto.etc.NoticeDto;
 import com.oops.server.dto.request.SignUpRequest;
 import com.oops.server.dto.response.DefaultResponse;
+import com.oops.server.dto.response.MyPageGetResponse;
 import com.oops.server.dto.response.SignInResponse;
 import com.oops.server.entity.Notice;
 import com.oops.server.entity.User;
@@ -15,6 +16,7 @@ import com.oops.server.repository.UserRepository;
 import com.oops.server.security.TokenProvider;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,11 @@ public class UserService {
     private final TokenProvider tokenProvider;
     private final UserRepository userRepository;
     private final NoticeRepository noticeRepository;
+
+    // 멘트 타입
+    private final int COMMENT_NOTICE = 1;   // 공지
+    private final int COMMENT_TIP = 2;      // tip
+    private final int COMMENT_NORMAL = 3;   // 일반
 
     // 중복 회원 검증
     public boolean validateDuplicateUser(String email, String snsType) {
@@ -117,6 +124,98 @@ public class UserService {
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공", new SignInResponse(token)),
                 HttpStatus.OK);
+    }
+
+    // 마이페이지 조회
+    public ResponseEntity getMyPage(Long userId) {
+        // 1. 사용자 정보 가져오기
+        User user = userRepository.findByUserId(userId);
+
+        // 2. 멘트 하나 가져오기
+        String comment = "";
+        // 2-1. 랜덤으로 돌리기 위한 변수 세팅
+        Random random = new Random();
+        int commentType = -1;
+        // 2-2. 존재하는 글이 뽑힐 때까지..
+        boolean[] isEmpty = new boolean[3];
+        while (!(isEmpty[0] && isEmpty[1] && isEmpty[2])) {
+            // 공지, tip, 일반 멘트 중 하나 랜덤으로 정하기
+            commentType = random.nextInt(3) + 1;    // 1 ~ 3
+
+            // 공지 글이 뽑힌 경우
+            if (commentType == COMMENT_NOTICE) {
+                Notice notice = noticeRepository.getRecentNotice();
+
+                // 만일 해당 글이 없다면
+                if (notice == null) {
+                    isEmpty[COMMENT_NOTICE - 1] = true;
+                    commentType = -1;   // 다시 초기화
+                    continue;
+                }
+
+                // 해당 글 정보 담기
+                comment = notice.getTitle();
+                break;
+            }
+            // TIP 글이 뽑힌 경우
+            else if (commentType == COMMENT_TIP) {
+                List<Notice> noticeList = noticeRepository.findAllByType(COMMENT_TIP);
+
+                // 만일 해당 글이 없다면
+                if (noticeList.size() == 0) {
+                    isEmpty[COMMENT_TIP - 1] = true;
+                    commentType = -1;   // 다시 초기화
+                    continue;
+                }
+
+                // 뽑아온 글들 중에서 하나 랜덤으로 담아오기
+                int randIndex = random.nextInt(noticeList.size());
+                comment = noticeList.get(randIndex).getTitle();
+                break;
+            }
+            // 일반 글이 뽑힌 경우
+            else {
+                List<Notice> noticeList = noticeRepository.findAllByType(COMMENT_NORMAL);
+
+                // 만일 해당 글이 없다면
+                if (noticeList.size() == 0) {
+                    isEmpty[COMMENT_NORMAL - 1] = true;
+                    commentType = -1;   // 다시 초기화
+                    continue;
+                }
+
+                // 뽑아온 글들 중에서 하나 랜덤으로 담아오기
+                int randIndex = random.nextInt(noticeList.size());
+                comment = noticeList.get(randIndex).getTitle();
+                break;
+            }
+        }
+
+        // 3. DTO 정보 담기
+        MyPageGetResponse myPageGetResponse = new MyPageGetResponse(
+                user.getSnsType(),
+                user.getEmail(),
+                user.getName(),
+                user.getProfileUrl(),
+                user.isPublic(),
+                commentType,
+                comment
+        );
+
+        // 4. 응답
+        // 멘트가 아무것도 뽑히지 않았다면
+        if (comment.equals("")) {
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.OK,
+                            ExceptionMessages.NOT_FOUND_MYPAGE_COMMENT.get(), myPageGetResponse),
+                    HttpStatus.OK);
+        }
+        // 정상 응답
+        else {
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.OK, "성공", myPageGetResponse),
+                    HttpStatus.OK);
+        }
     }
 
     // 프로필 공개/비공개 설정 변경

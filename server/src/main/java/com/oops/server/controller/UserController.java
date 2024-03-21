@@ -87,6 +87,14 @@ public class UserController {
         }
     }
 
+    // 마이페이지 조회
+    @GetMapping("/mypage")
+    public ResponseEntity getMyPage(@RequestHeader("xAuthToken") String token) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return userService.getMyPage(userId);
+    }
+
     // 프로필 공개 설정 변경
     @PatchMapping("/mypage/profile")
     public ResponseEntity modifyPublic(@RequestHeader("xAuthToken") String token,
