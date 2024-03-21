@@ -24,4 +24,6 @@ public class Notice {
 
     @Column(length = 1000)
     private String content;
+
+    private int type;
 }
