@@ -18,15 +18,24 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Autowired
-    private JwtAuthenticateFilter jwtAuthenticateFilter;
-    private final String[] allowedUrls = {"/", "/user/nickname/**", "/user/email/**", "/user/sign-up", "/user/login/**"};
+    private TokenProvider tokenProvider;
+    private final String[] allowedUrls = {"/", "/favicon.ico", "/user/nickname/**",
+            "/user/email/**",
+            "/user/sign-up", "/user/login/**"};
 
     // H2 콘솔 사용을 위한 설정
     @Bean
     @ConditionalOnProperty(name = "spring.h2.console.enabled", havingValue = "true")
     public WebSecurityCustomizer configureH2ConsoleEnable() {
         return web -> web.ignoring()
-                .requestMatchers(PathRequest.toH2Console());
+                         .requestMatchers(PathRequest.toH2Console());
+    }
+
+    // 특정 url은 security filter를 거치지 않도록 설정
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring()
+                         .requestMatchers(allowedUrls);
     }
 
     @Bean
@@ -34,13 +43,15 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)  // 쿠키 사용 안 함
                 .authorizeHttpRequests(requests ->
-                        requests.requestMatchers(allowedUrls).permitAll()	// requestMatchers의 인자로 전달된 url은 모두에게 허용
-                                .anyRequest().authenticated()	// 그 외의 모든 요청은 인증 필요
+                        requests.requestMatchers(allowedUrls)
+                                .permitAll()    // requestMatchers의 인자로 전달된 url은 모두에게 허용
+                                .anyRequest().authenticated()    // 그 외의 모든 요청은 인증 필요
                 )
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )	// 세션을 사용하지 않으므로 STATELESS 설정
-                .addFilterBefore(jwtAuthenticateFilter, UsernamePasswordAuthenticationFilter.class)
+                )    // 세션을 사용하지 않으므로 STATELESS 설정
+                .addFilterBefore(new JwtAuthenticateFilter(tokenProvider),
+                        UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 }

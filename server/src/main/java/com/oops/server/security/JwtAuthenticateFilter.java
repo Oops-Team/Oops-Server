@@ -9,12 +9,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Slf4j
 @RequiredArgsConstructor
-@Component
 public class JwtAuthenticateFilter extends OncePerRequestFilter {
 
     private final TokenProvider tokenProvider;
@@ -30,6 +28,7 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
         try {
             isGood = !tokenProvider.isTokenExpired(token);
         } catch (IllegalArgumentException e) {
+            log.info("요청 uri : " + request.getRequestURI());
             log.error("토큰이 존재하지 않습니다");
         } catch (io.jsonwebtoken.SignatureException e) {
             log.error("토큰의 서명이 올바르지 않습니다");
