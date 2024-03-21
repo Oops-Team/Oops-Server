@@ -1,7 +1,6 @@
 package com.oops.server.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,23 +18,16 @@ public class SecurityConfig {
 
     @Autowired
     private TokenProvider tokenProvider;
-    private final String[] allowedUrls = {"/", "/favicon.ico", "/user/nickname/**",
-            "/user/email/**",
+    private final String[] allowedURIs = {"/", "/user/nickname/**", "/user/email/**",
             "/user/sign-up", "/user/login/**"};
 
-    // H2 콘솔 사용을 위한 설정
-    @Bean
-    @ConditionalOnProperty(name = "spring.h2.console.enabled", havingValue = "true")
-    public WebSecurityCustomizer configureH2ConsoleEnable() {
-        return web -> web.ignoring()
-                         .requestMatchers(PathRequest.toH2Console());
-    }
-
-    // 특정 url은 security filter를 거치지 않도록 설정
+    // 특정 URI는 security filter를 거치지 않도록 설정
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
-                         .requestMatchers(allowedUrls);
+                         .requestMatchers(PathRequest.toH2Console())    // h2 console 관련 uri
+                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations())  // 정적 리소스 uri
+                         .requestMatchers(allowedURIs);
     }
 
     @Bean
@@ -43,7 +35,7 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)  // 쿠키 사용 안 함
                 .authorizeHttpRequests(requests ->
-                        requests.requestMatchers(allowedUrls)
+                        requests.requestMatchers(allowedURIs)
                                 .permitAll()    // requestMatchers의 인자로 전달된 url은 모두에게 허용
                                 .anyRequest().authenticated()    // 그 외의 모든 요청은 인증 필요
                 )
