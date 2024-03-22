@@ -27,7 +27,7 @@ spring:
       encoding: UTF-8   # data.sql 파일의 인코딩 지정 (안 하면 한글 깨짐)
       data-locations: classpath:data.sql
 
-#콘솔 색상 출력을 위함
+  #콘솔 색상 출력을 위함
   output:
     ansi:
       enabled: always
