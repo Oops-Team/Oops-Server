@@ -19,7 +19,7 @@ public class SecurityConfig {
     @Autowired
     private TokenProvider tokenProvider;
     private final String[] allowedURIs = {"/", "/user/nickname/**", "/user/email/**",
-            "/user/find/email/**", "/user/sign-up", "/user/login/**"};
+            "/user/find/email/**", "/user/find/password/**", "/user/sign-up", "/user/login/**"};
 
     // 특정 URI는 security filter를 거치지 않도록 설정
     @Bean

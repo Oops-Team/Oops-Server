@@ -106,6 +106,12 @@ public class UserController {
         return findIdAndPwdService.findEmail(email);
     }
 
+    // ID/PW 찾기 - 비밀번호 찾기 - 인증 코드 전송
+    @GetMapping("/find/password/{email}")
+    public ResponseEntity sendCode(@PathVariable("email") String email) {
+        return findIdAndPwdService.sendCode(email);
+    }
+
     // 마이페이지 조회
     @GetMapping("/mypage")
     public ResponseEntity getMyPage(@RequestHeader("xAuthToken") String token) {

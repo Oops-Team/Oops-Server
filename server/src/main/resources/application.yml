@@ -27,10 +27,30 @@ spring:
       encoding: UTF-8   # data.sql 파일의 인코딩 지정 (안 하면 한글 깨짐)
       data-locations: classpath:data.sql
 
-  #콘솔 색상 출력을 위함
+  # 콘솔 색상 출력을 위함
   output:
     ansi:
       enabled: always
+
+  # 이메일 발송 관련 설정
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${mail-username}
+    password: ${mail-password}
+    properties:
+      mail:
+        debug: true
+        smtp:
+          auth: true
+          timeout: 50000  # SMTP 서버에 연결 시도 후 응답을 기다리는 시간 (50,000ms)
+          starttls:
+            enable: true
+
+  # redis 설정
+  redis:
+    host: localhost
+    port: 6379
 
 # 에러 메시지 표출을 위함
 server:
