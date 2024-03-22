@@ -3,14 +3,17 @@ package com.oops.server.service;
 import com.oops.server.context.ExceptionMessages;
 import com.oops.server.context.StatusCode;
 import com.oops.server.dto.etc.NoticeDto;
+import com.oops.server.dto.request.AccountDeleteRequest;
 import com.oops.server.dto.request.SignUpRequest;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.dto.response.MyPageGetResponse;
 import com.oops.server.dto.response.SignInResponse;
+import com.oops.server.entity.CancelReason;
 import com.oops.server.entity.Notice;
 import com.oops.server.entity.User;
 //import com.oops.server.entity.UserRefreshToken;
 //import com.oops.server.repository.UserRefreshTokenRepository;
+import com.oops.server.repository.CancelReasonRepository;
 import com.oops.server.repository.NoticeRepository;
 import com.oops.server.repository.UserRepository;
 import com.oops.server.security.TokenProvider;
@@ -31,6 +34,7 @@ public class UserService {
     private final PasswordEncoder encoder;
     private final TokenProvider tokenProvider;
     private final UserRepository userRepository;
+    private final CancelReasonRepository cancelReasonRepository;
     private final NoticeRepository noticeRepository;
 
     // 멘트 타입
@@ -123,6 +127,20 @@ public class UserService {
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공", new SignInResponse(token)),
+                HttpStatus.OK);
+    }
+
+    // 회원 탈퇴
+    public ResponseEntity deleteAccount(Long userId, AccountDeleteRequest request) {
+        // 해당 회원 정보 삭제
+        User user = userRepository.findByUserId(userId);
+        userRepository.delete(user);
+
+        // 탈퇴 사유 저장
+        cancelReasonRepository.save(CancelReason.create(request.reasonType(), request.subReason()));
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공"),
                 HttpStatus.OK);
     }
 

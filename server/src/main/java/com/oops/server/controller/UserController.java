@@ -2,6 +2,7 @@ package com.oops.server.controller;
 
 import com.oops.server.context.ExceptionMessages;
 import com.oops.server.context.StatusCode;
+import com.oops.server.dto.request.AccountDeleteRequest;
 import com.oops.server.dto.request.SignUpRequest;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.security.TokenProvider;
@@ -10,6 +11,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -85,6 +87,15 @@ public class UserController {
                                 ExceptionMessages.BAD_REQUEST.get()),
                         HttpStatus.BAD_REQUEST);
         }
+    }
+
+    // 탙퇴
+    @DeleteMapping("")
+    public ResponseEntity deleteAccount(@RequestHeader("xAuthToken") String token,
+                                        @RequestBody AccountDeleteRequest request) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return userService.deleteAccount(userId, request);
     }
 
     // 마이페이지 조회
