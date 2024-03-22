@@ -6,6 +6,7 @@ import com.oops.server.dto.request.AccountDeleteRequest;
 import com.oops.server.dto.request.SignUpRequest;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.security.TokenProvider;
+import com.oops.server.service.FindIdAndPwdService;
 import com.oops.server.service.UserService;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private final FindIdAndPwdService findIdAndPwdService;
     private final TokenProvider tokenProvider;
 
     // 닉네임 중복 검사
@@ -101,7 +103,7 @@ public class UserController {
     // ID/PW 찾기 - 이메일 찾기
     @GetMapping("/find/email/{email}")
     public ResponseEntity findEmail(@PathVariable("email") String email) {
-        return userService.findEmail(email);
+        return findIdAndPwdService.findEmail(email);
     }
 
     // 마이페이지 조회
