@@ -98,6 +98,12 @@ public class UserController {
         return userService.deleteAccount(userId, request);
     }
 
+    // ID/PW 찾기 - 이메일 찾기
+    @GetMapping("/find/email/{email}")
+    public ResponseEntity findEmail(@PathVariable("email") String email) {
+        return userService.findEmail(email);
+    }
+
     // 마이페이지 조회
     @GetMapping("/mypage")
     public ResponseEntity getMyPage(@RequestHeader("xAuthToken") String token) {

@@ -5,8 +5,10 @@ public enum ExceptionMessages {
     BAD_REQUEST("요청이 올바르지 않습니다"),
     DUPLICATE_USER("이미 사용 중인 이메일이에요"),
     DUPLICATE_NAME("이미 사용 중인 닉네임이에요"),
-    NOT_FOUND_EMAIL("입력된 이메일이 올바르지 않아요"),
+    MISS_MATCH_EMAIL("입력된 이메일이 올바르지 않아요"),
     MISS_MATCH_PASSWORD("입력된 비밀번호가 올바르지 않아요"),
+
+    NOT_FOUND_EMAIL("등록된 이메일이 없습니다"),
 
     NOT_FOUND_MYPAGE_COMMENT("요약 멘트가 없습니다"),
 

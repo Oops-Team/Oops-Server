@@ -11,6 +11,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 이메일로 특정 sns의 회원 찾기
     User findByEmailAndSnsType(String email, String snsType);
 
+    // 해당 이메일로 가입한 모든 회원 불러오기
+    List<User> findAllByEmail(String email);
+
     // 닉네임으로 회원 찾기
     User findByName(String name);
 
