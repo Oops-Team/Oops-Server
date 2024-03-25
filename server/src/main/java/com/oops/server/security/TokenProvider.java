@@ -24,6 +24,7 @@ public class TokenProvider {
 
     private final String secretKey;
     private final long expirationDays;
+    private final long tempExpirationMinutes;
     private final String issuer;
 
     @Autowired
@@ -32,36 +33,54 @@ public class TokenProvider {
     public TokenProvider(
             @Value("${secret-key}") String secretKey,
             @Value("${expiration-days}") long expirationDays,
+            @Value("${temp-token-expiration-minutes}") long tempExpirationMinutes,
             @Value("${issuer}") String issuer
     ) {
         this.secretKey = secretKey;
         this.expirationDays = expirationDays;
+        this.tempExpirationMinutes = tempExpirationMinutes;
         this.issuer = issuer;
     }
 
     public String createAccessToken(Long userId) {
         return Jwts.builder()
-                .signWith(SignatureAlgorithm.HS512, secretKey.getBytes())
-                .claim("userId", userId)
-                .setIssuer(issuer)
-                .setIssuedAt(Timestamp.valueOf(LocalDateTime.now()))
-                .setExpiration(Date.from(Instant.now().plus(expirationDays, ChronoUnit.DAYS)))
-                .compact();
+                   .signWith(SignatureAlgorithm.HS512, secretKey.getBytes())
+                   .setSubject("accessToken")
+                   .claim("userId", userId)
+                   .setIssuer(issuer)
+                   .setIssuedAt(Timestamp.valueOf(LocalDateTime.now()))
+                   .setExpiration(Date.from(Instant.now().plus(expirationDays, ChronoUnit.DAYS)))
+                   .compact();
+    }
+
+    // 비밀번호 변경 시 발급하는 임시 토큰
+    public String createTempToken(Long userId) {
+        return Jwts.builder()
+                   .signWith(SignatureAlgorithm.HS512, secretKey.getBytes())
+                   .setSubject("tempToken")
+                   .claim("userId", userId)
+                   .setIssuer(issuer)
+                   .setIssuedAt(Timestamp.valueOf(LocalDateTime.now()))
+                   .setExpiration(Date.from(Instant.now().plus(tempExpirationMinutes,
+                           ChronoUnit.MINUTES)))
+                   .compact();
     }
 
     // 토큰의 Claim 디코딩
     public Claims getAllClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(secretKey.getBytes())
-                .parseClaimsJws(token)
-                .getBody();
+                   .setSigningKey(secretKey.getBytes())
+                   .parseClaimsJws(token)
+                   .getBody();
     }
 
     // 인증 정보 조회
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(getUserIdFromToken(token).toString());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(
+                getUserIdFromToken(token).toString());
 
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, "",
+                userDetails.getAuthorities());
     }
 
     // Claim 중 userId 값 빼오기
@@ -80,8 +99,13 @@ public class TokenProvider {
         return getExpirationDate(token).before(new Date());
     }
 
-    // Request의 Header에서 토큰 값 가져오기
+    // Request의 Header에서 Access Token 값 가져오기
     public String resolveToken(HttpServletRequest request) {
         return request.getHeader("xAuthToken");
+    }
+
+    // Requset의 Header에서 Temp Token 값 가져오기
+    public String resolveTempToken(HttpServletRequest request) {
+        return request.getHeader("tempToken");
     }
 }
