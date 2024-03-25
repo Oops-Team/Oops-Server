@@ -24,7 +24,6 @@ public class TokenProvider {
 
     private final String secretKey;
     private final long expirationDays;
-//    private final long refreshExpirationHours;
     private final String issuer;
 
     @Autowired
@@ -33,12 +32,10 @@ public class TokenProvider {
     public TokenProvider(
             @Value("${secret-key}") String secretKey,
             @Value("${expiration-days}") long expirationDays,
-//            @Value("${refresh-expiration-hours}") long refreshExpirationHours,
             @Value("${issuer}") String issuer
     ) {
         this.secretKey = secretKey;
         this.expirationDays = expirationDays;
-//        this.refreshExpirationHours = refreshExpirationHours;
         this.issuer = issuer;
     }
 
@@ -51,15 +48,6 @@ public class TokenProvider {
                 .setExpiration(Date.from(Instant.now().plus(expirationDays, ChronoUnit.DAYS)))
                 .compact();
     }
-
-//    public String createRefreshToken() {
-//        return Jwts.builder()
-//                .signWith(SignatureAlgorithm.HS512, secretKey.getBytes())
-//                .setIssuer(issuer)
-//                .setIssuedAt(Timestamp.valueOf(LocalDateTime.now()))
-//                .setExpiration(Date.from(Instant.now().plus(refreshExpirationHours, ChronoUnit.HOURS)))
-//                .compact();
-//    }
 
     // 토큰의 Claim 디코딩
     public Claims getAllClaims(String token) {
