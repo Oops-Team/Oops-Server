@@ -217,7 +217,7 @@ public class ScheduleService {
         List<Integer> remindTime = Arrays.stream(remindTimeIntArr).boxed().toList();
 
         // 6. 챙겨야 할 것 관련 정보 담기
-        List<DateStuff> dateStuffList = dateStuffRepository.findAllBySchedule(schedule);
+        List<DateStuff> dateStuffList = dateStuffRepository.findAllByScheduleOrderByStuffRank(schedule);
         List<StuffDto> stuffList = new ArrayList<>();
         for (DateStuff dateStuff : dateStuffList) {
             stuffList.add(new StuffDto(
@@ -435,7 +435,7 @@ public class ScheduleService {
         List<StuffGetAllResponse> stuffList = new ArrayList<>();
 
         // 전체 소지품 목록 불러오기
-        List<Stuff> stuffAllList = stuffRepository.findAll();
+        List<Stuff> stuffAllList = stuffRepository.findAllByOrderByRank();
 
         // 현재 등록된 소지품들의 이름 목록 (비교 대상)
         List<String> stuffNameList = new ArrayList<>();

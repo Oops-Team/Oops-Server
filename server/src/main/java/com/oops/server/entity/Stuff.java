@@ -21,6 +21,8 @@ public class Stuff {
     @Column(length = 500)
     private String img_url;
 
+    private int rank;
+
     @JsonIgnore
     @OneToMany(mappedBy = "stuff")
     private List<InventoryStuff> inventoryStuffs;

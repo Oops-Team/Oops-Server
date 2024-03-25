@@ -236,7 +236,7 @@ public class InventoryService {
         }
 
         // 해당 유저의 등록된 모든 소지품 가져오기
-        List<InventoryStuff> inventoryStuffList = inventoryStuffRepository.findAllByInventoryUser(user);
+        List<InventoryStuff> inventoryStuffList = inventoryStuffRepository.findAllByInventoryUserOrderByStuffRank(user);
         for (InventoryStuff inventoryStuff : inventoryStuffList) {
             stuffList.add(new StuffDto(
                     inventoryStuff.getStuff().getImg_url(),
@@ -261,7 +261,7 @@ public class InventoryService {
         Inventory inventory = inventoryRepository.findByInventoryId(inventoryId);
         String inventoryName = inventory.getName();
 
-        List<InventoryStuff> inventoryStuffList = inventoryStuffRepository.findAllByInventory(inventory);
+        List<InventoryStuff> inventoryStuffList = inventoryStuffRepository.findAllByInventoryOrderByStuffRank(inventory);
         List<String> stuffImgURIList = new ArrayList<>();
         List<String> stuffNameList = new ArrayList<>();
         for (InventoryStuff inventoryStuff : inventoryStuffList) {

@@ -14,9 +14,9 @@ public interface InventoryStuffRepository extends JpaRepository<InventoryStuff, 
     @Transactional
     void deleteAllByInventory(Inventory inventory);
 
-    // 특정 인벤토리의 모든 소지품 가져오기
-    List<InventoryStuff> findAllByInventory(Inventory inventory);
+    // 특정 인벤토리의 모든 소지품 가져오기 (중요도 순으로 정렬)
+    List<InventoryStuff> findAllByInventoryOrderByStuffRank(Inventory inventory);
 
-    // 해당 유저의 모든 인벤토리-소지품까지 불러오기
-    List<InventoryStuff> findAllByInventoryUser(User user);
+    // 해당 유저의 모든 인벤토리-소지품까지 불러오기 (중요도 순으로 정렬)
+    List<InventoryStuff> findAllByInventoryUserOrderByStuffRank(User user);
 }
