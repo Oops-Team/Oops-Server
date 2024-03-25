@@ -37,9 +37,7 @@ public interface FriendRepository extends JpaRepository<Friend, FriendID> {
             + "FROM Friend f JOIN f.responseUser m JOIN m.schedules s "
             + "WHERE f.requestUser = :requestUser AND f.isFriend = true"
             + " AND s.date = :date"
-            + " AND (s.outTime BETWEEN :startTime AND :endTime) "
-            + "ORDER BY s.outTime "
-            + "LIMIT 5")
+            + " AND (s.outTime BETWEEN :startTime AND :endTime)")
     List<User> getStingList(@Param("requestUser") User requestUser, @Param("date") LocalDate date,
             @Param("startTime") LocalTime startTime, @Param("endTime") LocalTime endTime);
 }

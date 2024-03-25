@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,8 @@ public class FriendService {
     // 콕콕 찌르기 친구들 불러오는 기준 시간 값
     // ex) 30일 경우, 외출 30분 전인 친구를 조회하는 것
     private final int STING_AFTER_TIME = 30;
+    // 콕콕 찌르기 화면에 뜨는 최대 친구 수
+    private final int STING_LIST_MAXIMUM = 5;
 
     // 외출 30분 전인 친구 조회 (찌르기 화면)
     public ResponseEntity getStingList(Long userId) {
@@ -53,12 +56,43 @@ public class FriendService {
         LocalTime endTime = presentTime.plusMinutes(STING_AFTER_TIME);
         log.info("end 시각 : " + endTime.toString());
 
-        // 찌를 수 있는 친구 불러오기
-        List<User> friendList = friendRepository.getStingList(user, presentDate, presentTime, endTime);
+        // 찌를 수 있는 친구 모두 불러오기
+        List<User> stingFriendList = friendRepository.getStingList(user, presentDate, presentTime, endTime);
 
-        // 친구 정보 담기
+        // 응답 DTO
         List<FriendDto> friendDtoList = new ArrayList<>();
-        for (User friend : friendList) {
+
+        // 찌를 수 있는 친구가 5명을 초과한다면
+        if (stingFriendList.size() > STING_LIST_MAXIMUM) {
+            Random random = new Random();
+            int listSize = stingFriendList.size();
+
+            // 랜덤으로 5명 담기
+            for (int i = 0; i < STING_LIST_MAXIMUM; i++) {
+                // 랜덤 index 뽑기
+                int randIndex = random.nextInt(listSize);
+
+                // dto 정보 넣기
+                friendDtoList.add(new FriendDto(
+                        stingFriendList.get(randIndex).getUserId(),
+                        stingFriendList.get(randIndex).getName(),
+                        stingFriendList.get(randIndex).getProfileUrl()
+                ));
+
+                // 해당 친구 리스트에서 제거
+                stingFriendList.remove(randIndex);
+                // size 줄이기
+                listSize--;
+            }
+
+            // 해당 친구 정보 return
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.OK, "성공", friendDtoList),
+                    HttpStatus.OK);
+        }
+
+        // (친구가 5명 이하일 경우) 친구 정보 다 담기
+        for (User friend : stingFriendList) {
             friendDtoList.add(new FriendDto(
                     friend.getUserId(),
                     friend.getName(),
