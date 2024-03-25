@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -27,6 +27,7 @@ public class FindIdAndPwdService {
     private final EmailService emailService;
     private final RedisService redisService;
     private final TokenProvider tokenProvider;
+    private final PasswordEncoder encoder;
 
     // 인증번호 자리수
     private final int CODE_LENGTH = 5;
@@ -141,5 +142,27 @@ public class FindIdAndPwdService {
                             ExceptionMessages.MISS_MATCH_VERIFICATION_CODE.get()),
                     HttpStatus.BAD_REQUEST);
         }
+    }
+
+    // 새로운 비밀번호로 변경
+    public ResponseEntity modifyPassword(Long userId, String password) {
+        // 해당 유저 정보 가져오기
+        User user = userRepository.findByUserId(userId);
+
+        // 기존 비밀번호와 동일하다면
+        if (encoder.matches(password, user.getPassword())) {
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.CONFLICT,
+                            ExceptionMessages.CONFLICT_OLD_PASSWORD.get()),
+                    HttpStatus.CONFLICT);
+        }
+
+        // 비밀번호 변경 및 적용
+        user.modifyPassword(password, encoder);
+        userRepository.save(user);
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공"),
+                HttpStatus.OK);
     }
 }

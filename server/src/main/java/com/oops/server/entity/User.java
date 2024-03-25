@@ -81,4 +81,9 @@ public class User {
     public void modifyPublic(boolean isPublic) {
         this.isPublic = isPublic;
     }
+
+    public void modifyPassword(String password, PasswordEncoder encoder) {
+        // 비밀번호 암호화 후 저장
+        this.password = encoder.encode(password);
+    }
 }

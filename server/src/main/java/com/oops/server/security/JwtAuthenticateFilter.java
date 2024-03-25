@@ -1,5 +1,6 @@
 package com.oops.server.security;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,15 +19,18 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
         // 헤더에서 토큰 받아오기
-        String token = tokenProvider.resolveToken(request);
+        String token = tokenProvider.resolveToken(request) != null
+                ? tokenProvider.resolveToken(request) : tokenProvider.resolveTempToken(request);
 
         // 토큰 유효 검사
         boolean isGood = false;
         try {
-            isGood = !tokenProvider.isTokenExpired(token);
+            isGood = !tokenProvider.isAccessTokenExpired(token);
+        } catch (ExpiredJwtException e) {
+            log.error("토큰이 만료되었습니다");
         } catch (IllegalArgumentException e) {
             log.info("요청 uri : " + request.getRequestURI());
             log.error("토큰이 존재하지 않습니다");

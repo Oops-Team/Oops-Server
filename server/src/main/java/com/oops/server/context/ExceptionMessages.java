@@ -11,6 +11,7 @@ public enum ExceptionMessages {
     NOT_FOUND_EMAIL("등록된 이메일이 없습니다"),
     EXPIRATION_VERIFICATION_CODE("인증 정보가 만료되었습니다"),
     MISS_MATCH_VERIFICATION_CODE("인증코드가 일치하지 않습니다"),
+    CONFLICT_OLD_PASSWORD("기존 비밀번호와 일치해 사용할 수 없어요"),
 
     NOT_FOUND_MYPAGE_COMMENT("요약 멘트가 없습니다"),
 

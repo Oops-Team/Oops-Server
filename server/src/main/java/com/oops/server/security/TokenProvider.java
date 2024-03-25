@@ -95,7 +95,8 @@ public class TokenProvider {
     }
 
     // 토큰이 만료되었는지 검증
-    public boolean isTokenExpired(String token) {
+    // true: 만료됨
+    public boolean isAccessTokenExpired(String token) {
         return getExpirationDate(token).before(new Date());
     }
 
