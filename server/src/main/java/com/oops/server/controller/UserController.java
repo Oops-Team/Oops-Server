@@ -22,13 +22,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/user")
 @RestController
+@RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-    private final FindIdAndPwdService findIdAndPwdService;
     private final TokenProvider tokenProvider;
 
     // 닉네임 중복 검사
@@ -98,18 +97,6 @@ public class UserController {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return userService.deleteAccount(userId, request);
-    }
-
-    // ID/PW 찾기 - 이메일 찾기
-    @GetMapping("/find/email/{email}")
-    public ResponseEntity findEmail(@PathVariable("email") String email) {
-        return findIdAndPwdService.findEmail(email);
-    }
-
-    // ID/PW 찾기 - 비밀번호 찾기 - 인증 코드 전송
-    @GetMapping("/find/password/{email}")
-    public ResponseEntity sendCode(@PathVariable("email") String email) {
-        return findIdAndPwdService.sendCode(email);
     }
 
     // 마이페이지 조회
