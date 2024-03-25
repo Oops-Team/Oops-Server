@@ -40,6 +40,9 @@ public class InventoryService {
     private final UserRepository userRepository;
     private final ScheduleRepository scheduleRepository;
 
+    // 인벤토리를 만들 수 있는 최대 개수
+    private final int MAXIMUM_INVENTORY = 5;
+
     // 인벤토리 이름 중복 검사
     public boolean validateDuplicateName(User user, String name) {
         // 중복 시 false 반환
@@ -66,6 +69,13 @@ public class InventoryService {
 
         // 유저 정보 가져오기
         User user = userRepository.findByUserId(userId);
+
+        // 이미 인벤토리를 최대로 만든 상태라면
+        if (inventoryRepository.findAllByUser(user).size() >= MAXIMUM_INVENTORY) {
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.BAD_REQUEST, ExceptionMessages.EXCEED_INVENTORY.get()),
+                    HttpStatus.BAD_REQUEST);
+        }
 
         // 인벤토리 이름이 중복되었다면
         if (!validateDuplicateName(user, request.inventoryName())) {
