@@ -1,5 +1,6 @@
 package com.oops.server.service;
 
+import com.oops.server.context.ExceptionMessages;
 import com.oops.server.dto.etc.CustomUserDetails;
 import com.oops.server.entity.User;
 import com.oops.server.repository.UserRepository;
@@ -22,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUserId(userId);
 
         if (user == null) {
-            throw new UsernameNotFoundException("해당 유저가 없습니다.");
+            throw new UsernameNotFoundException(ExceptionMessages.NOT_FOUND_USER.get());
         }
 
         return new CustomUserDetails(String.valueOf(user.getUserId()));
