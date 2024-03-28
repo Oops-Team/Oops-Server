@@ -98,7 +98,6 @@ public class FindIdAndPwdService {
     public ResponseEntity verificationCode(PwdCodeVerificationRequest request) {
         // 해당 이메일의 코드 가져오기
         String verificationCode = redisService.getVerificationCode(request.email());
-        log.debug("가져온 인증 코드 : " + verificationCode);
 
         // 만일 인증 코드가 만료되었다면
         if (verificationCode == null) {
@@ -123,6 +122,9 @@ public class FindIdAndPwdService {
                                 ExceptionMessages.NOT_FOUND_USER.get()),
                         HttpStatus.NOT_FOUND);
             }
+
+            // 해당 유저의 인증정보 redis에서 삭제
+            redisService.deleteVerificationCode(request.email());
 
             // 임시 토큰 발급
             String tempToken = tokenProvider.createTempToken(userId);
