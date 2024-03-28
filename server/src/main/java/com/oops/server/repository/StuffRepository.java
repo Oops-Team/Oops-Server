@@ -10,5 +10,5 @@ public interface StuffRepository extends JpaRepository<Stuff, String> {
     Stuff findByName(String name);
 
     // 정렬해서 모두 가져오기
-    List<Stuff> findAllByOrderByRank();
+    List<Stuff> findAllByOrderByStuffRank();
 }

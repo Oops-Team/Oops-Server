@@ -18,10 +18,11 @@ public class Stuff {
     @Column(length = 20)
     private String name;
 
-    @Column(length = 500)
-    private String img_url;
+    @Column(name = "img_url", length = 500)
+    private String imgUrl;
 
-    private int rank;
+    @Column(name = "stuff_rank")
+    private int stuffRank;
 
     @JsonIgnore
     @OneToMany(mappedBy = "stuff")
