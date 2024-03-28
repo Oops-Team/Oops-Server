@@ -33,8 +33,9 @@ public class FcmToken {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
 
-    public static FcmToken create(String token) {
+    public static FcmToken create(User user, String token) {
         return FcmToken.builder()
+                .user(user)
                 .token(token)
                 .build();
     }

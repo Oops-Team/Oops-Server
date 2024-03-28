@@ -1,5 +1,6 @@
 package com.oops.server.controller;
 
+import com.oops.server.dto.request.StingFriendRequest;
 import com.oops.server.security.TokenProvider;
 import com.oops.server.service.FriendService;
 import java.util.Map;
@@ -29,6 +30,15 @@ public class FriendController {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return friendService.getStingList(userId);
+    }
+
+    // 친구 찌르기
+    @PostMapping("/sting")
+    public ResponseEntity stingFriend(@RequestHeader("xAuthToken") String token,
+            @RequestBody StingFriendRequest request) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return friendService.stingFriend(userId, request);
     }
 
     // 친구 리스트 조회

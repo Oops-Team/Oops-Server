@@ -1,13 +1,17 @@
 package com.oops.server.service;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.oops.server.context.ExceptionMessages;
 import com.oops.server.context.StatusCode;
 import com.oops.server.dto.etc.FriendDto;
+import com.oops.server.dto.request.StingFriendRequest;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.dto.response.FriendGetAllResponse;
 import com.oops.server.dto.response.FriendGetSearchResponse;
+import com.oops.server.entity.FcmToken;
 import com.oops.server.entity.Friend;
 import com.oops.server.entity.User;
+import com.oops.server.repository.FcmTokenRepository;
 import com.oops.server.repository.FriendRepository;
 import com.oops.server.repository.UserRepository;
 import java.time.LocalDate;
@@ -28,6 +32,7 @@ public class FriendService {
 
     private final UserRepository userRepository;
     private final FriendRepository friendRepository;
+    private final FcmTokenRepository fcmTokenRepository;
 
     // 친구 관계 상태값
     private final int IS_FRIEND = 1;            // 현재 친구O
@@ -102,6 +107,42 @@ public class FriendService {
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공", friendDtoList),
+                HttpStatus.OK);
+    }
+
+    // 친구 찌르기
+    public ResponseEntity stingFriend(Long userId, StingFriendRequest request) {
+        // 1. 알림을 보내는 유저의 정보(닉네임) 가져오기
+        String reqUserName = userRepository.findByUserId(userId).getName();
+
+        // 2. 알림을 받는 유저의 정보(FCM 토큰) 가져오기
+        User resUser = userRepository.findByName(request.name());
+        // 만일 해당 유저가 없다면
+        if (resUser == null) {
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.NOT_FOUND,
+                            ExceptionMessages.NOT_FOUND_USER.get()),
+                    HttpStatus.NOT_FOUND);
+        }
+        String resUserFcmToken = fcmTokenRepository.findByUserId(resUser.getUserId()).getToken();
+
+        // 3. 알림 보내기
+        try {
+            FcmService.sendToMessage(resUserFcmToken, request.title(), request.body());
+        } catch (FirebaseMessagingException e) {
+            log.error("콕콕 찌르기 실패");
+            e.printStackTrace();
+
+            // 프론트단에 실패 응답
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.INTERNAL_SERVER_ERROR,
+                            ExceptionMessages.FAILED_STING.get()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        // 4. 프론트단에 성공 응답
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공"),
                 HttpStatus.OK);
     }
 
