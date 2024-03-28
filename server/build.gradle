@@ -40,9 +40,6 @@ dependencies {
 	// Spring Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
-	// JPA SQL문 파라미터 값 표출을 위함 - 배포할 때는 삭제해야됨
-	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1'
-
 	// 이메일 발송을 위함
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
