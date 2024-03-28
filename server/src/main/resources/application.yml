@@ -1,31 +1,18 @@
 spring:
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-
   datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: jdbc:mysql://localhost:3306/oops?characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Seoul
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${db-username}
+    password: ${db-password}
 
   jpa:
-      database-platform: org.hibernate.dialect.H2Dialect
+      database-platform: org.hibernate.dialect.MySQLDialect
       hibernate:
-          ddl-auto: create-drop
+          ddl-auto: update
       properties:
         hibernate:
-          dialect: org.hibernate.dialect.H2Dialect
           format_sql: true
           show_sql: true
-      defer-datasource-initialization: true   # 테이블 생성 후 DB 초기 데이터가 삽입되게 하기 위함
-
-  # DB 초기 데이터 삽입을 위함
-  sql:
-    init:
-      encoding: UTF-8   # data.sql 파일의 인코딩 지정 (안 하면 한글 깨짐)
-      data-locations: classpath:data.sql
 
   # 콘솔 색상 출력을 위함
   output:

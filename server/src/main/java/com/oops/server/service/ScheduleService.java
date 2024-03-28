@@ -217,11 +217,11 @@ public class ScheduleService {
         List<Integer> remindTime = Arrays.stream(remindTimeIntArr).boxed().toList();
 
         // 6. 챙겨야 할 것 관련 정보 담기
-        List<DateStuff> dateStuffList = dateStuffRepository.findAllByScheduleOrderByStuffRank(schedule);
+        List<DateStuff> dateStuffList = dateStuffRepository.findAllByScheduleOrderByStuffStuffRank(schedule);
         List<StuffDto> stuffList = new ArrayList<>();
         for (DateStuff dateStuff : dateStuffList) {
             stuffList.add(new StuffDto(
-                    dateStuff.getStuff().getImg_url(),
+                    dateStuff.getStuff().getImgUrl(),
                     dateStuff.getStuff().getName()
             ));
         }
@@ -410,7 +410,7 @@ public class ScheduleService {
         List<StuffDto> stuffList = new ArrayList<>();   // 응답으로 보낼 객체 리스트
         for (InventoryStuff inventoryStuff : inventoryStuffList) {
             dateStuffRepository.save(new DateStuff(schedule, inventoryStuff.getStuff()));
-            stuffList.add(new StuffDto(inventoryStuff.getStuff().getImg_url(), inventoryStuff.getStuff().getName()));
+            stuffList.add(new StuffDto(inventoryStuff.getStuff().getImgUrl(), inventoryStuff.getStuff().getName()));
         }
 
         return new ResponseEntity(
@@ -435,7 +435,7 @@ public class ScheduleService {
         List<StuffGetAllResponse> stuffList = new ArrayList<>();
 
         // 전체 소지품 목록 불러오기
-        List<Stuff> stuffAllList = stuffRepository.findAllByOrderByRank();
+        List<Stuff> stuffAllList = stuffRepository.findAllByOrderByStuffRank();
 
         // 현재 등록된 소지품들의 이름 목록 (비교 대상)
         List<String> stuffNameList = new ArrayList<>();
@@ -473,7 +473,7 @@ public class ScheduleService {
             }
 
             stuffList.add(new StuffGetAllResponse(
-                    stuff.getImg_url(),
+                    stuff.getImgUrl(),
                     stuff.getName(),
                     isSelected));
         }

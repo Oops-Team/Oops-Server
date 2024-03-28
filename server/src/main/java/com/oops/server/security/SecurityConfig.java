@@ -25,7 +25,6 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
-                         .requestMatchers(PathRequest.toH2Console())    // h2 console 관련 uri
                          .requestMatchers(PathRequest.toStaticResources().atCommonLocations())  // 정적 리소스 uri
                          .requestMatchers(allowedURIs);
     }

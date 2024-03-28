@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface DateStuffRepository extends JpaRepository<DateStuff, DateStuffID> {
 
     // 해당 유저, 특정 일자의 모든 소지품 리스트 가져오기
-    List<DateStuff> findAllByScheduleOrderByStuffRank(Schedule schedule);
+    List<DateStuff> findAllByScheduleOrderByStuffStuffRank(Schedule schedule);
 
     // 해당 유저, 특정 일자의 모든 소지품 삭제
     @Transactional

@@ -236,10 +236,10 @@ public class InventoryService {
         }
 
         // 해당 유저의 등록된 모든 소지품 가져오기
-        List<InventoryStuff> inventoryStuffList = inventoryStuffRepository.findAllByInventoryUserOrderByStuffRank(user);
+        List<InventoryStuff> inventoryStuffList = inventoryStuffRepository.findAllByInventoryUserOrderByStuffStuffRank(user);
         for (InventoryStuff inventoryStuff : inventoryStuffList) {
             stuffList.add(new StuffDto(
-                    inventoryStuff.getStuff().getImg_url(),
+                    inventoryStuff.getStuff().getImgUrl(),
                     inventoryStuff.getStuff().getName()
             ));
         }
@@ -261,11 +261,11 @@ public class InventoryService {
         Inventory inventory = inventoryRepository.findByInventoryId(inventoryId);
         String inventoryName = inventory.getName();
 
-        List<InventoryStuff> inventoryStuffList = inventoryStuffRepository.findAllByInventoryOrderByStuffRank(inventory);
+        List<InventoryStuff> inventoryStuffList = inventoryStuffRepository.findAllByInventoryOrderByStuffStuffRank(inventory);
         List<String> stuffImgURIList = new ArrayList<>();
         List<String> stuffNameList = new ArrayList<>();
         for (InventoryStuff inventoryStuff : inventoryStuffList) {
-            stuffImgURIList.add(inventoryStuff.getStuff().getImg_url());
+            stuffImgURIList.add(inventoryStuff.getStuff().getImgUrl());
             stuffNameList.add(inventoryStuff.getStuff().getName());
         }
         int stuffNum = stuffNameList.size();
