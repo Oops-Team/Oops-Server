@@ -21,15 +21,19 @@ public class FcmInitializer {
     private String fcmKeyPath;
 
     @PostConstruct
-    public void setting() throws IOException {
-        InputStream input = new ClassPathResource(fcmKeyPath).getInputStream();
+    public void setting() {
+        try {
+            InputStream input = new ClassPathResource(fcmKeyPath).getInputStream();
 
-        FirebaseOptions options = FirebaseOptions.builder()
-                                                 .setCredentials(
-                                                         GoogleCredentials.fromStream(input))
-                                                 .build();
+            FirebaseOptions options = FirebaseOptions.builder()
+                                                     .setCredentials(
+                                                             GoogleCredentials.fromStream(input))
+                                                     .build();
 
-        FirebaseApp.initializeApp(options);
+            FirebaseApp.initializeApp(options);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         log.info("FCM 세팅 완료");
     }
