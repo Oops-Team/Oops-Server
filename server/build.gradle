@@ -46,6 +46,9 @@ dependencies {
 
 	// MySQL DB
 	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// FCM 관련
+	implementation 'com.google.firebase:firebase-admin:9.1.1'
 }
 
 tasks.named('test') {
