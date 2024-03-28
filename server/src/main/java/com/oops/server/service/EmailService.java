@@ -1,13 +1,11 @@
 package com.oops.server.service;
 
-import jakarta.mail.Message;
 import jakarta.mail.Message.RecipientType;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -25,7 +23,7 @@ public class EmailService {
             // 정보 설정
             message.addRecipients(RecipientType.TO, to);
             message.setSubject(subject);
-            message.setText(content);
+            message.setContent(content, "text/html; charset=utf-8");
 
             // 이메일 발송
             javaMailSender.send(message);

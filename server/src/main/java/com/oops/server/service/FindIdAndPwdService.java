@@ -77,11 +77,11 @@ public class FindIdAndPwdService {
     public ResponseEntity sendCode(String email) {
         // 정보 구성
         String code = generateCode();
-        String subject = "[Oops] 인증 코드 발송";
-        String content = "인증 코드 : " + code;
-
-        // 만들어진 인증 코드 확인
-        log.debug("생성한 인증 코드 : " + code);
+        String subject = "[Oops] 인증코드 발송";
+        String content = "<h3 style=\"text-align: center;\"> 인증코드 </h3>";
+        content += "<h1 style=\"text-align: center;\">" + code + "</h1>";
+        content += "<br> <br> <p style=\"text-align: center;\"> 비밀번호 찾기 인증코드가 발급되었습니다. </p>";
+        content += "<br> <p style=\"text-align: center;\"> 위 숫자를 인증코드 입력 칸에 기입해주세요! </p>";
 
         // 이메일 보내기
         emailService.send(email, subject, content);
