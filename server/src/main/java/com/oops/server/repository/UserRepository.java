@@ -23,7 +23,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 특정 사용자와 친구가 아닌 사용자들 중 검색한 닉네임과 부분 일치하는 회원 찾기
     @Query("SELECT u FROM User u " +
             "WHERE u.userId != :userId " +  // 현재 사용자 자신은 제외
-            "AND u.name LIKE :name " +      // 입력된 닉네임과 일치하는 사용자 검색
+            "AND u.name LIKE :name " +      // 입력된 닉네임과 일치하고
+            "AND u.isPublic = true " +      // 프로필이 공개 상태인 유저 검색
             "AND NOT EXISTS (" +
             "SELECT f FROM Friend f " +
             "WHERE (f.requestUser.userId = :userId AND f.responseUser = u) " +
