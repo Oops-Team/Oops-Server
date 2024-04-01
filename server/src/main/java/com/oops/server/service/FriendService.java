@@ -67,7 +67,7 @@ public class FriendService {
             stingFriendList = friendRepository.getStingList(user, presentDate, presentTime, endTime);
         } catch (NullPointerException e) {
             log.error("불러올 수 있는 친구 없음");
-            
+
             return new ResponseEntity(
                     DefaultResponse.from(StatusCode.NOT_FOUND, ExceptionMessages.NOT_FOUND_FRIENDS.get()),
                     HttpStatus.NOT_FOUND);
@@ -163,7 +163,12 @@ public class FriendService {
         List<FriendGetAllResponse> data = new ArrayList<>();
 
         // 1-1. 내가 요청받았던 입장의 친구 목록 불러오기
-        List<User> receiveFriendList = friendRepository.getIncomingFriendRequestList(user);
+        List<User> receiveFriendList = new ArrayList<>();
+        try {
+            receiveFriendList = friendRepository.getIncomingFriendRequestList(user);
+        } catch (NullPointerException e) {
+            log.error("요청 받은 목록 없음!");
+        }
 
         // 1-2. 1번 항목 응답 정보에 담기
         for (User friendUser : receiveFriendList) {
@@ -175,7 +180,12 @@ public class FriendService {
         }
 
         // 2-1. 내가 요청했던 입장의 친구 목록 불러오기
-        List<User> requestFriendList = friendRepository.getSendFriendRequestList(user);
+        List<User> requestFriendList = new ArrayList<>();
+        try {
+            requestFriendList = friendRepository.getSendFriendRequestList(user);
+        } catch (NullPointerException e) {
+            log.error("내가 요청 보낸 목록 없음!");
+        }
 
         // 2-2. 2번 항목 응답 정보에 담기
         for (User friendUser : requestFriendList) {
@@ -187,7 +197,12 @@ public class FriendService {
         }
 
         // 3-1. 나와 완전 친구인 사용자들 불러오기
-        List<User> perfectFriendList = friendRepository.getFriendList(user);
+        List<User> perfectFriendList = new ArrayList<>();
+        try {
+            perfectFriendList = friendRepository.getFriendList(user);
+        } catch (NullPointerException e) {
+            log.error("나와 완전 친구인 사용자 없음!");
+        }
 
         // 3-2. 3번 항목 응답 정보에 담기
         for (User friendUser : perfectFriendList) {
@@ -209,7 +224,12 @@ public class FriendService {
         String searchName = "%" + name + "%"; // 해당 문자열을 포함하는 닉네임을 검색하기 위함
 
         // 해당 사용자와 완전 친구인 사람들 중 검색
-        List<User> friendList = friendRepository.getSearchFriendList(user, searchName);
+        List<User> friendList = new ArrayList<>();
+        try {
+            friendList = friendRepository.getSearchFriendList(user, searchName);
+        } catch (NullPointerException e) {
+        }
+
         // 친구 중에서 검색한 결과 dto 정보 넣기
         List<FriendDto> friendDtoList = new ArrayList<>();
         for (User friendUser : friendList) {
@@ -220,7 +240,12 @@ public class FriendService {
         }
 
         // 해당 사용자와 친구가 아닌 사람들 중 검색
-        List<User> notFriendList = userRepository.getSearchNotFriendList(user.getUserId(), searchName);
+        List<User> notFriendList = new ArrayList<>();
+        try {
+            notFriendList = userRepository.getSearchNotFriendList(user.getUserId(), searchName);
+        } catch (NullPointerException e) {
+        }
+
         // 친구가 아닌 사용자들 중에서 검색한 결과 dto 정보 넣기
         List<FriendDto> notFriendDtoList = new ArrayList<>();
         for (User notFriendUser : notFriendList) {

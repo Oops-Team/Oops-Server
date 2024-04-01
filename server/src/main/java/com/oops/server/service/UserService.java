@@ -21,11 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -152,7 +154,12 @@ public class UserService {
 
             // 공지 글이 뽑힌 경우
             if (commentType == COMMENT_NOTICE) {
-                Notice notice = noticeRepository.getRecentNotice();
+                Notice notice = null;
+                try {
+                    notice = noticeRepository.getRecentNotice();
+                } catch (NullPointerException e) {
+                    log.error("가져올 공지 없음");
+                }
 
                 // 만일 해당 글이 없다면
                 if (notice == null) {
@@ -240,7 +247,12 @@ public class UserService {
     // 공지사항 모두 조회
     public ResponseEntity getAllNotices() {
         // 공지사항 리스트 가져오기
-        List<Notice> noticeList = noticeRepository.getAllNoticeContent();
+        List<Notice> noticeList = new ArrayList<>();
+        try {
+            noticeList = noticeRepository.getAllNoticeContent();
+        } catch (NullPointerException e) {
+            log.error("가져올 공지사항들이 없음");
+        }
 
         // 응답 값에 넣기
         List<NoticeDto> noticeDtoList = new ArrayList<>();
