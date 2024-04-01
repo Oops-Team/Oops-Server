@@ -39,4 +39,8 @@ public class FcmToken {
                 .token(token)
                 .build();
     }
+
+    public void modifyToken(String token) {
+        this.token = token;
+    }
 }

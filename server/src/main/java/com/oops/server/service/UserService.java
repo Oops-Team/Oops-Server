@@ -97,7 +97,17 @@ public class UserService {
         // 1. Oops Access 토큰 생성
         String token = tokenProvider.createAccessToken(user.getUserId());
         // 2. FCM 토큰 저장
-        fcmTokenRepository.save(FcmToken.create(user, request.fcmToken()));
+        FcmToken fcmToken = fcmTokenRepository.findByUserId(user.getUserId());
+        // 이미 FCM 토큰이 저장되어 있던 상태라면
+        if (fcmToken != null) {
+            // 받은 토큰으로 갱신
+            fcmToken.modifyToken(request.fcmToken());
+        }
+        // 이미 저장되어 있는 게 없다면
+        else {
+            // FCM 토큰 데이터 새로 삽입
+            fcmTokenRepository.save(FcmToken.create(user, request.fcmToken()));
+        }
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공", new SignInResponse(token)),
@@ -126,7 +136,17 @@ public class UserService {
         // 1. Oops Access 토큰 발급
         String token = tokenProvider.createAccessToken(user.getUserId());
         // 2. FCM 토큰 저장
-        fcmTokenRepository.save(FcmToken.create(user, request.fcmToken()));
+        FcmToken fcmToken = fcmTokenRepository.findByUserId(user.getUserId());
+        // 이미 FCM 토큰이 저장되어 있던 상태라면
+        if (fcmToken != null) {
+            // 받은 토큰으로 갱신
+            fcmToken.modifyToken(request.fcmToken());
+        }
+        // 이미 저장되어 있는 게 없다면
+        else {
+            // FCM 토큰 데이터 새로 삽입
+            fcmTokenRepository.save(FcmToken.create(user, request.fcmToken()));
+        }
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공", new SignInResponse(token)),

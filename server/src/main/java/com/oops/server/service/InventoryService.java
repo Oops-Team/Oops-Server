@@ -94,8 +94,10 @@ public class InventoryService {
         saveInventoryTags(inventory, request.inventoryTag());
 
         // 생성한 인벤토리의 아이디 값 반환
+        Long inventoryId = inventory.getInventoryId();
+
         return new ResponseEntity(
-                DefaultResponse.from(StatusCode.OK, "성공", inventory.getInventoryId()),
+                DefaultResponse.from(StatusCode.OK, "성공", inventoryId),
                 HttpStatus.OK);
     }
 
