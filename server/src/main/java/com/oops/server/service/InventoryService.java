@@ -93,8 +93,9 @@ public class InventoryService {
         // 인벤토리 태그 데이터 추가
         saveInventoryTags(inventory, request.inventoryTag());
 
+        // 생성한 인벤토리의 아이디 값 반환
         return new ResponseEntity(
-                DefaultResponse.from(StatusCode.OK, "성공"),
+                DefaultResponse.from(StatusCode.OK, "성공", inventory.getInventoryId()),
                 HttpStatus.OK);
     }
 
