@@ -1,6 +1,7 @@
 package com.oops.server.service;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
+import com.oops.server.context.AlertMessages;
 import com.oops.server.context.ExceptionMessages;
 import com.oops.server.context.StatusCode;
 import com.oops.server.dto.etc.FriendDto;
@@ -44,6 +45,9 @@ public class FriendService {
     private final int STING_AFTER_TIME = 30;
     // 콕콕 찌르기 화면에 뜨는 최대 친구 수
     private final int STING_LIST_MAXIMUM = 5;
+
+    // FCM 알림 보낼 때의 Title 값
+    private final String FCM_TITLE = "Oops";
 
     // 외출 30분 전인 친구 조회 (찌르기 화면)
     public ResponseEntity getStingList(Long userId) {
@@ -120,11 +124,8 @@ public class FriendService {
     }
 
     // 친구 찌르기
-    public ResponseEntity stingFriend(Long userId, StingFriendRequest request) {
-        // 1. 알림을 보내는 유저의 정보(닉네임) 가져오기
-        String reqUserName = userRepository.findByUserId(userId).getName();
-
-        // 2. 알림을 받는 유저의 정보(FCM 토큰) 가져오기
+    public ResponseEntity stingFriend(StingFriendRequest request) {
+        // 1. 알림을 받는 유저의 정보(FCM 토큰) 가져오기
         User resUser = userRepository.findByName(request.name());
         // 만일 해당 유저가 없다면
         if (resUser == null) {
@@ -133,9 +134,21 @@ public class FriendService {
                             ExceptionMessages.NOT_FOUND_USER.get()),
                     HttpStatus.NOT_FOUND);
         }
-        String resUserFcmToken = fcmTokenRepository.findByUserId(resUser.getUserId()).getToken();
+        // 만일 해당 유저에게 토큰이 없다면
+        String resUserFcmToken = "";
+        try {
+            resUserFcmToken = fcmTokenRepository.findByUserId(resUser.getUserId()).getToken();
+        } catch (NullPointerException e) {
+            log.error("FCM 토큰 없음");
 
-        // 3. 알림 보내기
+            // 프론트단에 실패 응답
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.NOT_FOUND,
+                            ExceptionMessages.NOT_FOUND_FCM_TOKEN.get()),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        // 2. 알림 보내기
         try {
             FcmService.sendToMessage(resUserFcmToken, request.title(), request.body());
         } catch (FirebaseMessagingException e) {
@@ -149,7 +162,7 @@ public class FriendService {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        // 4. 프론트단에 성공 응답
+        // 3. 프론트단에 성공 응답
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공"),
                 HttpStatus.OK);
@@ -287,6 +300,33 @@ public class FriendService {
         // 레코드 삽입
         friendRepository.save(Friend.create(requestUser, responseUser));
 
+        // 친구 신청을 받은 사용자에게 알림 전송
+        String resUserFcmToken = "";
+        try {
+            resUserFcmToken = fcmTokenRepository.findByUserId(responseUser.getUserId()).getToken();
+        } catch (NullPointerException e) {
+            log.error("알림을 받을 사용자의 FCM 토큰 없음");
+
+            // 프론트단에 실패 응답
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.NOT_FOUND,
+                            ExceptionMessages.NOT_FOUND_FCM_TOKEN.get()),
+                    HttpStatus.NOT_FOUND);
+        }
+        // 알림 보내기
+        try {
+            FcmService.sendToMessage(resUserFcmToken, FCM_TITLE, AlertMessages.RECEIVE_FRIEND_REQUEST.get());
+        } catch (FirebaseMessagingException e) {
+            log.error("친구 신청을 했을 경우 알림 전송 실패");
+            e.printStackTrace();
+
+            // 프론트단에 실패 응답
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.INTERNAL_SERVER_ERROR,
+                            ExceptionMessages.FAILED_FRIEND_REQUEST_ALERT.get()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공"),
                 HttpStatus.OK);
@@ -353,6 +393,33 @@ public class FriendService {
         else {
             // 해당 행 삭제
             friendRepository.delete(friendRelation);
+
+            // 거절 당한 사용자에게 알림 보내기
+            String resUserFcmToken = "";
+            try {
+                resUserFcmToken = fcmTokenRepository.findByUserId(friend.getUserId()).getToken();
+            } catch (NullPointerException e) {
+                log.error("알림을 받을 사용자의 FCM 토큰 없음");
+
+                // 프론트단에 실패 응답
+                return new ResponseEntity(
+                        DefaultResponse.from(StatusCode.NOT_FOUND,
+                                ExceptionMessages.NOT_FOUND_FCM_TOKEN.get()),
+                        HttpStatus.NOT_FOUND);
+            }
+            // 알림 보내기
+            try {
+                FcmService.sendToMessage(resUserFcmToken, FCM_TITLE, AlertMessages.DENY_FRIEND_REQUEST.get());
+            } catch (FirebaseMessagingException e) {
+                log.error("친구 신청을 거절했을 경우 알림 전송 실패");
+                e.printStackTrace();
+
+                // 프론트단에 실패 응답
+                return new ResponseEntity(
+                        DefaultResponse.from(StatusCode.INTERNAL_SERVER_ERROR,
+                                ExceptionMessages.FAILED_FRIEND_REQUEST_ALERT.get()),
+                        HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
 
         return new ResponseEntity(

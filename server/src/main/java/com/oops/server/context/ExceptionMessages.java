@@ -15,6 +15,8 @@ public enum ExceptionMessages {
 
     NOT_FOUND_MYPAGE_COMMENT("요약 멘트가 없습니다"),
 
+    NOT_FOUND_FCM_TOKEN("해당 사용자의 FCM 토큰이 없습니다"),
+
     NOT_FOUND_FRIENDS("불러올 친구가 없습니다"),
     FAILED_STING("콕콕 찌르기를 실패했습니다"),
 
@@ -22,6 +24,7 @@ public enum ExceptionMessages {
     EXIST_FRIEND_REQUEST("이미 친구 신청한 사용자입니다"),
     NOT_FOUND_ACCEPT_USER("수락할 사용자가 존재하지 않습니다"),
     NOT_FOUND_USER("해당 사용자가 존재하지 않습니다"),
+    FAILED_FRIEND_REQUEST_ALERT("친구 신청 알림을 보내지 못했습니다"),
 
     NOT_FOUND_SCHEDULE("해당 날짜에 등록된 일정이 없습니다"),
 

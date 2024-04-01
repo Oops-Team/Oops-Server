@@ -34,11 +34,8 @@ public class FriendController {
 
     // 친구 찌르기
     @PostMapping("/sting")
-    public ResponseEntity stingFriend(@RequestHeader("xAuthToken") String token,
-            @RequestBody StingFriendRequest request) {
-        Long userId = tokenProvider.getUserIdFromToken(token);
-
-        return friendService.stingFriend(userId, request);
+    public ResponseEntity stingFriend(@RequestBody StingFriendRequest request) {
+        return friendService.stingFriend(request);
     }
 
     // 친구 리스트 조회
