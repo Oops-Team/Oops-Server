@@ -111,13 +111,6 @@ public class InventoryService {
 
         Inventory inventory = inventoryRepository.findByInventoryId(inventoryId);
 
-        // 인벤토리 이름이 중복되었다면
-        if (!validateDuplicateName(inventory.getUser(), request.inventoryName())) {
-            return new ResponseEntity(
-                    DefaultResponse.from(StatusCode.CONFLICT, ExceptionMessages.DUPLICATE_INVENTORY.get()),
-                    HttpStatus.CONFLICT);
-        }
-
         // 인벤토리 테이블 갱신 (이름 갱신)
         inventory.setName(request.inventoryName());
         inventoryRepository.save(inventory);
