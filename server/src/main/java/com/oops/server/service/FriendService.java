@@ -62,7 +62,16 @@ public class FriendService {
         log.info("end 시각 : " + endTime.toString());
 
         // 찌를 수 있는 친구 모두 불러오기
-        List<User> stingFriendList = friendRepository.getStingList(user, presentDate, presentTime, endTime);
+        List<User> stingFriendList = new ArrayList<>();
+        try {
+            stingFriendList = friendRepository.getStingList(user, presentDate, presentTime, endTime);
+        } catch (NullPointerException e) {
+            log.error("불러올 수 있는 친구 없음");
+            
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.NOT_FOUND, ExceptionMessages.NOT_FOUND_FRIENDS.get()),
+                    HttpStatus.NOT_FOUND);
+        }
 
         // 응답 DTO
         List<FriendDto> friendDtoList = new ArrayList<>();
