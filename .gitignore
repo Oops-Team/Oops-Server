@@ -144,5 +144,6 @@ replay_pid*
 server/src/main/resources/jwt.yml
 server/src/main/resources/application-secrete.yml
 server/src/main/resources/data.sql
+server/src/main/resources/oops-ffb38-firebase-adminsdk-3zor4-632f6151cc.json
 
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij
