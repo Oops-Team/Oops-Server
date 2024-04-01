@@ -102,6 +102,7 @@ public class UserService {
         if (fcmToken != null) {
             // 받은 토큰으로 갱신
             fcmToken.modifyToken(request.fcmToken());
+            fcmTokenRepository.save(fcmToken);
         }
         // 이미 저장되어 있는 게 없다면
         else {
@@ -141,6 +142,7 @@ public class UserService {
         if (fcmToken != null) {
             // 받은 토큰으로 갱신
             fcmToken.modifyToken(request.fcmToken());
+            fcmTokenRepository.save(fcmToken);
         }
         // 이미 저장되어 있는 게 없다면
         else {
