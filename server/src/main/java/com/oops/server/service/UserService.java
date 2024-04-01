@@ -9,11 +9,13 @@ import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.dto.response.MyPageGetResponse;
 import com.oops.server.dto.response.SignInResponse;
 import com.oops.server.entity.CancelReason;
+import com.oops.server.entity.FcmToken;
 import com.oops.server.entity.Notice;
 import com.oops.server.entity.User;
 //import com.oops.server.entity.UserRefreshToken;
 //import com.oops.server.repository.UserRefreshTokenRepository;
 import com.oops.server.repository.CancelReasonRepository;
+import com.oops.server.repository.FcmTokenRepository;
 import com.oops.server.repository.NoticeRepository;
 import com.oops.server.repository.UserRepository;
 import com.oops.server.security.TokenProvider;
@@ -35,6 +37,7 @@ public class UserService {
     private final PasswordEncoder encoder;
     private final TokenProvider tokenProvider;
     private final UserRepository userRepository;
+    private final FcmTokenRepository fcmTokenRepository;
     private final CancelReasonRepository cancelReasonRepository;
     private final NoticeRepository noticeRepository;
 
@@ -58,13 +61,16 @@ public class UserService {
     // Oops 회원가입
     public SignInResponse join(SignUpRequest request) {
         User user = User.create(request, encoder, "oops");
-        userRepository.save(user);
+        user = userRepository.save(user);
 
-        // 토큰에 저장할 user 정보 가져오기
+        // Access 토큰에 저장할 user 정보 가져오기
         Long userId = user.getUserId();
 
-        // Access 토큰 생성
+        // Oops Access 토큰 생성
         String accessToken = tokenProvider.createAccessToken(userId);
+
+        // FCM 토큰 저장
+        fcmTokenRepository.save(FcmToken.create(user, request.fcmToken()));
 
         return new SignInResponse(accessToken);
     }
@@ -87,8 +93,11 @@ public class UserService {
                     HttpStatus.BAD_REQUEST);
         }
 
-        // 모두 일치할 시 - 토큰 생성
+        // 모두 일치할 시
+        // 1. Oops Access 토큰 생성
         String token = tokenProvider.createAccessToken(user.getUserId());
+        // 2. FCM 토큰 저장
+        fcmTokenRepository.save(FcmToken.create(user, request.fcmToken()));
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공", new SignInResponse(token)),
@@ -114,8 +123,10 @@ public class UserService {
             user = userRepository.findByEmailAndSnsType(email, snsType);    // id값을 가져오기 위함
         }
 
-        // 토큰 발급
+        // 1. Oops Access 토큰 발급
         String token = tokenProvider.createAccessToken(user.getUserId());
+        // 2. FCM 토큰 저장
+        fcmTokenRepository.save(FcmToken.create(user, request.fcmToken()));
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공", new SignInResponse(token)),
