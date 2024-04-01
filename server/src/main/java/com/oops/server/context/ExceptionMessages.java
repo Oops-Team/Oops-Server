@@ -15,6 +15,8 @@ public enum ExceptionMessages {
 
     NOT_FOUND_MYPAGE_COMMENT("요약 멘트가 없습니다"),
 
+    FAILED_STING("콕콕 찌르기를 실패했습니다"),
+
     NOT_FOUND_RESPONSE_USER("신청하려는 사용자가 존재하지 않습니다"),
     EXIST_FRIEND_REQUEST("이미 친구 신청한 사용자입니다"),
     NOT_FOUND_ACCEPT_USER("수락할 사용자가 존재하지 않습니다"),
