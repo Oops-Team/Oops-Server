@@ -10,13 +10,12 @@ import lombok.extern.slf4j.Slf4j;
 public class FcmService {
 
     // FCM 서버로 알림 요청을 보내는 메소드
-    public static void sendToMessage(String token, String title, String body)
-            throws FirebaseMessagingException {
+    public static void sendToMessage(String token, String body)
+            throws FirebaseMessagingException, IllegalArgumentException {
         Message message = Message.builder()
                                  .setToken(token)
                                  .setNotification(
                                          Notification.builder()
-                                                     .setTitle(title)
                                                      .setBody(body)
                                                      .build())
                                  .build();

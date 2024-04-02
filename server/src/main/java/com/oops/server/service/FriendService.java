@@ -46,9 +46,6 @@ public class FriendService {
     // 콕콕 찌르기 화면에 뜨는 최대 친구 수
     private final int STING_LIST_MAXIMUM = 5;
 
-    // FCM 알림 보낼 때의 Title 값
-    private final String FCM_TITLE = "Oops";
-
     // 외출 30분 전인 친구 조회 (찌르기 화면)
     public ResponseEntity getStingList(Long userId) {
         User user = userRepository.findByUserId(userId);
@@ -150,7 +147,7 @@ public class FriendService {
 
         // 2. 알림 보내기
         try {
-            FcmService.sendToMessage(resUserFcmToken, request.title(), request.body());
+            FcmService.sendToMessage(resUserFcmToken, request.body());
         } catch (FirebaseMessagingException e) {
             log.error("콕콕 찌르기 실패");
             e.printStackTrace();
@@ -160,6 +157,14 @@ public class FriendService {
                     DefaultResponse.from(StatusCode.INTERNAL_SERVER_ERROR,
                             ExceptionMessages.FAILED_STING.get()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException e) {
+            log.error("해당 사용자의 토큰 없음");
+
+            // 프론트단에 실패 응답
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.NOT_FOUND,
+                            ExceptionMessages.FAILED_STING.get()),
+                    HttpStatus.NOT_FOUND);
         }
 
         // 3. 프론트단에 성공 응답
@@ -315,7 +320,7 @@ public class FriendService {
         }
         // 알림 보내기
         try {
-            FcmService.sendToMessage(resUserFcmToken, FCM_TITLE, AlertMessages.RECEIVE_FRIEND_REQUEST.get());
+            FcmService.sendToMessage(resUserFcmToken, AlertMessages.RECEIVE_FRIEND_REQUEST.get());
         } catch (FirebaseMessagingException e) {
             log.error("친구 신청을 했을 경우 알림 전송 실패");
             e.printStackTrace();
@@ -409,7 +414,7 @@ public class FriendService {
             }
             // 알림 보내기
             try {
-                FcmService.sendToMessage(resUserFcmToken, FCM_TITLE, AlertMessages.DENY_FRIEND_REQUEST.get());
+                FcmService.sendToMessage(resUserFcmToken, AlertMessages.DENY_FRIEND_REQUEST.get());
             } catch (FirebaseMessagingException e) {
                 log.error("친구 신청을 거절했을 경우 알림 전송 실패");
                 e.printStackTrace();
