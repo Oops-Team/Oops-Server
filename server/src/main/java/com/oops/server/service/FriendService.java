@@ -17,6 +17,7 @@ import com.oops.server.repository.FriendRepository;
 import com.oops.server.repository.UserRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -51,11 +52,11 @@ public class FriendService {
         User user = userRepository.findByUserId(userId);
 
         // 현재 날짜 구하기
-        LocalDate presentDate = LocalDate.now();
+        LocalDate presentDate = LocalDate.now(ZoneId.of("Asia/Seoul"));
         log.info("현재 날짜 : " + presentDate);
 
         // 현재 시각 구하기
-        LocalTime presentTime = LocalTime.now();
+        LocalTime presentTime = LocalTime.now(ZoneId.of("Asia/Seoul"));
         log.info("현재 시각 : " + presentTime.toString());
 
         // 시간 간격 구하기
