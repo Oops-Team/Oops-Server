@@ -69,6 +69,7 @@ public class User {
                 .password(encoder.encode(request.password()))
                 .snsType(snsType)
                 .isPublic(true)
+                .profileUrl("https://oops-bucket.s3.ap-northeast-2.amazonaws.com/defaultProfile.png")
                 .build();
     }
 
@@ -78,6 +79,7 @@ public class User {
                 .email(request.email())
                 .snsType(snsType)
                 .isPublic(true)
+                .profileUrl("https://oops-bucket.s3.ap-northeast-2.amazonaws.com/defaultProfile.png")
                 .build();
     }
 
