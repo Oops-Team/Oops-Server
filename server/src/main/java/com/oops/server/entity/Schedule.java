@@ -39,7 +39,7 @@ public class Schedule {
     @Column(length = 10, nullable = false)
     private String tagList;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TIME(0)")
     private LocalTime outTime;
 
     @Column(length = 10)

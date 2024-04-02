@@ -52,22 +52,23 @@ public class FriendService {
 
         // 현재 날짜 구하기
         LocalDate presentDate = LocalDate.now(ZoneId.of("Asia/Seoul"));
-        log.info("현재 날짜 : " + presentDate);
+        log.debug("현재 날짜 : " + presentDate);
 
         // 현재 시각 구하기
         LocalTime presentTime = LocalTime.now(ZoneId.of("Asia/Seoul"));
-        log.info("현재 시각 : " + presentTime.toString());
+        log.debug("현재 시각 : " + presentTime.toString());
 
         // 시간 간격 구하기
         LocalTime endTime = presentTime.plusMinutes(STING_AFTER_TIME);
-        log.info("end 시각 : " + endTime.toString());
+        log.debug("end 시각 : " + endTime.toString());
 
         // 찌를 수 있는 친구 모두 불러오기
         List<User> stingFriendList = new ArrayList<>();
         try {
             stingFriendList = friendRepository.getStingList(user, presentDate, presentTime, endTime);
         } catch (NullPointerException e) {
-            log.error("불러올 수 있는 친구 없음");
+            log.error("친구 조회 실패");
+            e.printStackTrace();
 
             return new ResponseEntity(
                     DefaultResponse.from(StatusCode.NOT_FOUND, ExceptionMessages.NOT_FOUND_FRIENDS.get()),

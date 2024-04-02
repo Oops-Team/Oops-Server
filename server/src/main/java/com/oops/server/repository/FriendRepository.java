@@ -28,14 +28,16 @@ public interface FriendRepository extends JpaRepository<Friend, FriendID> {
     List<User> getIncomingFriendRequestList(@Param("responseUser") User requestUser);
 
     // (요청인 기준 검색) 특정 사용자와 완전 친구 상태인 사람들 중에서 검색 결과 가져오기
-    @Query("SELECT m FROM Friend f LEFT JOIN f.responseUser m WHERE f.requestUser = :requestUser"
+    @Query("SELECT m FROM Friend f LEFT JOIN User m ON f.responseUser = m"
+            + " WHERE f.requestUser = :requestUser"
             + " AND f.isFriend = true AND m.name LIKE :name")
     List<User> getSearchFriendList(@Param("requestUser") User requestUser, @Param("name") String name);
 
     // 해당 유저의 친구들 중, 외출 시간이 N분 남은 사람들 불러오기
     @Query("SELECT m "
-            + "FROM Friend f JOIN f.responseUser m JOIN m.schedules s "
-            + "WHERE f.requestUser = :requestUser AND f.isFriend = true"
+            + "FROM Friend f LEFT JOIN User m ON f.responseUser = m"
+            + " LEFT JOIN Schedule s ON m = s.user"
+            + " WHERE f.requestUser = :requestUser AND f.isFriend = true"
             + " AND s.date = :date"
             + " AND (s.outTime BETWEEN :startTime AND :endTime)")
     List<User> getStingList(@Param("requestUser") User requestUser, @Param("date") LocalDate date,
