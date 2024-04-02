@@ -9,7 +9,6 @@ import com.oops.server.dto.request.StingFriendRequest;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.dto.response.FriendGetAllResponse;
 import com.oops.server.dto.response.FriendGetSearchResponse;
-import com.oops.server.entity.FcmToken;
 import com.oops.server.entity.Friend;
 import com.oops.server.entity.User;
 import com.oops.server.repository.FcmTokenRepository;
