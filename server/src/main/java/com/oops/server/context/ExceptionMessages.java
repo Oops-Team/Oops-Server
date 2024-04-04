@@ -25,6 +25,8 @@ public enum ExceptionMessages {
     NOT_FOUND_ACCEPT_USER("수락할 사용자가 존재하지 않습니다"),
     NOT_FOUND_USER("해당 사용자가 존재하지 않습니다"),
     FAILED_FRIEND_REQUEST_ALERT("친구 신청 알림을 보내지 못했습니다"),
+    FAILED_FRIEND_ACCEPT_ALERT("친구 수락 알림을 보내지 못했습니다"),
+    FAILED_FRIEND_DENY_ALERT("친구 거절 알림을 보내지 못했습니다"),
 
     NOT_FOUND_SCHEDULE("해당 날짜에 등록된 일정이 없습니다"),
 

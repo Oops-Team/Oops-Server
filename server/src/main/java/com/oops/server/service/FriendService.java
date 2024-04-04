@@ -352,6 +352,33 @@ public class FriendService {
 
             // 역방향 행 삽입
             friendRepository.save(Friend.createFriendTrue(me, friend));
+
+            // 친구 수락된 (상대방) 사용자에게 알림 전송
+            String resUserFcmToken = "";
+            try {
+                resUserFcmToken = fcmTokenRepository.findByUserId(friend.getUserId()).getToken();
+            } catch (NullPointerException e) {
+                log.error("알림을 받을 사용자의 FCM 토큰 없음");
+
+                // 프론트단에 실패 응답
+                return new ResponseEntity(
+                        DefaultResponse.from(StatusCode.NOT_FOUND,
+                                ExceptionMessages.NOT_FOUND_FCM_TOKEN.get()),
+                        HttpStatus.NOT_FOUND);
+            }
+            // 알림 보내기
+            try {
+                FcmService.sendToMessage(resUserFcmToken, AlertMessages.ACCEPT_FRIEND_REQUEST.get());
+            } catch (FirebaseMessagingException e) {
+                log.error("친구 수락을 했을 경우 알림 전송 실패");
+                e.printStackTrace();
+
+                // 프론트단에 실패 응답
+                return new ResponseEntity(
+                        DefaultResponse.from(StatusCode.INTERNAL_SERVER_ERROR,
+                                ExceptionMessages.FAILED_FRIEND_ACCEPT_ALERT.get()),
+                        HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } catch (NullPointerException e) {
             // 수락할 친구가 존재하지 않을 경우 응답
             return new ResponseEntity(
@@ -415,7 +442,8 @@ public class FriendService {
             }
             // 알림 보내기
             try {
-                FcmService.sendToMessage(resUserFcmToken, AlertMessages.DENY_FRIEND_REQUEST.get());
+                String denyComment = friend.getName() + AlertMessages.DENY_FRIEND_REQUEST.get();
+                FcmService.sendToMessage(resUserFcmToken, denyComment);
             } catch (FirebaseMessagingException e) {
                 log.error("친구 신청을 거절했을 경우 알림 전송 실패");
                 e.printStackTrace();
@@ -423,7 +451,7 @@ public class FriendService {
                 // 프론트단에 실패 응답
                 return new ResponseEntity(
                         DefaultResponse.from(StatusCode.INTERNAL_SERVER_ERROR,
-                                ExceptionMessages.FAILED_FRIEND_REQUEST_ALERT.get()),
+                                ExceptionMessages.FAILED_FRIEND_DENY_ALERT.get()),
                         HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
