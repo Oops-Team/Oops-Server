@@ -44,6 +44,9 @@ public class User {
     @Column(name = "is_public", nullable = false)
     private boolean isPublic;
 
+    @Column(name = "is_alert")
+    private Boolean isAlert;
+
     @Column(name = "profile_url", length = 500)
     private String profileUrl;
 
@@ -69,6 +72,7 @@ public class User {
                 .password(encoder.encode(request.password()))
                 .snsType(snsType)
                 .isPublic(true)
+                .isAlert(request.isAlert())
                 .profileUrl("https://oops-bucket.s3.ap-northeast-2.amazonaws.com/defaultProfile.png")
                 .build();
     }
@@ -79,6 +83,7 @@ public class User {
                 .email(request.email())
                 .snsType(snsType)
                 .isPublic(true)
+                .isAlert(request.isAlert())
                 .profileUrl("https://oops-bucket.s3.ap-northeast-2.amazonaws.com/defaultProfile.png")
                 .build();
     }

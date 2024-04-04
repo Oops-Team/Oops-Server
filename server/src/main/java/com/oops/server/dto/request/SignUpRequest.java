@@ -4,5 +4,6 @@ public record SignUpRequest (
         String name,
         String email,
         String password,
-        String fcmToken
+        String fcmToken,
+        Boolean isAlert
 ) {}
