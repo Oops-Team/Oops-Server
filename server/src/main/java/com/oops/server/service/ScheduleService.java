@@ -146,15 +146,38 @@ public class ScheduleService {
                     HttpStatus.OK);
         }
 
+        // 0-1. 챙겨야 할 것 관련 정보 먼저 가져오기
+        List<DateStuff> dateStuffList = dateStuffRepository.findAllByScheduleOrderByStuffStuffRank(schedule);
+
         // todoTag string -> int 값으로 분리
         int[] todoTagIntArr = Arrays.stream(schedule.getTagList().split(",")).mapToInt(Integer::parseInt).toArray();
         List<Integer> todoTagList = Arrays.stream(todoTagIntArr).boxed().toList();
 
-        // 해당 일정에 추천 인벤토리가 배치되지 않은 상태라면
-        if (schedule.getInventory() == null) {
+        // 해당 일정에 추천 인벤토리가 배치되지 않았고,
+        // 해당 일정에 배치된 소지품도 아예 없는 상태라면
+        if (schedule.getInventory() == null && dateStuffList.size() == 0) {
             // 인벤토리 배정 및 반영
             schedule.modifyInventory(matchingInventory(user, todoTagList));
             schedule = scheduleRepository.save(schedule);
+
+            // 해당 인벤토리의 소지품 배치
+            List<InventoryStuff> inventoryStuffList = schedule.getInventory().getInventoryStuffs();
+            for (InventoryStuff inventoryStuff : inventoryStuffList) {
+                dateStuffList.add(
+                        dateStuffRepository.save(
+                                DateStuff.create(schedule, inventoryStuff.getStuff())
+                        )
+                );
+            }
+        }
+
+        // 0-2. 챙겨야 할 것 관련 정보 담기
+        List<StuffDto> stuffList = new ArrayList<>();
+        for (DateStuff dateStuff : dateStuffList) {
+            stuffList.add(new StuffDto(
+                    dateStuff.getStuff().getImgUrl(),
+                    dateStuff.getStuff().getName()
+            ));
         }
 
         // 1. 인벤토리 관련 정보 담기
@@ -215,16 +238,6 @@ public class ScheduleService {
         int[] remindTimeIntArr = Arrays.stream(schedule.getNotification().split(",")).mapToInt(Integer::parseInt)
                 .toArray();
         List<Integer> remindTime = Arrays.stream(remindTimeIntArr).boxed().toList();
-
-        // 6. 챙겨야 할 것 관련 정보 담기
-        List<DateStuff> dateStuffList = dateStuffRepository.findAllByScheduleOrderByStuffStuffRank(schedule);
-        List<StuffDto> stuffList = new ArrayList<>();
-        for (DateStuff dateStuff : dateStuffList) {
-            stuffList.add(new StuffDto(
-                    dateStuff.getStuff().getImgUrl(),
-                    dateStuff.getStuff().getName()
-            ));
-        }
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공", new TodoGetOneResponse(
