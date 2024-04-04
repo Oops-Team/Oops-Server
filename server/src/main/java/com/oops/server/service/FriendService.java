@@ -1,6 +1,7 @@
 package com.oops.server.service;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
+import com.oops.server.context.AlertException;
 import com.oops.server.context.AlertMessages;
 import com.oops.server.context.ExceptionMessages;
 import com.oops.server.context.StatusCode;
@@ -134,7 +135,14 @@ public class FriendService {
 
         // 2. 해당 유저에게 알림 보내기
         try {
-            fcmService.sendToMessage(resUser.getUserId(), request.body());
+            fcmService.sendToMessage(resUser, request.body());
+        } catch (AlertException e) {
+            log.info("해당 사용자의 알림 설정이 해제되어 알림 전송 못함");
+
+            // 프론트단에 실패 응답
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.PRECONDITION_FAILED, ExceptionMessages.DO_NOT_STING.get()),
+                    HttpStatus.PRECONDITION_FAILED);
         } catch (NullPointerException e) {
             log.error("FCM 토큰 데이터 없음");
 
@@ -299,7 +307,14 @@ public class FriendService {
 
         // 친구 신청을 받은 사용자에게 알림 전송
         try {
-            fcmService.sendToMessage(responseUser.getUserId(), AlertMessages.RECEIVE_FRIEND_REQUEST.get());
+            fcmService.sendToMessage(responseUser, AlertMessages.RECEIVE_FRIEND_REQUEST.get());
+        } catch (AlertException e) {
+            log.error("해당 사용자의 알림 설정이 해제되어 알림 전송 못함");
+
+            // 프론트단에 전달성 응답
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.MULTI_STATUS, e.getMessage()),
+                    HttpStatus.MULTI_STATUS);
         } catch (NullPointerException e) {
             log.error("FCM 토큰 데이터 없음");
 
@@ -354,7 +369,14 @@ public class FriendService {
 
         // 친구 수락된 (상대방) 사용자에게 알림 전송
         try {
-            fcmService.sendToMessage(friend.getUserId(), AlertMessages.ACCEPT_FRIEND_REQUEST.get());
+            fcmService.sendToMessage(friend, AlertMessages.ACCEPT_FRIEND_REQUEST.get());
+        } catch (AlertException e) {
+            log.error("해당 사용자의 알림 설정이 해제되어 알림 전송 못함");
+
+            // 프론트단에 전달성 응답
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.MULTI_STATUS, e.getMessage()),
+                    HttpStatus.MULTI_STATUS);
         } catch (NullPointerException e) {
             log.error("FCM 토큰 데이터 없음");
 
@@ -423,7 +445,14 @@ public class FriendService {
             // 거절 당한 사용자에게 알림 보내기
             try {
                 String denyComment = friend.getName() + AlertMessages.DENY_FRIEND_REQUEST.get();
-                fcmService.sendToMessage(friend.getUserId(), denyComment);
+                fcmService.sendToMessage(friend, denyComment);
+            } catch (AlertException e) {
+                log.error("해당 사용자의 알림 설정이 해제되어 알림 전송 못함");
+
+                // 프론트단에 전달성 응답
+                return new ResponseEntity(
+                        DefaultResponse.from(StatusCode.MULTI_STATUS, e.getMessage()),
+                        HttpStatus.MULTI_STATUS);
             } catch (NullPointerException e) {
                 log.error("FCM 토큰 데이터 없음");
 

@@ -15,10 +15,12 @@ public enum ExceptionMessages {
 
     NOT_FOUND_MYPAGE_COMMENT("요약 멘트가 없습니다"),
 
+    NOT_ALLOWED_ALERT("요청 수행은 성공했으나, 알림 설정 해제로 인해 알림을 보낼 수 없습니다"),
     NOT_FOUND_FCM_TOKEN("해당 사용자의 FCM 토큰 데이터가 없습니다"),
     WRONG_FCM_TOKEN("올바르지 않은 FCM 토큰입니다"),
 
     NOT_FOUND_FRIENDS("불러올 친구가 없습니다"),
+    DO_NOT_STING("콕콕 찌르기를 할 수 없습니다"),
     FAILED_STING("콕콕 찌르기를 실패했습니다"),
 
     NOT_FOUND_RESPONSE_USER("신청하려는 사용자가 존재하지 않습니다"),
