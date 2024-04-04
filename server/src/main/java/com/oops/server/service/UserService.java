@@ -20,7 +20,9 @@ import com.oops.server.repository.NoticeRepository;
 import com.oops.server.repository.UserRepository;
 import com.oops.server.security.TokenProvider;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +61,7 @@ public class UserService {
     }
 
     // Oops 회원가입
-    public SignInResponse join(SignUpRequest request) {
+    public Map<String, String> join(SignUpRequest request) {
         User user = User.create(request, encoder, "oops");
         user = userRepository.save(user);
 
@@ -68,11 +70,13 @@ public class UserService {
 
         // Oops Access 토큰 생성
         String accessToken = tokenProvider.createAccessToken(userId);
+        Map<String, String> resTokenMap = new HashMap<>();
+        resTokenMap.put("xAuthToken", accessToken);
 
         // FCM 토큰 저장
         fcmTokenRepository.save(FcmToken.create(user, request.fcmToken()));
 
-        return new SignInResponse(accessToken);
+        return resTokenMap;
     }
 
     // Oops 로그인
@@ -111,7 +115,7 @@ public class UserService {
         }
 
         return new ResponseEntity(
-                DefaultResponse.from(StatusCode.OK, "성공", new SignInResponse(token)),
+                DefaultResponse.from(StatusCode.OK, "성공", new SignInResponse(user.getName(), token)),
                 HttpStatus.OK);
     }
 
@@ -151,7 +155,7 @@ public class UserService {
         }
 
         return new ResponseEntity(
-                DefaultResponse.from(StatusCode.OK, "성공", new SignInResponse(token)),
+                DefaultResponse.from(StatusCode.OK, "성공", new SignInResponse(user.getName(), token)),
                 HttpStatus.OK);
     }
 

@@ -1,5 +1,6 @@
 package com.oops.server.dto.response;
 
 public record SignInResponse(
-        String accessToken
+        String name,
+        String xAuthToken
 ) {}
