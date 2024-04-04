@@ -15,7 +15,8 @@ public enum ExceptionMessages {
 
     NOT_FOUND_MYPAGE_COMMENT("요약 멘트가 없습니다"),
 
-    NOT_FOUND_FCM_TOKEN("해당 사용자의 FCM 토큰이 없습니다"),
+    NOT_FOUND_FCM_TOKEN("해당 사용자의 FCM 토큰 데이터가 없습니다"),
+    WRONG_FCM_TOKEN("올바르지 않은 FCM 토큰입니다"),
 
     NOT_FOUND_FRIENDS("불러올 친구가 없습니다"),
     FAILED_STING("콕콕 찌르기를 실패했습니다"),
