@@ -157,17 +157,23 @@ public class ScheduleService {
         // 해당 일정에 배치된 소지품도 아예 없는 상태라면
         if (schedule.getInventory() == null && dateStuffList.size() == 0) {
             // 인벤토리 배정 및 반영
-            schedule.modifyInventory(matchingInventory(user, todoTagList));
-            schedule = scheduleRepository.save(schedule);
+            Inventory matchingResultInv = matchingInventory(user, todoTagList);
 
-            // 해당 인벤토리의 소지품 배치
-            List<InventoryStuff> inventoryStuffList = schedule.getInventory().getInventoryStuffs();
-            for (InventoryStuff inventoryStuff : inventoryStuffList) {
-                dateStuffList.add(
-                        dateStuffRepository.save(
-                                DateStuff.create(schedule, inventoryStuff.getStuff())
-                        )
-                );
+            // 새로 배치할 수 있는 인벤토리가 나왔다면
+            if (matchingResultInv != null) {
+                // 해당 일정에 인벤토리 배치
+                schedule.modifyInventory(matchingResultInv);
+                schedule = scheduleRepository.save(schedule);
+
+                // 해당 인벤토리의 소지품으로 해당 일정 소지품에 배치
+                List<InventoryStuff> inventoryStuffList = schedule.getInventory().getInventoryStuffs();
+                for (InventoryStuff inventoryStuff : inventoryStuffList) {
+                    dateStuffList.add(
+                            dateStuffRepository.save(
+                                    DateStuff.create(schedule, inventoryStuff.getStuff())
+                            )
+                    );
+                }
             }
         }
 
@@ -239,6 +245,15 @@ public class ScheduleService {
                 .toArray();
         List<Integer> remindTime = Arrays.stream(remindTimeIntArr).boxed().toList();
 
+        // 6. 소지품 전부 챙김 여부 담기
+        Boolean isCompleteStuff = false;
+        // 불러올 소지품 리스트가 없는데, 인벤토리는 배치된 상태일 경우
+        if (stuffList.size() == 0 && usedInventory != null) {
+            // 다 챙김 표시
+            isCompleteStuff = true;
+        }
+
+        // 7. 응답
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공", new TodoGetOneResponse(
                         inventoryList,
@@ -246,7 +261,8 @@ public class ScheduleService {
                         todoTagList,
                         goOutTime,
                         remindTime,
-                        stuffList)),
+                        stuffList,
+                        isCompleteStuff)),
                 HttpStatus.OK);
     }
 

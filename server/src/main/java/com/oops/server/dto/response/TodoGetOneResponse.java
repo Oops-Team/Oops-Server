@@ -12,5 +12,6 @@ public record TodoGetOneResponse(
         List<Integer> todoTagList,
         LocalTime goOutTime,
         List<Integer> remindTime,
-        List<StuffDto> stuffList
+        List<StuffDto> stuffList,
+        Boolean isCompleteStuff
 ) {}
