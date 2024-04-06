@@ -444,7 +444,7 @@ public class FriendService {
 
             // 거절 당한 사용자에게 알림 보내기
             try {
-                String denyComment = friend.getName() + AlertMessages.DENY_FRIEND_REQUEST.get();
+                String denyComment = me.getName() + AlertMessages.DENY_FRIEND_REQUEST.get();
                 fcmService.sendToMessage(friend, denyComment);
             } catch (AlertException e) {
                 log.error("해당 사용자의 알림 설정이 해제되어 알림 전송 못함");
