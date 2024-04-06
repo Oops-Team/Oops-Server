@@ -249,7 +249,8 @@ public class UserService {
                 user.getEmail(),
                 user.getName(),
                 user.getProfileUrl(),
-                user.isPublic(),
+                user.getIsPublic(),
+                user.getIsAlert(),
                 commentType,
                 comment
         );

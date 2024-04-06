@@ -42,7 +42,7 @@ public class User {
     private String snsType;
 
     @Column(name = "is_public", nullable = false)
-    private boolean isPublic;
+    private Boolean isPublic;
 
     @Column(name = "is_alert")
     private Boolean isAlert;
@@ -88,11 +88,11 @@ public class User {
                 .build();
     }
 
-    public void modifyPublic(boolean isPublic) {
+    public void modifyPublic(Boolean isPublic) {
         this.isPublic = isPublic;
     }
 
-    public void modifyAlertSetting(boolean isAlert) { this.isAlert = isAlert; }
+    public void modifyAlertSetting(Boolean isAlert) { this.isAlert = isAlert; }
 
     public void modifyPassword(String password, PasswordEncoder encoder) {
         // 비밀번호 암호화 후 저장

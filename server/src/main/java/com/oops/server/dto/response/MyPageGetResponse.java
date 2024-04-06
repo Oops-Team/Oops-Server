@@ -6,6 +6,7 @@ public record MyPageGetResponse(
         String userName,
         String userImgURI,
         Boolean isPublic,
+        Boolean isAlert,
         int commentType,
         String comment
 ) {}
