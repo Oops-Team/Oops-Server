@@ -71,7 +71,7 @@ public class UserController {
     // 로그인
     @PostMapping("/login/{loginId}")
     public ResponseEntity login(@PathVariable("loginId") String loginType,
-            @RequestBody SignUpRequest request) {
+                                @RequestBody SignUpRequest request) {
         switch (loginType) {
             // oops 로그인
             case "oops":
@@ -110,10 +110,19 @@ public class UserController {
     // 프로필 공개 설정 변경
     @PatchMapping("/mypage/profile")
     public ResponseEntity modifyPublic(@RequestHeader("xAuthToken") String token,
-            @RequestBody Map<String, Boolean> isPublicMap) {
+                                       @RequestBody Map<String, Boolean> isPublicMap) {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return userService.modifyPublic(userId, isPublicMap.get("isPublic"));
+    }
+
+    // 푸시알림 설정 변경
+    @PatchMapping("/mypage/alert")
+    public ResponseEntity modifyAlertSetting(@RequestHeader("xAuthToken") String token,
+                                             @RequestBody Map<String, Boolean> isAlertMap) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return userService.modifyAlertSetting(userId, isAlertMap.get("isAlert"));
     }
 
     // 공지사항 조회

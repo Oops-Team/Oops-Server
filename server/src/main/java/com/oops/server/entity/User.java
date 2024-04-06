@@ -92,6 +92,8 @@ public class User {
         this.isPublic = isPublic;
     }
 
+    public void modifyAlertSetting(boolean isAlert) { this.isAlert = isAlert; }
+
     public void modifyPassword(String password, PasswordEncoder encoder) {
         // 비밀번호 암호화 후 저장
         this.password = encoder.encode(password);

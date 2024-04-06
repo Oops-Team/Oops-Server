@@ -281,6 +281,17 @@ public class UserService {
                 HttpStatus.OK);
     }
 
+    // 푸시알림 설정 변경
+    public ResponseEntity modifyAlertSetting(Long userId, Boolean isAlert) {
+        User user = userRepository.findByUserId(userId);
+        user.modifyAlertSetting(isAlert);
+        userRepository.save(user);
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공"),
+                HttpStatus.OK);
+    }
+
     // 공지사항 모두 조회
     public ResponseEntity getAllNotices() {
         // 공지사항 리스트 가져오기
