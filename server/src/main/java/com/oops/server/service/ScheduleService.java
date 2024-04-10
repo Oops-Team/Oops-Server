@@ -126,6 +126,11 @@ public class ScheduleService {
                 }
             }
 
+            // 오늘 할 일 자체가 없을 경우
+            if (dateTodoList.size() == 0) {
+                isComplete = false;
+            }
+
             dateDto.add(new TodoGetAllResponse(schedule.getDate(), isComplete));
         }
 
