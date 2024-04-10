@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @PropertySource("classpath:application-secrete.yml")
-public class FcmInitializer {
+public class FcmConfig {
 
     @Value("${firebase.key-path}")
     private String fcmKeyPath;
