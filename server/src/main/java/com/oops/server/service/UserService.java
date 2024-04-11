@@ -170,8 +170,18 @@ public class UserService {
 
     // 회원 탈퇴
     public ResponseEntity deleteAccount(Long userId, AccountDeleteRequest request) {
-        // 해당 회원 정보 삭제
+        // 해당 회원 정보 불러오기
         User user = userRepository.findByUserId(userId);
+
+        // 해당 회원이 기본 프로필을 사용하고 있지 않을 경우
+        // 해당 회원의 프로필 사진 데이터(S3) 삭제
+        String profileImgUrl = user.getProfileUrl();
+        String profileImgName = profileImgUrl.split("/")[3];
+        if (!profileImgName.equals(DEFAULT_PROFILE_NAME)) {
+            s3Service.deleteFile(profileImgName);
+        }
+
+        // 해당 회원 정보 삭제
         userRepository.delete(user);
 
         // 탈퇴 사유 저장
