@@ -6,7 +6,6 @@ import com.oops.server.dto.request.AccountDeleteRequest;
 import com.oops.server.dto.request.SignUpRequest;
 import com.oops.server.dto.response.DefaultResponse;
 import com.oops.server.security.TokenProvider;
-import com.oops.server.service.FindIdAndPwdService;
 import com.oops.server.service.UserService;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/user")
@@ -105,6 +106,15 @@ public class UserController {
         Long userId = tokenProvider.getUserIdFromToken(token);
 
         return userService.getMyPage(userId);
+    }
+
+    // 프로필 사진 변경
+    @PostMapping("/mypage/profile/image")
+    public ResponseEntity modifyProfileImage(@RequestHeader("xAuthToken") String token,
+            @RequestParam("imageFile") MultipartFile profileImg) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+
+        return userService.modifyProfileImage(userId, profileImg);
     }
 
     // 프로필 공개 설정 변경

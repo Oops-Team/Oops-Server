@@ -13,6 +13,8 @@ public enum ExceptionMessages {
     MISS_MATCH_VERIFICATION_CODE("인증코드가 일치하지 않습니다"),
     CONFLICT_OLD_PASSWORD("기존 비밀번호와 일치해 사용할 수 없어요"),
 
+    CONFLICT_PROFILE_IMAGE("기존 프로필 사진과 동일한 사진입니다"),
+    FAILED_PROFILE_IMAGE_UPLOAD("프로필 사진 업로드를 실패했습니다"),
     NOT_FOUND_MYPAGE_COMMENT("요약 멘트가 없습니다"),
 
     NOT_ALLOWED_ALERT("요청 수행은 성공했으나, 알림 설정 해제로 인해 알림을 보낼 수 없습니다"),

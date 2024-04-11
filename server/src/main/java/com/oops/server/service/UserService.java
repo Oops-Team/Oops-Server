@@ -12,13 +12,12 @@ import com.oops.server.entity.CancelReason;
 import com.oops.server.entity.FcmToken;
 import com.oops.server.entity.Notice;
 import com.oops.server.entity.User;
-//import com.oops.server.entity.UserRefreshToken;
-//import com.oops.server.repository.UserRefreshTokenRepository;
 import com.oops.server.repository.CancelReasonRepository;
 import com.oops.server.repository.FcmTokenRepository;
 import com.oops.server.repository.NoticeRepository;
 import com.oops.server.repository.UserRepository;
 import com.oops.server.security.TokenProvider;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -38,10 +38,17 @@ public class UserService {
 
     private final PasswordEncoder encoder;
     private final TokenProvider tokenProvider;
+    private final S3Service s3Service;
+
     private final UserRepository userRepository;
     private final FcmTokenRepository fcmTokenRepository;
     private final CancelReasonRepository cancelReasonRepository;
     private final NoticeRepository noticeRepository;
+
+    // 기본 프로필 이미지 관련 정보
+    private final String DEFAULT_PROFILE_NAME = "defaultProfile.png";
+    private final String DEFAULT_PROFILE_URL =
+            "https://oops-bucket.s3.ap-northeast-2.amazonaws.com/defaultProfile.png";
 
     // 멘트 타입
     private final int COMMENT_NOTICE = 1;   // 공지
@@ -115,7 +122,8 @@ public class UserService {
         }
 
         return new ResponseEntity(
-                DefaultResponse.from(StatusCode.OK, "성공", new SignInResponse(user.getName(), token)),
+                DefaultResponse.from(StatusCode.OK, "성공",
+                        new SignInResponse(user.getName(), token)),
                 HttpStatus.OK);
     }
 
@@ -155,7 +163,8 @@ public class UserService {
         }
 
         return new ResponseEntity(
-                DefaultResponse.from(StatusCode.OK, "성공", new SignInResponse(user.getName(), token)),
+                DefaultResponse.from(StatusCode.OK, "성공",
+                        new SignInResponse(user.getName(), token)),
                 HttpStatus.OK);
     }
 
@@ -269,6 +278,67 @@ public class UserService {
                     DefaultResponse.from(StatusCode.OK, "성공", myPageGetResponse),
                     HttpStatus.OK);
         }
+    }
+
+    // 프로필 사진 변경
+    public ResponseEntity modifyProfileImage(Long userId, MultipartFile imageFile) {
+        User user = userRepository.findByUserId(userId);
+
+        // 기존 프로필 사진 파일 이름 가져오기
+        String oldImageUrl = user.getProfileUrl();
+        String oldImageName = oldImageUrl.split("/")[3];
+        log.debug("oldImageName: " + oldImageName);
+
+        // 새로 설정할 프로필 사진의 파일 이름 가져오기
+        String newImageName = imageFile.getOriginalFilename();
+        log.debug("newImageName: " + newImageName);
+
+        // 기존 프로필 사진과 동일한 사진으로 변경하는 경우
+        if (newImageName.equals(oldImageName)) {
+            // 프론트단에 실패 응답 (409)
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.CONFLICT,
+                            ExceptionMessages.CONFLICT_PROFILE_IMAGE.get()),
+                    HttpStatus.CONFLICT);
+        }
+
+        // 기본 프로필로 설정하는 경우
+        if (newImageName.equals(DEFAULT_PROFILE_NAME)) {
+            user.modifyProfileUrl(DEFAULT_PROFILE_URL);
+            userRepository.save(user);
+        }
+        // 새로운 프로필로 설정할 경우
+        else {
+            // 새 프로필 사진 업로드
+            String newImageUrl = "";
+            try {
+                newImageUrl = s3Service.uploadFile(imageFile);
+            } catch (IOException e) {
+                log.error("새 프로필 사진 업로드 실패");
+                e.printStackTrace();
+
+                // 프론트단에 실패 응답 (500)
+                return new ResponseEntity(
+                        DefaultResponse.from(StatusCode.INTERNAL_SERVER_ERROR,
+                                ExceptionMessages.FAILED_PROFILE_IMAGE_UPLOAD.get()),
+                        HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            // 새 프로필 사진의 url 저장
+            user.modifyProfileUrl(newImageUrl);
+            userRepository.save(user);
+        }
+
+        // 기존 프로필이 기본 프로필이 아니라면
+        if (!oldImageName.equals(DEFAULT_PROFILE_NAME)) {
+            // 기존 프로필 사진 삭제
+            s3Service.deleteFile(oldImageName);
+        }
+
+        // 성공 응답
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공"),
+                HttpStatus.OK);
     }
 
     // 프로필 공개/비공개 설정 변경

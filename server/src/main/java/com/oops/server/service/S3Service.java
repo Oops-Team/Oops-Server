@@ -34,5 +34,8 @@ public class S3Service {
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
-    // TODO: 파일 삭제
+    // 파일 삭제
+    public void deleteFile(String originalFileName) {
+        amazonS3.deleteObject(bucket, originalFileName);
+    }
 }
