@@ -32,6 +32,12 @@ spring:
           starttls:
             enable: true
 
+  # 이미지 파일 최대 용량 설정
+  servlet:
+    multipart:
+      maxFileSize: 20MB
+      maxRequestSize: 20MB
+
 # 에러 메시지 표출을 위함
 server:
   error:
