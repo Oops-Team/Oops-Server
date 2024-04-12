@@ -263,11 +263,16 @@ public class UserService {
         }
 
         // 3. DTO 정보 담기
+        // 만일 기본 프로필일 경우 null로 설정
+        String profileUrl = user.getProfileUrl();
+        if (profileUrl.equals(DEFAULT_PROFILE_URL)) {
+            profileUrl = null;
+        }
         MyPageGetResponse myPageGetResponse = new MyPageGetResponse(
                 user.getSnsType(),
                 user.getEmail(),
                 user.getName(),
-                user.getProfileUrl(),
+                profileUrl,
                 user.getIsPublic(),
                 user.getIsAlert(),
                 commentType,
