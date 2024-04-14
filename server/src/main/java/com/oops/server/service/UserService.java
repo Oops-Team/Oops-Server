@@ -111,18 +111,7 @@ public class UserService {
         resTokenMap.put("xAuthToken", token);
 
         // 2. FCM 토큰 저장
-        FcmToken fcmToken = fcmTokenRepository.findByUserId(user.getUserId());
-        // 이미 FCM 토큰이 저장되어 있던 상태라면
-        if (fcmToken != null) {
-            // 받은 토큰으로 갱신
-            fcmToken.modifyToken(request.fcmToken());
-            fcmTokenRepository.save(fcmToken);
-        }
-        // 이미 저장되어 있는 게 없다면
-        else {
-            // FCM 토큰 데이터 새로 삽입
-            fcmTokenRepository.save(FcmToken.create(user, request.fcmToken()));
-        }
+        fcmTokenRepository.save(FcmToken.create(user, request.fcmToken()));
 
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공", resTokenMap),
