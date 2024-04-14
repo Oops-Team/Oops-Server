@@ -21,6 +21,8 @@ import com.oops.server.repository.ScheduleRepository;
 import com.oops.server.repository.UserRepository;
 import com.oops.server.security.TokenProvider;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -363,14 +365,20 @@ public class UserService {
         // 기존 프로필 사진 파일 이름 가져오기
         String oldImageUrl = user.getProfileUrl();
         String oldImageName = oldImageUrl.split("/")[3];
+        try {
+            oldImageName = URLDecoder.decode(oldImageName, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            log.error("파일명 디코딩 실패");
+        }
         log.debug("oldImageName: " + oldImageName);
 
         // 새로 설정할 프로필 사진의 파일 이름 가져오기
         String newImageName = imageFile.getOriginalFilename();
+        String plusIdNewImgName = user.getUserId() + newImageName;  // 해당 유저의 아이디값을 앞에 붙여 유저끼리의 중복 방지
         log.debug("newImageName: " + newImageName);
 
         // 기존 프로필 사진과 동일한 사진으로 변경하는 경우
-        if (newImageName.equals(oldImageName)) {
+        if (plusIdNewImgName.equals(oldImageName)) {
             // 프론트단에 실패 응답 (409)
             return new ResponseEntity(
                     DefaultResponse.from(StatusCode.CONFLICT,
@@ -388,7 +396,7 @@ public class UserService {
             // 새 프로필 사진 업로드
             String newImageUrl = "";
             try {
-                newImageUrl = s3Service.uploadFile(imageFile);
+                newImageUrl = s3Service.uploadFile(imageFile, plusIdNewImgName);
             } catch (IOException e) {
                 log.error("새 프로필 사진 업로드 실패");
                 e.printStackTrace();

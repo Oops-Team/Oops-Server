@@ -20,8 +20,7 @@ public class S3Service {
     private String bucket;
 
     // 파일 업로드 및 저장
-    public String uploadFile(MultipartFile multipartFile) throws IOException {
-        String fileName = multipartFile.getOriginalFilename();
+    public String uploadFile(MultipartFile multipartFile, String fileName) throws IOException {
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(multipartFile.getSize());
