@@ -69,6 +69,12 @@ public class UserController {
                 HttpStatus.OK);
     }
 
+    // Naver 회원가입
+    @PostMapping("/sign-up/naver")
+    public ResponseEntity creteNaverUser(@RequestBody SignUpRequest request) {
+        return userService.joinWithNaver(request);
+    }
+
     // 로그인
     @PostMapping("/login/{loginId}")
     public ResponseEntity login(@PathVariable("loginId") String loginType,
@@ -78,10 +84,13 @@ public class UserController {
             case "oops":
                 return userService.signInOops(request);
 
-            // 소셜 로그인
+            // naver 로그인
             case "naver":
+                return userService.signInNaver(request);
+
+            // google 로그인
             case "google":
-                return userService.signInSocial(request, loginType);
+                return userService.signInGoogle(request);
 
             default:
                 return new ResponseEntity(

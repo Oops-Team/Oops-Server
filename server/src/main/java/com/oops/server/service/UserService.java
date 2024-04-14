@@ -45,6 +45,11 @@ public class UserService {
     private final CancelReasonRepository cancelReasonRepository;
     private final NoticeRepository noticeRepository;
 
+    // SNS Type 정보
+    private final String SNS_OOPS = "oops";
+    private final String SNS_NAVER = "naver";
+    private final String SNS_GOOGLE = "google";
+
     // 기본 프로필 이미지 관련 정보
     private final String DEFAULT_PROFILE_NAME = "defaultProfile.png";
     private final String DEFAULT_PROFILE_URL =
@@ -86,10 +91,38 @@ public class UserService {
         return resTokenMap;
     }
 
+    // Naver 회원가입
+    public ResponseEntity joinWithNaver(SignUpRequest request) {
+        // 0. 회원가입 진행
+        User user = User.createSocial(request, SNS_NAVER);
+        user = userRepository.save(user);
+
+        // 1. Oops Access 토큰 발급
+        String token = tokenProvider.createAccessToken(user.getUserId());
+        // 2. FCM 토큰 저장
+        FcmToken fcmToken = fcmTokenRepository.findByUserId(user.getUserId());
+        // 이미 FCM 토큰이 저장되어 있던 상태라면
+        if (fcmToken != null) {
+            // 받은 토큰으로 갱신
+            fcmToken.modifyToken(request.fcmToken());
+            fcmTokenRepository.save(fcmToken);
+        }
+        // 이미 저장되어 있는 게 없다면
+        else {
+            // FCM 토큰 데이터 새로 삽입
+            fcmTokenRepository.save(FcmToken.create(user, request.fcmToken()));
+        }
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공",
+                        new SignInResponse(user.getName(), token)),
+                HttpStatus.OK);
+    }
+
     // Oops 로그인
     public ResponseEntity signInOops(SignUpRequest request) {
 
-        User user = userRepository.findByEmailAndSnsType(request.email(), "oops");
+        User user = userRepository.findByEmailAndSnsType(request.email(), SNS_OOPS);
 
         // 해당하는 이메일이 없을 시
         if (user == null) {
@@ -127,23 +160,55 @@ public class UserService {
                 HttpStatus.OK);
     }
 
-    // 소셜 로그인
-    public ResponseEntity signInSocial(SignUpRequest request, String snsType) {
+    // 소셜 로그인 - Naver(로그인)
+    public ResponseEntity signInNaver(SignUpRequest request) {
 
         String email = request.email();
-        User user = userRepository.findByEmailAndSnsType(email, snsType);
+        User user = userRepository.findByEmailAndSnsType(email, SNS_NAVER);
+
+        // 가입된 이력이 없을 경우
+        if (user == null) {
+            // 회원가입 요청 응답
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.OK, "회원가입을 진행해주시기 바랍니다"),
+                    HttpStatus.OK);
+        }
+
+        // 그게 아닐 경우 로그인 진행
+        // 1. Oops Access 토큰 발급
+        String token = tokenProvider.createAccessToken(user.getUserId());
+        // 2. FCM 토큰 저장
+        FcmToken fcmToken = fcmTokenRepository.findByUserId(user.getUserId());
+        // 이미 FCM 토큰이 저장되어 있던 상태라면
+        if (fcmToken != null) {
+            // 받은 토큰으로 갱신
+            fcmToken.modifyToken(request.fcmToken());
+            fcmTokenRepository.save(fcmToken);
+        }
+        // 이미 저장되어 있는 게 없다면
+        else {
+            // FCM 토큰 데이터 새로 삽입
+            fcmTokenRepository.save(FcmToken.create(user, request.fcmToken()));
+        }
+
+        return new ResponseEntity(
+                DefaultResponse.from(StatusCode.OK, "성공",
+                        new SignInResponse(user.getName(), token)),
+                HttpStatus.OK);
+    }
+
+    // 소셜 로그인 - Google
+    public ResponseEntity signInGoogle(SignUpRequest request) {
+
+        String email = request.email();
+        User user = userRepository.findByEmailAndSnsType(email, SNS_GOOGLE);
 
         // 가입된 이력이 없을 경우
         if (user == null) {
             // 회원가입 진행
-            if (snsType.equals("naver")) {
-                user = User.createSocial(request, "naver");
-            } else if (snsType.equals("google")) {
-                user = User.createSocial(request, "google");
-            }
+            user = User.createSocial(request, SNS_GOOGLE);
 
-            userRepository.save(user);
-            user = userRepository.findByEmailAndSnsType(email, snsType);    // id값을 가져오기 위함
+            user = userRepository.save(user);    // id값을 가져오기 위함
         }
 
         // 1. Oops Access 토큰 발급
