@@ -16,6 +16,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, ScheduleID> 
     // 해당 유저의 특정 기간 일정 모두 찾기
     List<Schedule> findAllByUserAndDateBetween(User user, LocalDate startDate, LocalDate endDate);
 
+    // 해당 유저의 특정 일자 이후 일정 찾기
+    List<Schedule> findAllByUserAndDateGreaterThanEqual(User user, LocalDate date);
+
     // 해당 유저의 특정 일자의 일정 모두 삭제
     @Transactional
     void deleteByUserAndDate(User user, LocalDate date);

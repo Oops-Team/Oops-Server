@@ -3,6 +3,7 @@ package com.oops.server.service;
 import com.oops.server.context.ExceptionMessages;
 import com.oops.server.context.StatusCode;
 import com.oops.server.dto.etc.NoticeDto;
+import com.oops.server.dto.etc.RemindAlertDto;
 import com.oops.server.dto.request.AccountDeleteRequest;
 import com.oops.server.dto.request.SignUpRequest;
 import com.oops.server.dto.response.DefaultResponse;
@@ -11,14 +12,20 @@ import com.oops.server.dto.response.SignInResponse;
 import com.oops.server.entity.CancelReason;
 import com.oops.server.entity.FcmToken;
 import com.oops.server.entity.Notice;
+import com.oops.server.entity.Schedule;
 import com.oops.server.entity.User;
 import com.oops.server.repository.CancelReasonRepository;
 import com.oops.server.repository.FcmTokenRepository;
 import com.oops.server.repository.NoticeRepository;
+import com.oops.server.repository.ScheduleRepository;
 import com.oops.server.repository.UserRepository;
 import com.oops.server.security.TokenProvider;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +49,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final FcmTokenRepository fcmTokenRepository;
+    private final ScheduleRepository scheduleRepository;
     private final CancelReasonRepository cancelReasonRepository;
     private final NoticeRepository noticeRepository;
 
@@ -99,6 +107,9 @@ public class UserService {
 
         // 1. Oops Access 토큰 발급
         String token = tokenProvider.createAccessToken(user.getUserId());
+        Map<String, String> resTokenMap = new HashMap<>();
+        resTokenMap.put("xAuthToken", token);
+
         // 2. FCM 토큰 저장
         FcmToken fcmToken = fcmTokenRepository.findByUserId(user.getUserId());
         // 이미 FCM 토큰이 저장되어 있던 상태라면
@@ -114,8 +125,7 @@ public class UserService {
         }
 
         return new ResponseEntity(
-                DefaultResponse.from(StatusCode.OK, "성공",
-                        new SignInResponse(user.getName(), token)),
+                DefaultResponse.from(StatusCode.OK, "성공", resTokenMap),
                 HttpStatus.OK);
     }
 
@@ -140,6 +150,7 @@ public class UserService {
         // 모두 일치할 시
         // 1. Oops Access 토큰 생성
         String token = tokenProvider.createAccessToken(user.getUserId());
+
         // 2. FCM 토큰 저장
         FcmToken fcmToken = fcmTokenRepository.findByUserId(user.getUserId());
         // 이미 FCM 토큰이 저장되어 있던 상태라면
@@ -154,9 +165,28 @@ public class UserService {
             fcmTokenRepository.save(FcmToken.create(user, request.fcmToken()));
         }
 
+        // 3. 일정 알림 리스트 저장
+        List<RemindAlertDto> alertList = new ArrayList<>();
+        // 오늘 날짜 불러오기
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        List<Schedule> scheduleList = scheduleRepository.findAllByUserAndDateGreaterThanEqual(user, today);
+        for (Schedule schedule : scheduleList) {
+            // 해당 날짜
+            LocalDate date = schedule.getDate();
+            // 외출 시각
+            LocalTime outTime = schedule.getOutTime();
+            // 리마인더 값
+            int[] remindTimeIntArr = Arrays.stream(schedule.getNotification().split(","))
+                    .mapToInt(Integer::parseInt).toArray();
+            List<Integer> remindList = Arrays.stream(remindTimeIntArr).boxed().toList();
+
+            // 각 정보 dto에 담기
+            alertList.add(new RemindAlertDto(date, outTime, remindList));
+        }
+
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공",
-                        new SignInResponse(user.getName(), token)),
+                        new SignInResponse(user.getName(), token, alertList)),
                 HttpStatus.OK);
     }
 
@@ -177,6 +207,7 @@ public class UserService {
         // 그게 아닐 경우 로그인 진행
         // 1. Oops Access 토큰 발급
         String token = tokenProvider.createAccessToken(user.getUserId());
+
         // 2. FCM 토큰 저장
         FcmToken fcmToken = fcmTokenRepository.findByUserId(user.getUserId());
         // 이미 FCM 토큰이 저장되어 있던 상태라면
@@ -191,9 +222,28 @@ public class UserService {
             fcmTokenRepository.save(FcmToken.create(user, request.fcmToken()));
         }
 
+        // 3. 일정 알림 리스트 저장
+        List<RemindAlertDto> alertList = new ArrayList<>();
+        // 오늘 날짜 불러오기
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        List<Schedule> scheduleList = scheduleRepository.findAllByUserAndDateGreaterThanEqual(user, today);
+        for (Schedule schedule : scheduleList) {
+            // 해당 날짜
+            LocalDate date = schedule.getDate();
+            // 외출 시각
+            LocalTime outTime = schedule.getOutTime();
+            // 리마인더 값
+            int[] remindTimeIntArr = Arrays.stream(schedule.getNotification().split(","))
+                    .mapToInt(Integer::parseInt).toArray();
+            List<Integer> remindList = Arrays.stream(remindTimeIntArr).boxed().toList();
+
+            // 각 정보 dto에 담기
+            alertList.add(new RemindAlertDto(date, outTime, remindList));
+        }
+
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공",
-                        new SignInResponse(user.getName(), token)),
+                        new SignInResponse(user.getName(), token, alertList)),
                 HttpStatus.OK);
     }
 
@@ -213,6 +263,7 @@ public class UserService {
 
         // 1. Oops Access 토큰 발급
         String token = tokenProvider.createAccessToken(user.getUserId());
+
         // 2. FCM 토큰 저장
         FcmToken fcmToken = fcmTokenRepository.findByUserId(user.getUserId());
         // 이미 FCM 토큰이 저장되어 있던 상태라면
@@ -227,9 +278,28 @@ public class UserService {
             fcmTokenRepository.save(FcmToken.create(user, request.fcmToken()));
         }
 
+        // 3. 일정 알림 리스트 저장
+        List<RemindAlertDto> alertList = new ArrayList<>();
+        // 오늘 날짜 불러오기
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        List<Schedule> scheduleList = scheduleRepository.findAllByUserAndDateGreaterThanEqual(user, today);
+        for (Schedule schedule : scheduleList) {
+            // 해당 날짜
+            LocalDate date = schedule.getDate();
+            // 외출 시각
+            LocalTime outTime = schedule.getOutTime();
+            // 리마인더 값
+            int[] remindTimeIntArr = Arrays.stream(schedule.getNotification().split(","))
+                    .mapToInt(Integer::parseInt).toArray();
+            List<Integer> remindList = Arrays.stream(remindTimeIntArr).boxed().toList();
+
+            // 각 정보 dto에 담기
+            alertList.add(new RemindAlertDto(date, outTime, remindList));
+        }
+
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공",
-                        new SignInResponse(user.getName(), token)),
+                        new SignInResponse(user.getName(), token, alertList)),
                 HttpStatus.OK);
     }
 
