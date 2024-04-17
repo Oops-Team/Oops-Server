@@ -240,6 +240,12 @@ public class UserService {
         // 해당 회원의 프로필 사진 데이터(S3) 삭제
         String profileImgUrl = user.getProfileUrl();
         String profileImgName = profileImgUrl.split("/")[3];
+        try {
+            profileImgName = URLDecoder.decode(profileImgName, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            log.error("파일명 디코딩 실패");
+        }
+        
         if (!profileImgName.equals(DEFAULT_PROFILE_NAME)) {
             s3Service.deleteFile(profileImgName);
         }
