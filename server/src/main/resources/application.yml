@@ -9,6 +9,9 @@ spring:
       database-platform: org.hibernate.dialect.MySQLDialect
       hibernate:
           ddl-auto: update
+      properties:
+        hibernate:
+          default_batch_fetch_size: 1000
 
   # 콘솔 색상 출력을 위함
   output:

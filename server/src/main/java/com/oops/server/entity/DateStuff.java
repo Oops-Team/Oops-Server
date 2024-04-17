@@ -2,6 +2,7 @@ package com.oops.server.entity;
 
 import com.oops.server.compositekey.DateStuffID;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
@@ -24,7 +25,7 @@ import lombok.NoArgsConstructor;
 public class DateStuff {
 
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
             @JoinColumn(name = "date", referencedColumnName = "date"),
             @JoinColumn(name = "user_id", referencedColumnName = "user_id")
@@ -33,7 +34,7 @@ public class DateStuff {
 
 
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stuff_name", referencedColumnName = "name")
     private Stuff stuff;
 

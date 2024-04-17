@@ -3,6 +3,7 @@ package com.oops.server.entity;
 import com.oops.server.compositekey.FriendID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
@@ -24,12 +25,12 @@ import lombok.NoArgsConstructor;
 public class Friend {
 
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "request_id", referencedColumnName = "user_id")
     private User requestUser;
 
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "response_id", referencedColumnName = "user_id")
     private User responseUser;
 

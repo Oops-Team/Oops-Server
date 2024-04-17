@@ -62,7 +62,7 @@ public class User {
     @OneToMany(mappedBy = "responseUser", cascade = CascadeType.REMOVE)
     private List<Friend> responseFriends;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @OneToOne(optional = false, mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private FcmToken fcmToken;
 
     public static User create(SignUpRequest request, PasswordEncoder encoder, String snsType) {

@@ -2,6 +2,7 @@ package com.oops.server.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,7 +30,7 @@ public class DateTodo {
     @Column(name = "todo_id")
     private Long todoId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
             @JoinColumn(name = "date", referencedColumnName = "date"),
             @JoinColumn(name = "user_id", referencedColumnName = "user_id")

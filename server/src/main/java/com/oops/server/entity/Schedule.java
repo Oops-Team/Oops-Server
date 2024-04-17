@@ -4,6 +4,7 @@ import com.oops.server.compositekey.ScheduleID;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
@@ -29,7 +30,7 @@ import lombok.NoArgsConstructor;
 public class Schedule {
 
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
 
@@ -51,7 +52,7 @@ public class Schedule {
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.REMOVE)
     private List<DateStuff> dateStuffs;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_id", referencedColumnName = "inventory_id")
     private Inventory inventory;
 
