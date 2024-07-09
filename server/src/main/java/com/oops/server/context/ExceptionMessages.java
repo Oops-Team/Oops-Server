@@ -2,6 +2,8 @@ package com.oops.server.context;
 
 public enum ExceptionMessages {
 
+    REFRESH_PAGE("페이지 새로고침이 필요합니다"),
+
     BAD_REQUEST("요청이 올바르지 않습니다"),
     DUPLICATE_USER("이미 사용 중인 이메일이에요"),
     DUPLICATE_NAME("이미 사용 중인 닉네임이에요"),

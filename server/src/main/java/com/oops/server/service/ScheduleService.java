@@ -569,8 +569,26 @@ public class ScheduleService {
 
     // (Home) 일정 1개 삭제
     public ResponseEntity deleteOne(Long todoId) {
+        // 해당 할 일이 들어있는 Schedule 객체 뽑아오기
+        DateTodo dateTodo = dateTodoRepository.findByTodoId(todoId);
+        Schedule schedule = dateTodo.getSchedule();
+
+        // 해당 할 일 삭제
         dateTodoRepository.deleteByTodoId(todoId);
 
+        // 해당 날짜에 할 일들이 더 남아있는지 체크
+        List<DateTodo> dateTodoList = dateTodoRepository.findAllBySchedule(schedule);
+        // 남은 할 일이 없다면 해당 Schedule 삭제
+        if (dateTodoList.size() == 0) {
+            scheduleRepository.delete(schedule);
+
+            // 페이지 새로고침 요청 응답
+            return new ResponseEntity(
+                    DefaultResponse.from(StatusCode.OK, ExceptionMessages.REFRESH_PAGE.get()),
+                    HttpStatus.OK);
+        }
+
+        // 기본 응답
         return new ResponseEntity(
                 DefaultResponse.from(StatusCode.OK, "성공"),
                 HttpStatus.OK);
