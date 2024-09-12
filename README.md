@@ -1,5 +1,22 @@
 # Oops-Server
 
+### File Directory Structure
+```
+📘server
+  ├─📂compositekey     : 복합키 클래스
+  ├─📂context          : Alert/Exception Message, Status 코드 클래스
+  ├─📂controller
+  ├─📂dto
+  │  ├─🔍etc           : 다양한 곳에서 쓰이는 기본 단위의 DTO
+  │  ├─🔍request       : 요청 시 쓰이는 DTO
+  │  └─🔍response      : 응답 시 쓰이는 DTO
+  ├─📂entity           : DB와 직접적으로 매핑되는 객체
+  ├─📂initializer      : FCM, S3 설정 파일
+  ├─📂repository
+  ├─📂security         : token, password encoder 등의 보안 관련 파일
+  └─📂service
+```
+
 ### Commit Message Convention
 ```
 feat: 새로운 기능을 추가하는 경우(일반적인 구현)
@@ -25,3 +42,4 @@ comment: 필요한 주석 추가 및 변경
 
 ```
 ex) feat: commit message
+```
